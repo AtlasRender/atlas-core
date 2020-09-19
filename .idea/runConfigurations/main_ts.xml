@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="main.ts" type="NodeJSConfigurationType" singleton="false" application-parameters="--project tsconfig.json" nameIsGenerated="true" node-parameters="--require ts-node/register" path-to-js-file="src/main.ts" working-dir="$PROJECT_DIR$">
+    <method v="2">
+      <option name="NpmBeforeRunTask" enabled="true">
+        <package-json value="$PROJECT_DIR$/package.json" />
+        <command value="install" />
+        <node-interpreter value="project" />
+        <package-manager value="yarn" />
+        <envs />
+      </option>
+    </method>
+  </configuration>
+</component>
