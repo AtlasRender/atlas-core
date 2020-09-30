@@ -10,7 +10,7 @@
 import * as Koa from "koa";
 import * as Router from "koa-router";
 import {createConnection, Connection, getManager} from "typeorm";
-import CustomerEntity from "./entities/customer.entity";
+import CustomerEntity from "./entities/Customer.entity";
 
 const app = new Koa();
 
