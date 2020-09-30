@@ -1,33 +1,53 @@
 {
   "name": "pathfinder-core",
   "version": "1.0.0",
-  "description": "",
+  "description": "Pathfinder Slave - part of Pathfinder system, designed to manipulate render software directly on render nodes",
+  "keywords": [
+    "monitoring",
+    "manager",
+    "manager-system",
+    "visualization",
+    "3d-graphics",
+    "2d-graphics",
+    "automation",
+    "simulation"
+  ],
+  "author": {
+    "name": "Danil Andreev",
+    "email": "danssg08@gmail.com",
+    "url": "https://github.com/DanilAndreev"
+  },
+  "contributors": [
+    {
+      "name": "Denis Afendikov",
+      "email": "denafen2000@gmail.com",
+      "url": "https://github.com/JeyM1"
+    }
+  ],
+  "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": [
-      "src"
-    ],
+    "start": "tsc src/main.ts",
+    "watch": "npx nodemon",
     "ext": ".ts,.js",
     "ignore": [],
     "exec": "ts-node ./src/index.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "dependencies": {
+    "@types/koa-router": "^7.4.1",
+    "koa": "^2.13.0",
+    "koa-router": "^9.4.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^6.6.3",
+    "typeorm": "^0.2.26"
+  },
   "devDependencies": {
+    "@types/koa": "^2.11.4",
     "@types/node": "^14.0.14",
     "nodemon": "^2.0.4",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^3.9.6"
-  },
-  "dependencies": {
-    "@nestjs/common": "^7.4.4",
-    "@nestjs/core": "^7.4.4",
-    "@nestjs/platform-express": "^7.4.4",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^6.6.3",
-    "typeorm": "^0.2.26"
   }
 }
