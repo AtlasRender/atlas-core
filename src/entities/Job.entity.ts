@@ -9,8 +9,13 @@
 
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
+/**
+ * JobEntity - typeorm entity for job data.
+ * @class
+ * @author Denis Afendikov
+ */
 @Entity("job")
-export default class CustomerEntity {
+export default class JobEntity {
 
     @PrimaryGeneratedColumn()
     id: number;

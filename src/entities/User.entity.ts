@@ -9,8 +9,14 @@
 
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
+
+/**
+ * UserEntity - typeorm entity for user data.
+ * @class
+ * @author Denis Afendikov
+ */
 @Entity("user")
-export default class CustomerEntity {
+export default class UserEntity {
 
     @PrimaryGeneratedColumn()
     id: number;

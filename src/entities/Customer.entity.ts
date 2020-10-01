@@ -9,7 +9,11 @@
 
 import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
 
-
+/**
+ * CustomerEntity - typeorm entity for customers table (not used)
+ * @class
+ * @author Denis Afendikov
+ */
 @Entity("customer")
 export default class CustomerEntity {
 
