@@ -28,7 +28,7 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc src/main.ts",
+    "start": "tsc src/index.ts",
     "watch": "npx nodemon",
     "ext": ".ts,.js",
     "ignore": [],
