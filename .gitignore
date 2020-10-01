@@ -1,3 +1,5 @@
 /node_modules
 /dest
-package-lock.json
+*.log
+.env
+.env.*
