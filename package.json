@@ -35,8 +35,6 @@
     "exec": "ts-node ./src/index.ts"
   },
   "dependencies": {
-    "@types/koa-router": "^7.4.1",
-    "@types/moment": "^2.13.0",
     "koa": "^2.13.0",
     "koa-router": "^9.4.0",
     "moment": "^2.29.0",
@@ -45,6 +43,8 @@
     "typeorm": "^0.2.26"
   },
   "devDependencies": {
+    "@types/koa-router": "^7.4.1",
+    "@types/moment": "^2.13.0",
     "@types/koa": "^2.11.4",
     "@types/node": "^14.0.14",
     "nodemon": "^2.0.4",
