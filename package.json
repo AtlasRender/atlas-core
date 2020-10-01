@@ -35,9 +35,11 @@
     "exec": "ts-node ./src/index.ts"
   },
   "dependencies": {
+    "@types/koa-router": "^7.4.1",
     "koa": "^2.13.0",
     "koa-router": "^9.4.0",
     "moment": "^2.29.0",
+    "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.3",
     "typeorm": "^0.2.26"
