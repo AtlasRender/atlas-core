@@ -31,6 +31,4 @@ export default class CustomerEntity {
 
     @Column({name: "bank_details"})
     bankDetails: number;
-
-
 }
