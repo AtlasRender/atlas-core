@@ -9,6 +9,7 @@
 
 import * as Koa from "Koa";
 import * as Router from "koa-router";
+import * as KoaLogger from "koa-logger";
 import {importClassesFromDirectories} from "typeorm/util/DirectoryExportedClassesLoader";
 import {Logger as TypeOrmLogger, QueryRunner} from "typeorm";
 import Controller from "./Controller";
@@ -44,25 +45,35 @@ export default class Server extends Koa {
     protected logger: TypeOrmLogger;
     protected router: Router;
 
-    constructor(config?: ServerConfig) {
+    public constructor(config?: ServerConfig) {
         super();
+        this.use(KoaLogger);
         this.config = config;
         this.logger = new Logger();
 
+        console.log(`Pathfinder Core: Loading controllers...`);
         if (this.config.controllersDir) {
             const found: any[] = importClassesFromDirectories(this.logger, [this.config.controllersDir]);
-            const controllers: Controller[] = [];
+            const controllers: any[] = [];
             for (const item of found) {
-                item instanceof Controller && controllers.push(item);
+                if (item.prototype instanceof Controller)
+                    controllers.push(item);
             }
-            this.controllers = controllers;
+            console.log(`Pathfinder Core: found controllers: [ ${controllers.map(item => item.name).join(", ")} ]`);
+            this.controllers = controllers.map(controller => new controller());
         }
 
         this.router = new Router();
-        this.controllers.map(controller => this.router.use(controller.getBaseRoute(), controller.routes()));
+
+        for (const controller of this.controllers) {
+            this.router.use(controller.getRoute(), controller.getRouter().routes(), controller.getRouter().allowedMethods());
+        }
+        this.use(this.router.routes()).use(this.router.allowedMethods());
     }
     public start(): Server {
-        this.listen(this.config.port || 3002);
+        const port = this.config.port || 3002;
+        this.listen(port);
+        console.log(`Pathfinder Core: Server listening on port ${port}`);
         return this;
     }
 }

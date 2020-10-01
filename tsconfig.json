@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
+    "lib": [
+      "es5",
+      "es6"
+    ],
     "experimentalDecorators": true,
     "module": "commonjs",
-    "target": "es5",
-    "sourceMap": true,
+    "target": "es2015",
+    "sourceMap": true
   },
   "exclude": [
     "node_modules"

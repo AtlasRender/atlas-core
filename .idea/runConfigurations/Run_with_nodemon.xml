@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run with nodemon" type="js.build_tools.npm" singleton="false">
+  <configuration default="false" name="Run with nodemon" type="js.build_tools.npm" singleton="true">
     <package-json value="$PROJECT_DIR$/package.json" />
     <command value="run" />
     <scripts>

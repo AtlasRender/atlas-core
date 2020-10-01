@@ -9,16 +9,37 @@
 
 import * as Router from "koa-router";
 
-class Controller extends Router {
-    protected baseRoute: string;
+class Controller {
+    protected route: string;
+    protected router: Router;
 
     constructor(route: string) {
-        super();
-        this.baseRoute = route;
+        this.route = route;
+        this.router = new Router();
     }
 
-    public getBaseRoute() {
-        return this.baseRoute;
+    public getRoute(): string {
+        return this.route;
+    }
+
+    public getRouter(): Router {
+        return this.router;
+    }
+
+    public get(route: string, ...other): void {
+        this.router.use(route, ...other);
+    }
+
+    public post(route: string, ...other): void {
+        this.router.post(route, ...other);
+    }
+
+    public delete(route: string, ...other): void {
+        this.router.delete(route, ...other);
+    }
+
+    public put(route: string, ...other): void {
+        this.router.put(route, ...other);
     }
 }
 

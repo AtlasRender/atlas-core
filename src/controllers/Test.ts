@@ -12,10 +12,13 @@ import {Context} from "koa";
 
 export default class Test extends Controller{
     constructor() {
-        super("");
-        this.get("/test", this.getHandler);
+        super("/hello");
+        console.log(`Inited controller on [/hello]`);
+        const fnct = (ctx: Context) => ctx.body = "Hello";
+        this.get("/darkness", fnct);
     }
     public getHandler(ctx: Context): void {
+        console.log("asdf");
         ctx.body = "Kuku";
     }
 }
