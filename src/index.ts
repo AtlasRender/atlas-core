@@ -7,32 +7,29 @@
  * All rights reserved.
  */
 
+
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
 import Server from "./core/Server";
+import {createConnection, Connection, getManager} from "typeorm";
 
 
 const server = new Server({controllersDir: __dirname + "\\controllers\\**\\*"});
-server.start(3003)
-
-// import {createConnection, Connection, getManager} from "typeorm";
-// import CustomerEntity from "./entities/Customer.entity";
-// async function DB_connect() {
-//     const connection: Connection = await createConnection({
-//         type: "mysql",
-//         host: "localhost",
-//         port: 3306,
-//         username: "root",
-//         password: "",
-//         database: "afendikov_db",
-//         entities: [__dirname + "/entities/*.entity.ts"]
-//     });
-//     const customers = await getManager().getRepository(CustomerEntity)
-//         .createQueryBuilder("customer")
-//         .select()
-//         .getMany();
-//     console.log(customers);
-//     return connection;
-// }
-//
-// const connection = DB_connect().then();
+server.start(3003);
 
 
+async function DB_connect() {
+    const connection: Connection = await createConnection({
+        type: "mysql",
+        host: "localhost",
+        port: 3306,
+        username: "root",
+        password: "",
+        database: "afendikov_db",
+        entities: [__dirname + "/entities/*.entity.ts"]
+    });
+
+    return connection;
+}
