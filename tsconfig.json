@@ -8,8 +8,10 @@
     "module": "commonjs",
     "target": "es2015",
     "sourceMap": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "outDir": "dest"
   },
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules"
   ]
