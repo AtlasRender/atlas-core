@@ -10,12 +10,12 @@
 import Controller from "../core/Controller";
 import {Context} from "koa";
 
-export default class Test extends Controller{
+export default class HelloWorld extends Controller{
     constructor() {
-        super();
-        this.get("/darkness", this.getHandler);
+        super("/hello");
+        this.get("/world", this.getHandler);
     }
     public getHandler(ctx: Context): void {
-        ctx.body = "<div style='background-color: red;'>Adfasfas</div>";
+        ctx.body = "Hello world!";
     }
 }

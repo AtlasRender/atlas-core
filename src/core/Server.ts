@@ -66,6 +66,7 @@ export default class Server extends Koa {
      * @param config
      */
     constructor(config: ServerConfig) {
+        console.log(`Server: initializing.`);
         super();
         this.config = config;
         this.router = new Router();
@@ -88,9 +89,9 @@ export default class Server extends Koa {
             this.controllers = controllers.map(controller => new controller());
 
             for (const controller of this.controllers)
-                this.router.use(controller.getRoute(), controller.router.routes(), this.router.allowedMethods());
+                this.router.use(controller.baseRoute, controller.routes(), controller.allowedMethods());
         } else {
-            console.warn(`Server: "config.controllersDir" is not defined, controllers will not be loaded.`);
+            console.warn(`Server: Warning: "config.controllersDir" is not defined, controllers will not be loaded.`);
         }
 
         // Applying router routes.
@@ -103,7 +104,9 @@ export default class Server extends Koa {
      * @author Danil Andreev
      */
     public start(port?: number) {
-        this.listen(port || this.config.port || 3002);
+        const targetPort = port || this.config.port || 3002
+        console.log(`Server: server is listening on port ${targetPort}.`);
+        this.listen(targetPort);
     }
 }
 

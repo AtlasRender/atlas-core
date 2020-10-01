@@ -9,5 +9,4 @@
 
 import Server from "./core/Server";
 
-const server = new Server({controllersDir: __dirname + "\\controllers\\**\\*"});
-server.listen(3002);
+const server = new Server({controllersDir: __dirname + "\\controllers\\**\\*"}).start(3003);
