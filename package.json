@@ -35,11 +35,11 @@
     "exec": "ts-node ./src/index.ts"
   },
   "dependencies": {
-    "@types/koa-logger": "^3.1.1",
     "@types/koa-router": "^7.4.1",
+    "@types/moment": "^2.13.0",
     "koa": "^2.13.0",
-    "koa-logger": "^3.2.1",
     "koa-router": "^9.4.0",
+    "moment": "^2.29.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.3",
     "typeorm": "^0.2.26"

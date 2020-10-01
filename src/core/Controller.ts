@@ -11,7 +11,7 @@ import * as Router from "koa-router";
 
 class Controller {
     protected route: string;
-    protected router: Router;
+    public readonly router: Router;
 
     constructor(route: string) {
         this.route = route;
@@ -22,12 +22,8 @@ class Controller {
         return this.route;
     }
 
-    public getRouter(): Router {
-        return this.router;
-    }
-
     public get(route: string, ...other): void {
-        this.router.use(route, ...other);
+        this.router.get(route, ...other);
     }
 
     public post(route: string, ...other): void {

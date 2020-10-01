@@ -13,12 +13,9 @@ import {Context} from "koa";
 export default class Test extends Controller{
     constructor() {
         super("/hello");
-        console.log(`Inited controller on [/hello]`);
-        const fnct = (ctx: Context) => ctx.body = "Hello";
-        this.get("/darkness", fnct);
+        this.get("/darkness", this.getHandler);
     }
     public getHandler(ctx: Context): void {
-        console.log("asdf");
-        ctx.body = "Kuku";
+        ctx.body = "<div style='background-color: red;'>Adfasfas</div>";
     }
 }
