@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 
-import * as Koa from "Koa";
+import * as Koa from "koa";
 import * as Router from "koa-router";
 import * as moment from "moment";
 import {importClassesFromDirectories} from "typeorm/util/DirectoryExportedClassesLoader";
