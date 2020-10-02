@@ -27,6 +27,12 @@ jobs:
         password: ${{secrets.DOCKER_HUB_DA_TOKEN}}
         # Log out from the Docker registry at the end of a job
         logout: true
+    - name: Run docker daemon
+      run: dockerd
+    - name: Echo docker version
+      run: docker --version
+    - name: Echo docker-compose version
+      run: docker-compose --version
     - name: Build the Docker image
       run: docker-compose build
     - name: List of images in local docker registry
