@@ -35,11 +35,9 @@ jobs:
       run: docker-compose --version
     - name: Build the Docker image
       run: docker-compose build
-      
-      env:
-        image_id: $(docker images --filter=reference=core --format "{{.ID}}")
+  
     - name: Tag image "core" as "pathfinder/core"
-      run: docker tag ${{image_id}} pathfinder/core
+      run: docker tag $(docker images --filter=reference=core --format "{{.ID}}") pathfinder/core
     - name: List of images in local docker registry
       run: docker images
     - name: Push image to docker
