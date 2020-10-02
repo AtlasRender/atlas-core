@@ -33,7 +33,8 @@
     "watch": "npx nodemon",
     "ext": ".ts,.js",
     "ignore": [],
-    "exec": "ts-node ./src/index.ts"
+    "exec": "ts-node ./src/index.ts",
+    "start:prod": "node dest/index.js"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
