@@ -27,7 +27,7 @@
   "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "tsc && node dest/index.js",
     "build": "tsc",
     "watch": "npx nodemon",
@@ -45,10 +45,14 @@
     "typeorm": "^0.2.26"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.10.4",
+    "@types/jest": "^26.0.14",
     "@types/koa": "^2.11.4",
     "@types/koa-router": "^7.4.1",
     "@types/node": "^14.0.14",
+    "jest": "^26.4.2",
     "nodemon": "^2.0.4",
+    "ts-jest": "^26.4.1",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^3.9.6"
