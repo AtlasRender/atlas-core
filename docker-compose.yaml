@@ -1,0 +1,12 @@
+version: "3.3"
+services:
+  api:
+    container_name: pathfinder-core
+    build: .
+    restart: always
+    ports:
+      - "3002:3002"
+    volumes:
+      - .:/root
+    expose:
+      - "3002"
