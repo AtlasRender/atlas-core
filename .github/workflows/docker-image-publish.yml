@@ -28,7 +28,7 @@ jobs:
         # Log out from the Docker registry at the end of a job
         logout: true
     - name: Run docker daemon
-      run: dockerd
+      run: sudo dockerd
     - name: Echo docker version
       run: docker --version
     - name: Echo docker-compose version
