@@ -7,29 +7,42 @@
  * All rights reserved.
  */
 
+import * as Koa from "koa";
+import * as Router from "koa-router";
+import {Context} from "koa";
 
-import * as dotenv from "dotenv";
+const app = new Koa();
+const router = new Router();
+router.get("/kuku", (ctx: Context) => {
+    ctx.body = "Kuku";
+});
 
-dotenv.config();
-
-import Server from "./core/Server";
-import {createConnection, Connection, getManager} from "typeorm";
-
-
-const server = new Server({controllersDir: __dirname + "\\controllers\\**\\*"});
-server.start(3002);
+app.use(router.routes()).use(router.allowedMethods());
+app.listen(3002);
 
 
-async function DB_connect() {
-    const connection: Connection = await createConnection({
-        type: "mysql",
-        host: "localhost",
-        port: 3306,
-        username: "root",
-        password: "",
-        database: "afendikov_db",
-        entities: [__dirname + "/entities/*.entity.ts"]
-    });
+// import * as dotenv from "dotenv";
+//
+// dotenv.config();
 
-    return connection;
-}
+// import Server from "./core/Server";
+// import {createConnection, Connection, getManager} from "typeorm";
+
+
+// const server = new Server({controllersDir: __dirname + "\\controllers\\**\\*"});
+// server.start(3002);
+//
+//
+// async function DB_connect() {
+//     const connection: Connection = await createConnection({
+//         type: "mysql",
+//         host: "localhost",
+//         port: 3306,
+//         username: "root",
+//         password: "",
+//         database: "afendikov_db",
+//         entities: [__dirname + "/entities/*.entity.ts"]
+//     });
+//
+//     return connection;
+// }
