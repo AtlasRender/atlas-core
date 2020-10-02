@@ -8,6 +8,6 @@ services:
     ports:
       - "3002:3002"
     volumes:
-      - .:/root
+      - .:/app
     expose:
       - "3002"
