@@ -34,7 +34,7 @@ jobs:
     - name: Echo docker-compose version
       run: docker-compose --version
     - name: Build the Docker image
-      run: docker-compose build
+      run: sudo docker-compose build
     - name: List of images in local docker registry
       run: docker images
     - name: Push image to docker
