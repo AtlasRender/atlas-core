@@ -1,8 +1,8 @@
 version: "3.3"
 services:
-  pathfinder-core:
-    image: core
-    # container_name: pathfinder-core
+  core:
+    image: core:1.0.0
+    container_name: core
     build: .
     restart: always
     ports:
