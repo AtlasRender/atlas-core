@@ -37,7 +37,7 @@ jobs:
       run: docker-compose build
   
     - name: Tag image "core" as "pathfinder/core"
-      run: docker tag test pathfinder/core
+      run: docker tag core pathfinder/core
     - name: List of images in local docker registry
       run: docker images
     - name: Push image to docker
