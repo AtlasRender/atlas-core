@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   pathfinder-core:
-    image: pathfinder-core
+    image: core
     # container_name: pathfinder-core
     build: .
     restart: always
