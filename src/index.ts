@@ -12,12 +12,15 @@ import * as Router from "koa-router";
 import {Context} from "koa";
 
 const app = new Koa();
-const router = new Router();
-router.get("/kuku", (ctx: Context) => {
-    ctx.body = "Kuku";
-});
 
-app.use(router.routes()).use(router.allowedMethods());
+console.log("Starting server on port 3002")
+app.use(async (ctx, next) => {
+    ctx.body = "Kuku";
+    console.log("Kuku");
+    await next();
+})
+
+console.log("Server started on port 3002");
 app.listen(3002);
 
 
