@@ -17,7 +17,7 @@ import {createConnection, Connection, getManager} from "typeorm";
 
 
 const server = new Server({controllersDir: __dirname + "\\controllers\\**\\*"});
-server.start(3003);
+server.start(3002);
 
 
 async function DB_connect() {
