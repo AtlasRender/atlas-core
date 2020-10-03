@@ -22,7 +22,7 @@ app.use(async (ctx, next) => {
     await next();
 })
 
-console.log("Server started on port 8080");
+console.log(`Server started on port ${port}`);
 app.listen(port);
 
 
