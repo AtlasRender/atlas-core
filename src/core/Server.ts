@@ -103,7 +103,7 @@ export default class Server extends Koa {
      * @method
      * @author Danil Andreev
      */
-    public start(port?: number) {
+    public start(port?: string | number) {
         const targetPort = port || this.config.port || 3002;
         console.log(`Server: server is listening on port ${targetPort}.`);
         this.listen(targetPort);
