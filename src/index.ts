@@ -13,7 +13,9 @@ import {Context} from "koa";
 
 const app = new Koa();
 
-console.log("Starting server on port 8080")
+const port : string|number= process.env.PORT || 80;
+
+console.log(`Starting server on port ${port}`)
 app.use(async (ctx, next) => {
     ctx.body = "Kuku";
     console.log("Kuku");
@@ -21,7 +23,7 @@ app.use(async (ctx, next) => {
 })
 
 console.log("Server started on port 8080");
-app.listen(3002);
+app.listen(port);
 
 
 // import * as dotenv from "dotenv";
