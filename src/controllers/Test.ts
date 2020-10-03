@@ -16,6 +16,6 @@ export default class Test extends Controller{
         this.get("/darkness", this.getHandler);
     }
     public getHandler(ctx: Context): void {
-        ctx.body = "<div style='background-color: red;'>Adfasfas</div>";
+        ctx.body = "<div style='background-color: #ff0000;'>Adfasfas</div>";
     }
 }
