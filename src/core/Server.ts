@@ -70,6 +70,7 @@ export default class Server extends Koa {
         super();
         this.config = config;
         this.router = new Router();
+        this.controllers = [];
 
         // Creating additional functional for routing.
         this.use(async (ctx: Context, next: Next) => {
@@ -101,12 +102,29 @@ export default class Server extends Koa {
     /**
      * start - starts the wev server message handling cycle. If you want to run the server - call this method;
      * @method
+     * @param port - port on which server will start listening. If not set, will try to find it in config (config.port),
+     * or map to default (3002)
      * @author Danil Andreev
      */
     public start(port?: string | number) {
         const targetPort = port || this.config.port || 3002;
         console.log(`Server: server is listening on port ${targetPort}.`);
         this.listen(targetPort);
+    }
+
+    /**
+     * useController - add new controller clas
+     * @method
+     * @param controller - controller that will be applied to server
+     * @author Denis Afendikov
+     */
+    public useController(controller: Controller) {
+        console.log(`Connecting controller: ${controller.constructor.name}`);
+        this.controllers.push(controller);
+        this.router.use(controller.baseRoute, controller.routes(), controller.allowedMethods());
+
+        // Applying router routes.
+        this.use(this.router.routes()).use(this.router.allowedMethods());
     }
 }
 
