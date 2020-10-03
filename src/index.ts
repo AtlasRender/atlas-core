@@ -21,7 +21,7 @@ app.use(async (ctx, next) => {
 })
 
 console.log("Server started on port 8080");
-app.listen(8080);
+app.listen(3002);
 
 
 // import * as dotenv from "dotenv";
