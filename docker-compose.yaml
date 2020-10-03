@@ -1,8 +1,8 @@
+# This scenario builds pathfinder-core image.
 version: "3.3"
 services:
   core:
     image: pathfinder-core
-    # container_name: core
     build: .
     restart: always
     ports:
