@@ -1,0 +1,8 @@
+# This scenario pulls pathfinder-core image from Docker Hub and start it.
+version: "3.3"
+services:
+  core:
+    image: danilandreev/pathfinder-core
+    restart: always
+    ports:
+      - "3002:3002"
