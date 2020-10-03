@@ -28,11 +28,11 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "jest",
-    "start": "tsc && node dest/index.js",
+    "start": "node dest/index.js",
+    "dev": "tsc && node dest/index.js",
     "build": "tsc",
     "watch": "npx nodemon",
-    "exec": "ts-node ./src/index.ts",
-    "start:prod": "node dest/index.js"
+    "exec": "ts-node ./src/index.ts"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
