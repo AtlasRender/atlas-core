@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
 
 /**
@@ -16,7 +16,7 @@ import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
  * @author Denis Afendikov
  */
 @Entity("user")
-export default class UserEntity {
+export default class UserEntity extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;

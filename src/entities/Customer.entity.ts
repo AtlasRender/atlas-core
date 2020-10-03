@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
 
 /**
  * CustomerEntity - typeorm entity for customers table (not used)
@@ -15,7 +15,7 @@ import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
  * @author Denis Afendikov
  */
 @Entity("customer")
-export default class CustomerEntity {
+export default class CustomerEntity extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;

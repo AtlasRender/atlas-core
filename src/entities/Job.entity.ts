@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
 /**
  * JobEntity - typeorm entity for job data.
@@ -15,7 +15,7 @@ import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
  * @author Denis Afendikov
  */
 @Entity("job")
-export default class JobEntity {
+export default class JobEntity extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;

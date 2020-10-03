@@ -10,29 +10,21 @@
 import * as dotenv from "dotenv";
 import HelloWorld from "./controllers/HelloWorld";
 import Test from "./controllers/Test";
-import Server from "./core/Server";
-import {Connection, createConnection} from "typeorm";
+import Server, {ServerConfig, ServerOptions} from "./core/Server";
+import * as config from "./config.json";
+import CustomerEntity from "./entities/Customer.entity";
+import JobEntity from "./entities/Job.entity";
+import UserEntity from "./entities/User.entity";
 
 dotenv.config();
 
 const port: string | number = process.env.PORT || 3002;
 
-const server = new Server({/*controllersDir: __dirname + "\\controllers\\**\\*"*/});
+const additionalConfig: ServerOptions = {
+    additionalEntities: [CustomerEntity, JobEntity, UserEntity],
+}
+
+const server = new Server(config as ServerConfig, additionalConfig);
 server.useController(new HelloWorld());
 server.useController(new Test());
 server.start(port);
-
-
-async function DB_connect() {
-    const connection: Connection = await createConnection({
-        type: "mysql",
-        host: "localhost",
-        port: 3306,
-        username: "root",
-        password: "",
-        database: "afendikov_db",
-        entities: [__dirname + "/entities/*.entity.ts"]
-    });
-
-    return connection;
-}

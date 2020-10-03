@@ -8,12 +8,19 @@
  */
 
 import * as Koa from "koa";
+import {Context, Next} from "koa";
 import * as Router from "koa-router";
 import * as moment from "moment";
 import {importClassesFromDirectories} from "typeorm/util/DirectoryExportedClassesLoader";
-import {Logger as TypeOrmLogger, QueryRunner} from "typeorm";
+import {
+    Connection,
+    ConnectionOptions,
+    createConnection,
+    EntitySchema,
+    Logger as TypeOrmLogger,
+    QueryRunner
+} from "typeorm";
 import Controller from "./Controller";
-import {Context, Next} from "koa";
 
 
 /**
@@ -33,6 +40,20 @@ export interface ServerConfig {
      * @author Danil Andreev
      */
     port?: number;
+    /**
+     * db - data base connection options for typeorm
+     * @author Danil Adnreev
+     */
+    db?: ConnectionOptions;
+}
+
+/**
+ * ServerOptions - additional options for Server setup.
+ * @interface
+ * @author Danil Andreev
+ */
+export interface ServerOptions {
+    additionalEntities?: (string | Function | EntitySchema<any>)[];
 }
 
 /**
@@ -50,10 +71,12 @@ export default class Server extends Koa {
      * @readonly
      */
     public readonly config: ServerConfig;
+
     /**
      * controllers - array of server controllers. Needs for requests handling.
      */
     protected controllers: Controller[];
+
     /**
      * router - main server router. Other routers used by it;
      * @readonly
@@ -61,16 +84,30 @@ export default class Server extends Koa {
     public readonly router: Router;
 
     /**
+     * DbConnection - connection object for typeorm
+     */
+    protected DbConnection: Connection;
+
+    /**
+     * options - additional options for server;
+     */
+    public readonly options: ServerOptions;
+
+    /**
      * Creates the Server instance. If you want to run the server - call the ___start()___ method.
      * @constructor
      * @param config
      */
-    constructor(config: ServerConfig) {
+    constructor(config: ServerConfig, options: ServerOptions = {}) {
         console.log(`Server: initializing.`);
         super();
         this.config = config;
         this.router = new Router();
         this.controllers = [];
+        this.options = options;
+
+        // Creating typeorm connection
+        this.setupConnection().then();
 
         // Creating additional functional for routing.
         this.use(async (ctx: Context, next: Next) => {
@@ -97,6 +134,21 @@ export default class Server extends Koa {
 
         // Applying router routes.
         this.use(this.router.routes()).use(this.router.allowedMethods());
+    }
+
+    private async setupConnection(): Promise<void> {
+        console.log("TypeORM: Setting up database connection...");
+        this.DbConnection = await createConnection({
+            type: "postgres",
+            host: "34.65.70.236",
+            port: 5432,
+            username: "postgres",
+            password: "pathfinder",
+            database: "postgres",
+            entities: [__dirname + "../entities/*.entity.ts", ...this.options.additionalEntities],
+            migrationsRun: true
+        });
+
     }
 
     /**
