@@ -8,6 +8,8 @@
  */
 
 import * as dotenv from "dotenv";
+import HelloWorld from "./controllers/HelloWorld";
+import Test from "./controllers/Test";
 
 dotenv.config();
 
@@ -16,8 +18,10 @@ import {createConnection, Connection, getManager} from "typeorm";
 
 const port : string|number= process.env.PORT || 80;
 
-const server = new Server({controllersDir: __dirname + "\\controllers\\**\\*"});
+const server = new Server({/*controllersDir: __dirname + "\\controllers\\**\\*"*/});
 server.start(port);
+server.useController(new HelloWorld());
+server.useController(new Test());
 
 
 async function DB_connect() {
