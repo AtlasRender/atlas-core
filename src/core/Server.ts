@@ -107,7 +107,9 @@ export default class Server extends Koa {
         this.options = options;
 
         // Creating typeorm connection
-        this.setupConnection().then();
+        this.setupConnection().then(() => {
+            console.log("TypeORM: connected to DB");
+        });
 
         // Creating additional functional for routing.
         this.use(async (ctx: Context, next: Next) => {
@@ -146,8 +148,8 @@ export default class Server extends Koa {
             password: "pathfinder",
             database: "postgres",
             entities: [__dirname + "../entities/*.entity.ts", ...this.options.additionalEntities],
-            migrationsRun: true
         });
+        await this.DbConnection.synchronize();
 
     }
 
@@ -158,19 +160,19 @@ export default class Server extends Koa {
      * or map to default (3002)
      * @author Danil Andreev
      */
-    public start(port?: string | number) {
+    public start(port?: string | number): void {
         const targetPort = port || this.config.port || 3002;
         console.log(`Server: server is listening on port ${targetPort}.`);
         this.listen(targetPort);
     }
 
     /**
-     * useController - add new controller clas
+     * useController - add new controller clasz
      * @method
      * @param controller - controller that will be applied to server
      * @author Denis Afendikov
      */
-    public useController(controller: Controller) {
+    public useController(controller: Controller): void {
         console.log(`Connecting controller: ${controller.constructor.name}`);
         this.controllers.push(controller);
         this.router.use(controller.baseRoute, controller.routes(), controller.allowedMethods());
