@@ -16,17 +16,19 @@ import HelloWorld from "./controllers/HelloWorld";
 import Test from "./controllers/Test";
 import Server, {ServerConfig, ServerOptions} from "./core/Server";
 import * as config from "./config.json";
-import Job from "./entities/Job.entity";
-import User from "./entities/User.entity";
-import Organization from "./entities/Organization.entity";
-import RenderTask from "./entities/RenderTask.entity";
-import RenderTaskAttempt from "./entities/RenderTaskAttempt.entity";
+import RenderJob from "./entities/RenderJob";
+import User from "./entities/User";
+import Organization from "./entities/Organization";
+import RenderTask from "./entities/RenderTask";
+import RenderTaskAttempt from "./entities/RenderTaskAttempt";
+import RenderTaskAttemptLog from "./entities/RenderTaskAttemptLog";
+import RenderJobLog from "./entities/RenderJobLog";
 
 
 const port: string | number = process.env.PORT || 3002;
 
 const additionalConfig: ServerOptions = {
-    additionalEntities: [Job, User, Organization, RenderTask, RenderTaskAttempt],
+    additionalEntities: [RenderJob, User, Organization, RenderTask, RenderTaskAttempt, RenderTaskAttemptLog, RenderJobLog],
 };
 
 const server = new Server(config as ServerConfig, additionalConfig);

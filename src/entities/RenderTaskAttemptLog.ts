@@ -9,9 +9,9 @@
 
 
 import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, Timestamp} from "typeorm";
-import Job from "./Job.entity";
-import RenderTask from "./RenderTask.entity";
-import RenderTaskAttempt from "./RenderTaskAttempt.entity";
+import RenderJob from "./RenderJob";
+import RenderTask from "./RenderTask";
+import RenderTaskAttempt from "./RenderTaskAttempt";
 
 /**
  * RenderTaskAttemptLog - typeorm entity for task attempt log data.
@@ -24,14 +24,14 @@ export default class RenderTaskAttemptLog extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(type => RenderTaskAttempt, attempt => attempt.logs)
-    renderTaskAttempt: RenderTaskAttempt;
-
     @Column({type: "jsonb"})
     data: any;
 
     @Column({type: "varchar", default: 50})
     type: string;
+
+    @ManyToOne(type => RenderTaskAttempt, attempt => attempt.logs)
+    renderTaskAttempt: RenderTaskAttempt;
 
     @Column({type: "timestamp"})
     created_at: Timestamp;

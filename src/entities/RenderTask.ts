@@ -3,37 +3,36 @@
  * Owner and project architect: Danil Andreev | danssg08@gmail.com |  https://github.com/DanilAndreev
  * File creator: Denis Afendikov
  * Project: pathfinder-core
- * File last modified: 30.09.20, 23:02
+ * File last modified: 05.10.2020, 15:40
  * All rights reserved.
  */
 
 import {BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Timestamp} from "typeorm";
-import Organization from "./Organization.entity";
-import RenderTask from "./RenderTask.entity";
+import RenderJob from "./RenderJob";
+import RenderTaskAttempt from "./RenderTaskAttempt";
 
 /**
- * Job - typeorm entity for job data.
+ * RenderTask - typeorm entity for render task data.
  * @class
  * @author Denis Afendikov
  */
 @Entity()
-export default class Job extends BaseEntity {
+export default class RenderTask extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    attempts_per_task_limit: number;
+    frame: number;
 
-    @ManyToOne(type => Organization, organization => organization.jobs)
-    organization: Organization[];
+    @Column({type: "varchar", default: 50})
+    status: string;
 
-    @Column()
-    name: string;
+    @ManyToOne(type => RenderJob, job => job.renderTasks)
+    job: RenderJob;
 
-    @OneToMany(type => RenderTask, task => task.job)
-    renderTasks: RenderTask[];
-
+    @OneToMany(type => RenderTaskAttempt, attempt => attempt.task)
+    renderTaskAttempts: RenderTaskAttempt[];
 
     @Column({type: "timestamp"})
     created_at: Timestamp;

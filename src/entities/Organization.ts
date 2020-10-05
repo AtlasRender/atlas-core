@@ -8,8 +8,8 @@
  */
 
 import {BaseEntity, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, Timestamp} from "typeorm";
-import User from "./User.entity";
-import Job from "./Job.entity";
+import User from "./User";
+import RenderJob from "./RenderJob";
 
 /**
  * Organization - typeorm entity for organization data.
@@ -22,10 +22,6 @@ export default class Organization extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(type => User)
-    @JoinColumn()
-    owner_user: User;
-
     @Column()
     default_role_id: number;
 
@@ -35,8 +31,12 @@ export default class Organization extends BaseEntity {
     @Column({type: "text"})
     description: string;
 
-    @OneToMany(type => Job, job => job.organization)
-    jobs: Job[];
+    @OneToOne(type => User)
+    @JoinColumn()
+    owner_user: User;
+
+    @OneToMany(type => RenderJob, job => job.organization)
+    jobs: RenderJob[];
 
     @Column({type: "timestamp"})
     created_at: Timestamp;

@@ -3,37 +3,40 @@
  * Owner and project architect: Danil Andreev | danssg08@gmail.com |  https://github.com/DanilAndreev
  * File creator: Denis Afendikov
  * Project: pathfinder-core
- * File last modified: 05.10.2020, 15:51
+ * File last modified: 30.09.20, 23:02
  * All rights reserved.
  */
 
 import {BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Timestamp} from "typeorm";
-import Job from "./Job.entity";
-import RenderTask from "./RenderTask.entity";
-import RenderTaskAttemptLog from "./RenderTaskAttemptLog.entity";
+import Organization from "./Organization";
+import RenderTask from "./RenderTask";
+import RenderJobLog from "./RenderJobLog";
 
 /**
- * RenderTaskAttempt - typeorm entity for task attempt data.
+ * Job - typeorm entity for job data.
  * @class
  * @author Denis Afendikov
  */
 @Entity()
-export default class RenderTaskAttempt extends BaseEntity {
+export default class RenderJob extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(type => RenderTask, renderTask => renderTask.renderTaskAttempts)
-    task: RenderTask;
-
-    @OneToMany(type => RenderTaskAttemptLog, log => log.renderTaskAttempt)
-    logs: RenderTaskAttemptLog[];
+    @Column()
+    attempts_per_task_limit: number;
 
     @Column()
-    slave: number;
+    name: string;
 
-    @Column({type: "varchar", default: 50})
-    status: string;
+    @ManyToOne(type => Organization, organization => organization.jobs)
+    organization: Organization[];
+
+    @OneToMany(type => RenderTask, task => task.job)
+    renderTasks: RenderTask[];
+
+    @OneToMany(type => RenderJobLog, log => log.renderJob)
+    logs: RenderJobLog[];
 
     @Column({type: "timestamp"})
     created_at: Timestamp;
