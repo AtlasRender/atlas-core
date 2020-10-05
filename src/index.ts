@@ -19,12 +19,14 @@ import * as config from "./config.json";
 import Job from "./entities/Job.entity";
 import User from "./entities/User.entity";
 import Organization from "./entities/Organization.entity";
+import RenderTask from "./entities/RenderTask.entity";
+import RenderTaskAttempt from "./entities/RenderTaskAttempt.entity";
 
 
 const port: string | number = process.env.PORT || 3002;
 
 const additionalConfig: ServerOptions = {
-    additionalEntities: [Job, User, Organization],
+    additionalEntities: [Job, User, Organization, RenderTask, RenderTaskAttempt],
 };
 
 const server = new Server(config as ServerConfig, additionalConfig);
