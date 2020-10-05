@@ -9,7 +9,8 @@
     "target": "es2015",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
-    "outDir": "dest"
+    "outDir": "dest",
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],
   "exclude": [

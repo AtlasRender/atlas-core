@@ -7,32 +7,40 @@
  * All rights reserved.
  */
 
+// import 'reflect-metadata' // WTF?
 import * as dotenv from "dotenv";
-import HelloWorld from "./controllers/HelloWorld";
-import Test from "./controllers/Test";
-import Server from "./core/Server";
-import {Connection, createConnection} from "typeorm";
 
 dotenv.config();
 
+import HelloWorld from "./controllers/HelloWorld";
+import Test from "./controllers/Test";
+import Server, {ServerConfig, ServerOptions} from "./core/Server";
+import * as config from "./config.json";
+import RenderJob from "./entities/RenderJob";
+import User from "./entities/User";
+import Organization from "./entities/Organization";
+import RenderTask from "./entities/RenderTask";
+import RenderTaskAttempt from "./entities/RenderTaskAttempt";
+import RenderTaskAttemptLog from "./entities/RenderTaskAttemptLog";
+import RenderJobLog from "./entities/RenderJobLog";
+import Role from "./entities/Role";
+import OrganizationLog from "./entities/OrganizationLog";
+import Plugin from "./entities/Plugin";
+import Slave from "./entities/Slave";
+import GlobalPlugin from "./entities/GlobalPlugin";
+
+
 const port: string | number = process.env.PORT || 3002;
 
-const server = new Server({/*controllersDir: __dirname + "\\controllers\\**\\*"*/});
+const additionalConfig: ServerOptions = {
+    additionalEntities: [
+        RenderJob, User, Role, Organization, OrganizationLog,
+        RenderTask, RenderTaskAttempt, RenderTaskAttemptLog, RenderJobLog,
+        Plugin, GlobalPlugin, Slave
+    ],
+};
+
+const server = new Server(config as ServerConfig, additionalConfig);
 server.useController(new HelloWorld());
 server.useController(new Test());
 server.start(port);
-
-
-async function DB_connect() {
-    const connection: Connection = await createConnection({
-        type: "mysql",
-        host: "localhost",
-        port: 3306,
-        username: "root",
-        password: "",
-        database: "afendikov_db",
-        entities: [__dirname + "/entities/*.entity.ts"]
-    });
-
-    return connection;
-}

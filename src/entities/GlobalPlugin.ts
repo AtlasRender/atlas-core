@@ -3,24 +3,18 @@
  * Owner and project architect: Danil Andreev | danssg08@gmail.com |  https://github.com/DanilAndreev
  * File creator: Denis Afendikov
  * Project: pathfinder-core
- * File last modified: 30.09.20, 23:02
+ * File last modified: 05.10.2020, 18:52
  * All rights reserved.
  */
 
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToOne, Timestamp} from "typeorm";
+import BasicPlugin from "./BasicPlugin";
 
 /**
- * JobEntity - typeorm entity for job data.
+ * GlobalPlugin - typeorm entity for global plugins data.
  * @class
  * @author Denis Afendikov
  */
-@Entity("job")
-export default class JobEntity {
-
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @Column({name: "name"})
-    name: string;
-
+@Entity()
+export default class GlobalPlugin extends BasicPlugin {
 }
