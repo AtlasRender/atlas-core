@@ -3,25 +3,18 @@
  * Owner and project architect: Danil Andreev | danssg08@gmail.com |  https://github.com/DanilAndreev
  * File creator: Denis Afendikov
  * Project: pathfinder-core
- * File last modified: 05.10.2020, 18:45
+ * File last modified: 05.10.2020, 18:52
  * All rights reserved.
  */
 
-
-import {Entity, ManyToOne} from "typeorm";
-import Organization from "./Organization";
+import {Column, Entity, ManyToOne, Timestamp} from "typeorm";
 import BasicPlugin from "./BasicPlugin";
 
-
 /**
- * Plugin - typeorm entity for plugin data.
+ * GlobalPlugin - typeorm entity for global plugins data.
  * @class
  * @author Denis Afendikov
  */
 @Entity()
-export default class Plugin extends BasicPlugin {
-
-    @ManyToOne(type => Organization, org => org.plugins)
-    organization: Organization;
-
+export default class GlobalPlugin extends BasicPlugin {
 }
