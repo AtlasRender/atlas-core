@@ -7,22 +7,25 @@
  * All rights reserved.
  */
 
+// import 'reflect-metadata' // WTF?
 import * as dotenv from "dotenv";
+
+dotenv.config();
+
 import HelloWorld from "./controllers/HelloWorld";
 import Test from "./controllers/Test";
 import Server, {ServerConfig, ServerOptions} from "./core/Server";
 import * as config from "./config.json";
-import CustomerEntity from "./entities/Customer.entity";
-import JobEntity from "./entities/Job.entity";
-import UserEntity from "./entities/User.entity";
+import Job from "./entities/Job.entity";
+import User from "./entities/User.entity";
+import Organization from "./entities/Organization.entity";
 
-dotenv.config();
 
 const port: string | number = process.env.PORT || 3002;
 
 const additionalConfig: ServerOptions = {
-    additionalEntities: [CustomerEntity, JobEntity, UserEntity],
-}
+    additionalEntities: [Job, User, Organization],
+};
 
 const server = new Server(config as ServerConfig, additionalConfig);
 server.useController(new HelloWorld());

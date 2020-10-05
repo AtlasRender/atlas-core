@@ -7,20 +7,33 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, Timestamp} from "typeorm";
+import Organization from "./Organization.entity";
 
 /**
- * JobEntity - typeorm entity for job data.
+ * Job - typeorm entity for job data.
  * @class
  * @author Denis Afendikov
  */
-@Entity("job")
-export default class JobEntity extends BaseEntity {
+@Entity()
+export default class Job extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({name: "name"})
+    @Column()
+    attempts_per_task_limit: number;
+
+    @ManyToOne(type => Organization, organization => organization.jobs)
+    organization: Organization[];
+
+    @Column()
     name: string;
+
+    @Column({type: "timestamp"})
+    created_at: Timestamp;
+
+    @Column({type: "timestamp"})
+    updated_at: Timestamp;
 
 }

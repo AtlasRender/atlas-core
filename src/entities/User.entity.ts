@@ -7,27 +7,36 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, PrimaryGeneratedColumn, Timestamp} from "typeorm";
 
 
 /**
- * UserEntity - typeorm entity for user data.
+ * User - typeorm entity for user data.
  * @class
  * @author Denis Afendikov
  */
-@Entity("user")
-export default class UserEntity extends BaseEntity {
+@Entity()
+export default class User extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({name: "username"})
+    @Column()
     username: string;
 
-    @Column({name: "email"})
+    @Column()
     email: string;
 
-    @Column({name: "password"})
+    @Column()
     password: string;
+
+    @Column()
+    deleted: boolean;
+
+    @Column({type: "timestamp"})
+    created_at: Timestamp;
+
+    @Column({type: "timestamp"})
+    updated_at: Timestamp;
 
 }

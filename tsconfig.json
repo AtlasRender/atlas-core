@@ -10,7 +10,7 @@
     "sourceMap": true,
     "emitDecoratorMetadata": true,
     "outDir": "dest",
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],
   "exclude": [

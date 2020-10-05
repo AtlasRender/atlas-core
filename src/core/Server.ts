@@ -97,6 +97,7 @@ export default class Server extends Koa {
      * Creates the Server instance. If you want to run the server - call the ___start()___ method.
      * @constructor
      * @param config
+     * @param options
      */
     constructor(config: ServerConfig, options: ServerOptions = {}) {
         console.log(`Server: initializing.`);
@@ -167,7 +168,7 @@ export default class Server extends Koa {
     }
 
     /**
-     * useController - add new controller clasz
+     * useController - add new controller class
      * @method
      * @param controller - controller that will be applied to server
      * @author Denis Afendikov
