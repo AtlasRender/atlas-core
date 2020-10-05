@@ -22,6 +22,7 @@ import User from "./User";
 import RenderJob from "./RenderJob";
 import Role from "./Role";
 import OrganizationLog from "./OrganizationLog";
+import Plugin from "./Plugin";
 
 /**
  * Organization - typeorm entity for organization data.
@@ -58,6 +59,9 @@ export default class Organization extends BaseEntity {
 
     @OneToMany(type => OrganizationLog, log => log.organization)
     logs: OrganizationLog[];
+
+    @OneToMany(type => Plugin, plugin => plugin.organization)
+    plugins: Plugin[];
 
     @Column({type: "timestamp"})
     created_at: Timestamp;
