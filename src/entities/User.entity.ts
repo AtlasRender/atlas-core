@@ -38,5 +38,4 @@ export default class User extends BaseEntity {
 
     @Column({type: "timestamp"})
     updated_at: Timestamp;
-
 }

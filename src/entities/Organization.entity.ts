@@ -12,7 +12,7 @@ import User from "./User.entity";
 import Job from "./Job.entity";
 
 /**
- * JobEntity - typeorm entity for job data.
+ * Organization - typeorm entity for organization data.
  * @class
  * @author Denis Afendikov
  */
@@ -43,5 +43,4 @@ export default class Organization extends BaseEntity {
 
     @Column({type: "timestamp"})
     updated_at: Timestamp;
-
 }

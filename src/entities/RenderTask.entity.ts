@@ -12,7 +12,7 @@ import Job from "./Job.entity";
 import RenderTaskAttempt from "./RenderTaskAttempt.entity";
 
 /**
- * JobEntity - typeorm entity for job data.
+ * RenderTask - typeorm entity for render task data.
  * @class
  * @author Denis Afendikov
  */
@@ -26,7 +26,7 @@ export default class RenderTask extends BaseEntity {
     job: Job;
 
     @OneToMany(type => RenderTaskAttempt, attempt => attempt.task)
-    taskAttempts: RenderTaskAttempt[];
+    renderTaskAttempts: RenderTaskAttempt[];
 
     @Column()
     frame: number;
@@ -39,5 +39,4 @@ export default class RenderTask extends BaseEntity {
 
     @Column({type: "timestamp"})
     updated_at: Timestamp;
-
 }

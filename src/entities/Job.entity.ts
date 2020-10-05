@@ -40,5 +40,4 @@ export default class Job extends BaseEntity {
 
     @Column({type: "timestamp"})
     updated_at: Timestamp;
-
 }
