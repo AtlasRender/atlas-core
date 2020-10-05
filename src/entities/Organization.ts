@@ -11,6 +11,7 @@ import {BaseEntity, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGene
 import User from "./User";
 import RenderJob from "./RenderJob";
 import Role from "./Role";
+import OrganizationLog from "./OrganizationLog";
 
 /**
  * Organization - typeorm entity for organization data.
@@ -41,6 +42,9 @@ export default class Organization extends BaseEntity {
 
     @OneToMany(type => Role, role => role.organization)
     roles: Role[];
+
+    @OneToMany(type => OrganizationLog, log => log.organization)
+    logs: OrganizationLog[];
 
     @Column({type: "timestamp"})
     created_at: Timestamp;

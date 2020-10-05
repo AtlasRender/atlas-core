@@ -3,21 +3,20 @@
  * Owner and project architect: Danil Andreev | danssg08@gmail.com |  https://github.com/DanilAndreev
  * File creator: Denis Afendikov
  * Project: pathfinder-core
- * File last modified: 05.10.2020, 15:58
+ * File last modified: 05.10.2020, 16:39
  * All rights reserved.
  */
 
-
 import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, Timestamp} from "typeorm";
-import RenderTaskAttempt from "./RenderTaskAttempt";
+import Organization from "./Organization";
 
 /**
- * RenderTaskAttemptLog - typeorm entity for task attempt log data.
+ * OrganizationLog - typeorm entity for organization log data.
  * @class
  * @author Denis Afendikov
  */
 @Entity()
-export default class RenderTaskAttemptLog extends BaseEntity {
+export default class OrganizationLog extends BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -28,8 +27,8 @@ export default class RenderTaskAttemptLog extends BaseEntity {
     @Column({type: "varchar", default: 50})
     type: string;
 
-    @ManyToOne(type => RenderTaskAttempt, attempt => attempt.logs)
-    renderTaskAttempt: RenderTaskAttempt;
+    @ManyToOne(type => Organization, org => org.logs)
+    organization: Organization;
 
     @Column({type: "timestamp"})
     created_at: Timestamp;
