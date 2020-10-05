@@ -7,7 +7,17 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, Timestamp} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToMany,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    Timestamp
+} from "typeorm";
 import User from "./User";
 import RenderJob from "./RenderJob";
 import Role from "./Role";
@@ -36,6 +46,9 @@ export default class Organization extends BaseEntity {
     @OneToOne(type => User)
     @JoinColumn()
     owner_user: User;
+
+    @ManyToMany(type => User, user => user.organizations)
+    users: User[];
 
     @OneToMany(type => RenderJob, job => job.organization)
     jobs: RenderJob[];

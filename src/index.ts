@@ -24,13 +24,16 @@ import RenderTaskAttempt from "./entities/RenderTaskAttempt";
 import RenderTaskAttemptLog from "./entities/RenderTaskAttemptLog";
 import RenderJobLog from "./entities/RenderJobLog";
 import Role from "./entities/Role";
+import OrganizationLog from "./entities/OrganizationLog";
 
 
 const port: string | number = process.env.PORT || 3002;
 
 const additionalConfig: ServerOptions = {
     additionalEntities: [
-        RenderJob, User, Role, Organization, RenderTask, RenderTaskAttempt, RenderTaskAttemptLog, RenderJobLog
+        RenderJob, User, Role, Organization, OrganizationLog,
+        RenderTask, RenderTaskAttempt, RenderTaskAttemptLog, RenderJobLog,
+
     ],
 };
 

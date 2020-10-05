@@ -9,6 +9,7 @@
 
 import {BaseEntity, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, Timestamp} from "typeorm";
 import Role from "./Role";
+import Organization from "./Organization";
 
 
 /**
@@ -33,6 +34,10 @@ export default class User extends BaseEntity {
 
     @Column()
     deleted: boolean;
+
+    @ManyToMany(type => Organization, org => org.users)
+    @JoinTable()
+    organizations: Organization[];
 
     @ManyToMany(type => Role, role => role.users)
     @JoinTable()

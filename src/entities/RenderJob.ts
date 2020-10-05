@@ -29,6 +29,9 @@ export default class RenderJob extends BaseEntity {
     @Column()
     name: string;
 
+    @Column({type: "text"})
+    description: string;
+
     @ManyToOne(type => Organization, organization => organization.jobs)
     organization: Organization[];
 
