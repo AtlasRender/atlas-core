@@ -23,12 +23,15 @@ import RenderTask from "./entities/RenderTask";
 import RenderTaskAttempt from "./entities/RenderTaskAttempt";
 import RenderTaskAttemptLog from "./entities/RenderTaskAttemptLog";
 import RenderJobLog from "./entities/RenderJobLog";
+import Role from "./entities/Role";
 
 
 const port: string | number = process.env.PORT || 3002;
 
 const additionalConfig: ServerOptions = {
-    additionalEntities: [RenderJob, User, Organization, RenderTask, RenderTaskAttempt, RenderTaskAttemptLog, RenderJobLog],
+    additionalEntities: [
+        RenderJob, User, Role, Organization, RenderTask, RenderTaskAttempt, RenderTaskAttemptLog, RenderJobLog
+    ],
 };
 
 const server = new Server(config as ServerConfig, additionalConfig);
