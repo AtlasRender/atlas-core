@@ -7,8 +7,9 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, Timestamp} from "typeorm";
+import {BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Timestamp} from "typeorm";
 import Organization from "./Organization.entity";
+import RenderTask from "./RenderTask.entity";
 
 /**
  * Job - typeorm entity for job data.
@@ -29,6 +30,10 @@ export default class Job extends BaseEntity {
 
     @Column()
     name: string;
+
+    @OneToMany(type => RenderTask, task => task.job)
+    renderTasks: RenderTask[];
+
 
     @Column({type: "timestamp"})
     created_at: Timestamp;
