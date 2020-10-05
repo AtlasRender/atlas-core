@@ -25,6 +25,9 @@ import RenderTaskAttemptLog from "./entities/RenderTaskAttemptLog";
 import RenderJobLog from "./entities/RenderJobLog";
 import Role from "./entities/Role";
 import OrganizationLog from "./entities/OrganizationLog";
+import Plugin from "./entities/Plugin";
+import Slave from "./entities/Slave";
+import GlobalPlugin from "./entities/GlobalPlugin";
 
 
 const port: string | number = process.env.PORT || 3002;
@@ -33,7 +36,7 @@ const additionalConfig: ServerOptions = {
     additionalEntities: [
         RenderJob, User, Role, Organization, OrganizationLog,
         RenderTask, RenderTaskAttempt, RenderTaskAttemptLog, RenderJobLog,
-
+        Plugin, GlobalPlugin, Slave
     ],
 };
 

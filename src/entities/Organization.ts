@@ -11,7 +11,7 @@ import {
     BaseEntity,
     Column,
     Entity,
-    JoinColumn,
+    JoinColumn, JoinTable,
     ManyToMany,
     OneToMany,
     OneToOne,
@@ -23,6 +23,7 @@ import RenderJob from "./RenderJob";
 import Role from "./Role";
 import OrganizationLog from "./OrganizationLog";
 import Plugin from "./Plugin";
+import Slave from "./Slave";
 
 /**
  * Organization - typeorm entity for organization data.
@@ -48,8 +49,18 @@ export default class Organization extends BaseEntity {
     @JoinColumn()
     owner_user: User;
 
+    @OneToOne(type => Role)
+    @JoinColumn()
+    default_role: Role;
+
     @ManyToMany(type => User, user => user.organizations)
     users: User[];
+
+    @ManyToMany(type => Slave, slave => slave.organizations)
+    @JoinTable({
+        name: "slaves_pool"
+    })
+    slaves: Slave[];
 
     @OneToMany(type => RenderJob, job => job.organization)
     jobs: RenderJob[];
