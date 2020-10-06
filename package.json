@@ -35,10 +35,7 @@
     "exec": "ts-node ./src/index.ts"
   },
   "dependencies": {
-    "@types/crypto-random-string": "^2.0.0",
-    "@types/server-destroy": "^1.0.0",
     "crypto-random-string": "^3.3.0",
-    "@types/argon2": "^0.15.0",
     "argon2": "^0.27.0",
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
@@ -57,6 +54,9 @@
     "typeorm": "^0.2.26"
   },
   "devDependencies": {
+    "@types/argon2": "^0.15.0",
+    "@types/crypto-random-string": "^2.0.0",
+    "@types/server-destroy": "^1.0.0",
     "@babel/preset-typescript": "^7.10.4",
     "@types/jest": "^26.0.14",
     "@types/joi": "^14.3.4",

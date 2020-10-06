@@ -9,22 +9,11 @@
 
 import Controller from "../core/Controller";
 import {Context} from "koa";
-import * as Joi from 'joi';
-import * as validateMiddleware from "koa-joi-validate-middleware";
 import * as argon2 from "argon2";
 
 import User from "../entities/User";
-import {ObjectType} from "typeorm";
+import {RegisterUserValidator} from "../validators/UserRequestValidator";
 
-
-const RegisterUserValidator = validateMiddleware.create({
-    body: Joi.object({
-        // TODO: data from config.
-        username: Joi.string().alphanum().min(3).max(50).required(),
-        email: Joi.string().email().required(),
-        password: Joi.string().min(6).max(30).required(),
-    }),
-});
 
 /**
  * UsersController - controller for /users and /users/:user_id routes.
@@ -48,7 +37,6 @@ export default class UsersController extends Controller {
      */
     public async registerUser(ctx: Context): Promise<void> {
 
-        let userData: ObjectType<User> = ctx.request.body;
         const user = new User();
         user.username = ctx.request.body.username;
         user.password = await argon2.hash(ctx.request.body.password);
