@@ -72,10 +72,10 @@ export default class UsersController extends Controller {
         user.password = await argon2.hash(ctx.request.body.password);
 
         let result = await user.save();
-        result.bearer = Authenticator.createJwt({username: user.username});
+        result.bearer = Authenticator.createJwt({id: user.id, username: user.username});
         result = await result.save();
+
         result.password = undefined;
-        result.email = undefined;
         result.deleted = undefined;
         ctx.body = result;
     }

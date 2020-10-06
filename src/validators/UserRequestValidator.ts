@@ -22,3 +22,15 @@ export const RegisterUserValidator = validateMiddleware.create({
         password: Joi.string().min(6).max(30).required(),
     }),
 });
+
+/**
+ * LoginUserValidator - validator for user l request.
+ * @author Denis Afendikov
+ */
+export const LoginUserValidator = validateMiddleware.create({
+    body: Joi.object({
+        // TODO: data from config.
+        username: Joi.string().alphanum().min(3).max(50).required(),
+        password: Joi.string().min(6).max(30).required(),
+    }),
+});

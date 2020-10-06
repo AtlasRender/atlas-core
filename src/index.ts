@@ -16,6 +16,8 @@ import HelloWorld from "./controllers/HelloWorld";
 import Test from "./controllers/Test";
 import Server, {ServerConfig, ServerOptions} from "./core/Server";
 import * as config from "./config.json";
+
+// Entities
 import RenderJob from "./entities/RenderJob";
 import User from "./entities/User";
 import Organization from "./entities/Organization";
@@ -28,7 +30,10 @@ import OrganizationLog from "./entities/OrganizationLog";
 import Plugin from "./entities/Plugin";
 import Slave from "./entities/Slave";
 import GlobalPlugin from "./entities/GlobalPlugin";
+
+// Controllers
 import UsersController from "./controllers/UsersController";
+import LoginController from "./controllers/LoginController";
 
 
 const port: string | number = process.env.PORT || 3002;
@@ -45,4 +50,5 @@ const server = new Server(config as ServerConfig, additionalConfig);
 server.useController(new HelloWorld());
 server.useController(new Test());
 server.useController(new UsersController());
+server.useController(new LoginController());
 server.start(port);
