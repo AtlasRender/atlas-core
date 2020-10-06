@@ -20,8 +20,10 @@ import {
     Logger as TypeOrmLogger,
     QueryRunner
 } from "typeorm";
+// @ts-ignore
 import * as destroyable from "server-destroy";
 import Controller from "./Controller";
+import Authenticator from "./Authenticator";
 
 
 /**
@@ -143,8 +145,20 @@ export default class Server extends Koa {
         // Creating additional functional for routing.
         this.use(async (ctx: Context, next: Next) => {
             console.log(`Server [${moment().format("l")} ${moment().format("LTS")}]: request from (${ctx.hostname}) to route "${ctx.url}".`);
-            await next();
+            // Calling next middleware and handling errors
+            await next().catch(error => {
+                // 401 Unauthorized
+                if (error.status === 401) {
+                    ctx.status = 401;
+                    ctx.body = "Protected resource, use Authorization header to get access";
+                } else {
+                    throw error;
+                }
+            });
         });
+
+        // Applying JWT for routes.
+        this.use(Authenticator.getJwtMiddleware());
 
         // Getting controllers from directory in config.
         if (this.config.controllersDir) {
@@ -170,6 +184,7 @@ export default class Server extends Koa {
     }
 
     public destroy(): void {
+        // @ts-ignore
         destroyable(this);
         Server.hasInstance = false;
         Server.current = null;
