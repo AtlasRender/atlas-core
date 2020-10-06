@@ -26,16 +26,28 @@ export default class OrganizationsController extends Controller {
         super("/organizations");
 
         this.get("/", this.getOrganizations);
+        this.post("/", this.createOrganization);
 
     }
 
     /**
-     * Route __[GET]__ ___/organizations___ - handler for user login.
+     * Route __[GET]__ ___/organizations___ - get information about all organizations in the system.
      * @method
      * @author Denis Afendikov
      */
     public async getOrganizations(ctx: Context): Promise<void> {
-        let orgs = Organization.find();
+        // TODO
+    }
+
+    /**
+     * Route __[POST]__ ___/organizations___ - register new organization.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async createOrganization(ctx: Context): Promise<void> {
+        let orgs = Organization.find({
+            select: ["id", "name", "description", "owner_user"]
+        });
         ctx.body = orgs;
     }
 }

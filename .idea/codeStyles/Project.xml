@@ -1,5 +1,9 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
+    <TypeScriptCodeStyleSettings version="0">
+      <option name="FORCE_SEMICOLON_STYLE" value="true" />
+      <option name="FORCE_QUOTE_STYlE" value="true" />
+    </TypeScriptCodeStyleSettings>
     <codeStyleSettings language="TypeScript">
       <option name="METHOD_CALL_CHAIN_WRAP" value="5" />
     </codeStyleSettings>
