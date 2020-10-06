@@ -10,11 +10,12 @@
 import Controller from "../core/Controller";
 import {Context} from "koa";
 
-export default class HelloWorld extends Controller{
+export default class HelloWorld extends Controller {
     constructor() {
         super("/hello");
         this.get("/world", this.getHandler);
     }
+
     public getHandler(ctx: Context): void {
         ctx.body = "Hello world!";
     }

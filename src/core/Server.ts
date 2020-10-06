@@ -10,6 +10,7 @@
 import * as Koa from "koa";
 import {Context, Next} from "koa";
 import * as Router from "koa-router";
+import * as bodyParser from "koa-bodyparser";
 import * as moment from "moment";
 import {importClassesFromDirectories} from "typeorm/util/DirectoryExportedClassesLoader";
 import {
@@ -106,6 +107,23 @@ export default class Server extends Koa {
         this.router = new Router();
         this.controllers = [];
         this.options = options;
+
+        // error handler
+        this.use(async (ctx, next) => {
+            try {
+                await next();
+            } catch (err) {
+                console.error(err);
+                ctx.status = err.code || 400;
+                ctx.body = {
+                    success: false,
+                    message: err.message,
+                };
+            }
+        });
+
+        // bodyParser middleware
+        this.use(bodyParser());
 
         // Creating typeorm connection
         this.setupConnection().then(() => {
