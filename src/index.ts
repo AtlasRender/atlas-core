@@ -33,6 +33,7 @@ import GlobalPlugin from "./entities/GlobalPlugin";
 // Controllers
 import UsersController from "./controllers/UsersController";
 import LoginController from "./controllers/LoginController";
+import OrganizationsController from "./controllers/OrganizationsController";
 
 
 const port: string | number = process.env.PORT || 3002;
@@ -50,4 +51,5 @@ server.useController(new HelloWorld());
 server.useController(new Test());
 server.useController(new UsersController());
 server.useController(new LoginController());
+server.useController(new OrganizationsController());
 server.start(port);

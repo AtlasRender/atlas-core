@@ -38,12 +38,9 @@ export default class UsersController extends Controller {
      * @author Denis Afendikov
      */
     public async getAllUsers(ctx: Context): Promise<void> {
-        let users = await User.find();
-        for (let user of users) {
-            user.password = undefined;
-            user.bearer = undefined;
-        }
-        ctx.body = users;
+        ctx.body = await User.find({
+            select: ["id", "username", "email", "deleted", "created_at", "updated_at"]
+        });
     }
 
     /**
@@ -88,9 +85,9 @@ export default class UsersController extends Controller {
     public async getUserById(ctx: Context): Promise<void> {
         // TODO: check params for injections
         // TODO: if not found, return 404
-        const user = await User.findOne(ctx.params.user_id);
-        user.password = undefined;
-        user.bearer = undefined;
+        const user = await User.findOne(ctx.params.user_id, {
+            select: ["id", "username", "email", "deleted", "created_at", "updated_at"]
+        });
         ctx.body = user;
     }
 }

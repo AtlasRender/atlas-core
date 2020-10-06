@@ -13,6 +13,7 @@ import {Context} from "koa";
 
 import User from "../entities/User";
 import Authenticator from "../core/Authenticator";
+import Organization from "../entities/Organization";
 
 
 /**
@@ -20,17 +21,21 @@ import Authenticator from "../core/Authenticator";
  * @class
  * @author Denis Afendikov
  */
-export default class OrganizationController extends Controller {
+export default class OrganizationsController extends Controller {
     constructor() {
-        super("/organization");
+        super("/organizations");
+
+        this.get("/", this.getOrganizations);
+
     }
 
     /**
-     * Route __[POST]__ ___/login - handler for user login.
+     * Route __[GET]__ ___/organizations___ - handler for user login.
      * @method
      * @author Denis Afendikov
      */
-    public async loginHandler(ctx: Context): Promise<void> {
-
+    public async getOrganizations(ctx: Context): Promise<void> {
+        let orgs = Organization.find();
+        ctx.body = orgs;
     }
 }

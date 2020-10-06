@@ -28,7 +28,7 @@ export default class LoginController extends Controller {
     }
 
     /**
-     * Route __[POST]__ ___/login - handler for user login.
+     * Route __[POST]__ ___/login___ - handler for user login.
      * @method
      * @author Denis Afendikov
      */
