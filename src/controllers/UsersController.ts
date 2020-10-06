@@ -25,10 +25,25 @@ export default class UsersController extends Controller {
     constructor() {
         super("/users");
 
+        this.get("/", this.getAllUsers);
         this.post("/", RegisterUserValidator, this.registerUser);
         this.get("/:user_id", this.getUserById);
 
 
+    }
+
+    /**
+     * Route __[GET]__ ___/users___ - get information about all users in the system.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async getAllUsers(ctx: Context): Promise<void> {
+        let users = await User.find();
+        for (let user of users) {
+            user.password = undefined;
+            user.bearer = undefined;
+        }
+        ctx.body = users;
     }
 
     /**
