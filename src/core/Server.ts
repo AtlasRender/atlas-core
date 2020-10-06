@@ -138,19 +138,6 @@ export default class Server extends Koa {
         this.controllers = [];
         this.options = options;
 
-        // error handler
-        this.use(async (ctx, next) => {
-            try {
-                await next();
-            } catch (err) {
-                console.error(err);
-                ctx.status = err.code || 400;
-                ctx.body = {
-                    success: false,
-                    message: err.message,
-                };
-            }
-        });
 
         // bodyParser middleware
         this.use(bodyParser());
@@ -177,6 +164,20 @@ export default class Server extends Koa {
 
         // Applying JWT for routes.
         this.use(Authenticator.getJwtMiddleware());
+
+        // error handler
+        this.use(async (ctx, next) => {
+            try {
+                await next();
+            } catch (err) {
+                console.error(err);
+                ctx.status = err.code || 400;
+                ctx.body = {
+                    success: false,
+                    message: err.message,
+                };
+            }
+        });
 
         // Getting controllers from directory in config.
         if (this.config.controllersDir) {

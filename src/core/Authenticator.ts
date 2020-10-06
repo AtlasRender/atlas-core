@@ -61,7 +61,7 @@ export default class Authenticator {
         Authenticator.jwtMiddleware = Jwt({
             secret: Authenticator.key,
             isRevoked: Authenticator.checkTokenRevoked,
-        }).unless({path: [/^\/auth/]});
+        }).unless({path: [/^\/login/, "/users"]});
     }
 
     /**
@@ -91,7 +91,7 @@ export default class Authenticator {
      * @param options - Additional options.
      * @author Danil Andreev
      */
-    public createJwt(data: object, options: JwtOptions = {}): string {
+    public static createJwt(data: object, options: JwtOptions = {}): string {
         const createdAt: Moment = moment();
         if (options?.expires < createdAt)
             throw new RangeError(`Authenticator: "expires" can not be less than "createdAt"`);

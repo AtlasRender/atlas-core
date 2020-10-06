@@ -13,6 +13,7 @@ import * as argon2 from "argon2";
 
 import User from "../entities/User";
 import {RegisterUserValidator} from "../validators/UserRequestValidator";
+import Authenticator from "../core/Authenticator";
 
 
 /**
@@ -37,12 +38,31 @@ export default class UsersController extends Controller {
      */
     public async registerUser(ctx: Context): Promise<void> {
 
+        if (await User.findOne({username: ctx.request.body.username})) {
+            throw {
+                code: 400,
+                message: "user with this username already exists"
+            };
+        }
+        if (await User.findOne({email: ctx.request.body.email})) {
+            throw {
+                code: 400,
+                message: "user with this email already exists"
+            };
+        }
+
         const user = new User();
         user.username = ctx.request.body.username;
+        user.email = ctx.request.body.email;
         user.password = await argon2.hash(ctx.request.body.password);
-        user.email = ctx.request.body.email || null;
 
-        ctx.body = await user.save();
+        let result = await user.save();
+        result.bearer = Authenticator.createJwt({username: user.username});
+        result = await result.save();
+        result.password = undefined;
+        result.email = undefined;
+        result.deleted = undefined;
+        ctx.body = result;
     }
 
     /**
@@ -54,7 +74,8 @@ export default class UsersController extends Controller {
         // TODO: check params for injections
         // TODO: if not found, return 404
         const user = await User.findOne(ctx.params.user_id);
-        console.log(user);
+        user.password = undefined;
+        user.bearer = undefined;
         ctx.body = user;
     }
 }
