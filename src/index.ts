@@ -7,7 +7,6 @@
  * All rights reserved.
  */
 
-// import 'reflect-metadata' // WTF?
 import * as dotenv from "dotenv";
 
 dotenv.config();

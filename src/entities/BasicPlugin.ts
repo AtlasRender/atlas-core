@@ -41,9 +41,9 @@ export default class BasicPlugin extends BaseEntity {
     @Column()
     deleted: boolean;
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     created_at: Timestamp;
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     updated_at: Timestamp;
 }

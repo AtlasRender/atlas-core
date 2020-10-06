@@ -39,7 +39,7 @@ export default class Organization extends BaseEntity {
     @Column()
     default_role_id: number;
 
-    @Column()
+    @Column({unique: true})
     name: string;
 
     @Column({type: "text"})
@@ -74,9 +74,9 @@ export default class Organization extends BaseEntity {
     @OneToMany(type => Plugin, plugin => plugin.organization)
     plugins: Plugin[];
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     created_at: Timestamp;
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     updated_at: Timestamp;
 }

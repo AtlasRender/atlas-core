@@ -33,9 +33,9 @@ export default class RenderJobLog extends BaseEntity {
     @ManyToOne(type => RenderJob, job => job.logs)
     renderJob: RenderJob;
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     created_at: Timestamp;
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     updated_at: Timestamp;
 }
