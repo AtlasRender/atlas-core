@@ -35,6 +35,8 @@
     "exec": "ts-node ./src/index.ts"
   },
   "dependencies": {
+    "@types/crypto-random-string": "^2.0.0",
+    "crypto-random-string": "^3.3.0",
     "dotenv": "^8.2.0",
     "koa": "^2.13.0",
     "koa-router": "^9.4.0",

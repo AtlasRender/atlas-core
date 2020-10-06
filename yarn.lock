@@ -605,6 +605,13 @@
     "@types/keygrip" "*"
     "@types/node" "*"
 
+"@types/crypto-random-string@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/crypto-random-string/-/crypto-random-string-2.0.0.tgz#e39c2029fca9402eadabe1b3efb83a3085efc490"
+  integrity sha512-tigdoJv6LNUvhB6tuvr6r3pWXlb0Ol1XcFtOKMuHkMNLvtL4JSaMu6JZlnrwd2oPoksuZckDYALDyhNygWSUZg==
+  dependencies:
+    crypto-random-string "*"
+
 "@types/express-serve-static-core@*":
   version "4.17.13"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.13.tgz#d9af025e925fc8b089be37423b8d1eac781be084"
@@ -1449,6 +1456,13 @@ cross-spawn@^7.0.0:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
     which "^2.0.1"
+
+crypto-random-string@*, crypto-random-string@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-3.3.0.tgz#c7a4682b2a87146a1f8b7378ea2606f95775e7e6"
+  integrity sha512-teWAwfMb1d6brahYyKqcBEb5Yp8PJPvPOdOonXDnvaKOTmKDFNVE8E3Y2XQuzjNV/3XMwHbrX9fHWvrhRKt4Gg==
+  dependencies:
+    type-fest "^0.8.1"
 
 crypto-random-string@^2.0.0:
   version "2.0.0"
