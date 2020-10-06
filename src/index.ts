@@ -28,6 +28,7 @@ import OrganizationLog from "./entities/OrganizationLog";
 import Plugin from "./entities/Plugin";
 import Slave from "./entities/Slave";
 import GlobalPlugin from "./entities/GlobalPlugin";
+import UsersController from "./controllers/UsersController";
 
 
 const port: string | number = process.env.PORT || 3002;
@@ -43,4 +44,5 @@ const additionalConfig: ServerOptions = {
 const server = new Server(config as ServerConfig, additionalConfig);
 server.useController(new HelloWorld());
 server.useController(new Test());
+server.useController(new UsersController());
 server.start(port);
