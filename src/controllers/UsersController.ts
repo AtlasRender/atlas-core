@@ -53,27 +53,29 @@ export default class UsersController extends Controller {
     public async registerUser(ctx: Context): Promise<void> {
 
         if (await User.findOne({username: ctx.request.body.username})) {
-            let err = new HttpError("user with this username already exists");
-            err.status = 400;
-            throw err;
+            ctx.throw(400, "user with this username already exists");
         }
         if (await User.findOne({email: ctx.request.body.email})) {
-            let err = new HttpError("user with this email already exists");
-            err.status = 400;
-            throw err;
+            ctx.throw(400, "user with this email already exists");
         }
 
         const user = new User();
         user.username = ctx.request.body.username;
         user.email = ctx.request.body.email;
+        console.log("Hashing: " + ctx.request.body.password);
         user.password = await argon2.hash(ctx.request.body.password);
-        let savedUser = await user.save();
-        savedUser.password = undefined;
-        savedUser.deleted = undefined;
+        console.log("Hashed: " + user.password);
+
+        const savedUser = await user.save();
         const result: OutUser = {
-            ...savedUser,
-            bearer: Authenticator.createJwt({id: user.id, username: user.username})
-        }
+            id: savedUser.id,
+            username: savedUser.username,
+            email: savedUser.email,
+            deleted: savedUser.deleted,
+            createdAt: savedUser.createdAt,
+            updatedAt: savedUser.updatedAt,
+            bearer: Authenticator.createJwt({id: savedUser.id, username: savedUser.username})
+        };
         ctx.body = result;
     }
 
