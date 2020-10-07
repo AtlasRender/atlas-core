@@ -14,8 +14,7 @@ import * as bodyParser from "koa-bodyparser";
 import * as moment from "moment";
 import {importClassesFromDirectories} from "typeorm/util/DirectoryExportedClassesLoader";
 import {
-    Connection,
-    ConnectionOptions,
+    Connection, ConnectionOptions,
     createConnection,
     EntitySchema,
     Logger as TypeOrmLogger,
@@ -25,6 +24,8 @@ import {
 import * as destroyable from "server-destroy";
 import Controller from "./Controller";
 import Authenticator from "./Authenticator";
+
+
 
 
 /**
@@ -48,7 +49,7 @@ export interface ServerConfig {
      * db - data base connection options for typeorm
      * @author Danil Adnreev
      */
-    db?: ConnectionOptions;
+    db: ConnectionOptions;
 }
 
 /**
@@ -57,7 +58,6 @@ export interface ServerConfig {
  * @author Danil Andreev
  */
 export interface ServerOptions {
-    additionalEntities?: (string | Function | EntitySchema<any>)[];
 }
 
 /**
@@ -125,7 +125,7 @@ export default class Server extends Koa {
      * @param options - Additional option for web server.
      * @author Danil Andreev
      */
-    constructor(config: ServerConfig, options: ServerOptions = {}) {
+    constructor(config: ServerConfig, options?: ServerOptions) {
         if (Server.hasInstance)
             throw new ReferenceError(`Server: Server instance already exists. Can not create multiple instances of Server.`);
 
@@ -143,13 +143,14 @@ export default class Server extends Koa {
         this.use(bodyParser());
 
         // Creating typeorm connection
-        this.setupConnection().then(() => {
+        this.setupConnection(config.db).then(() => {
             console.log("TypeORM: connected to DB");
         });
 
         // Creating additional functional for routing.
         this.use(async (ctx: Context, next: Next) => {
-            console.log(`Server [${moment().format("l")} ${moment().format("LTS")}]: request from (${ctx.hostname}) to route "${ctx.url}".`);
+            console.log(`Server [${moment().format("l")} ${moment()
+                .format("LTS")}]: request from (${ctx.hostname}) to route "${ctx.url}".`);
             // Calling next middleware and handling errors
             await next().catch(error => {
                 // 401 Unauthorized
@@ -216,17 +217,10 @@ export default class Server extends Koa {
      * @method
      * @author Danil Andreev
      */
-    private async setupConnection(): Promise<void> {
+    private async setupConnection(dbOptions: ConnectionOptions): Promise<void> {
         console.log("TypeORM: Setting up database connection...");
-        this.DbConnection = await createConnection({
-            type: "postgres",
-            host: "34.65.70.236",
-            port: 5432,
-            username: "postgres",
-            password: "pathfinder",
-            database: "postgres",
-            entities: [__dirname + "../entities/*.entity.ts", ...this.options.additionalEntities],
-        });
+        console.log(dbOptions);
+        this.DbConnection = await createConnection(dbOptions);
         await this.DbConnection.synchronize();
 
     }

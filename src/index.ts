@@ -14,7 +14,7 @@ dotenv.config();
 import HelloWorld from "./controllers/HelloWorld";
 import Test from "./controllers/Test";
 import Server, {ServerConfig, ServerOptions} from "./core/Server";
-import * as config from "./config.json";
+//import * as config from "./config.json";
 
 // Entities
 import RenderJob from "./entities/RenderJob";
@@ -36,17 +36,27 @@ import LoginController from "./controllers/LoginController";
 import OrganizationsController from "./controllers/OrganizationsController";
 
 
-const port: string | number = process.env.PORT || 3002;
+const port: number = +process.env.PORT || 3002;
 
-const additionalConfig: ServerOptions = {
-    additionalEntities: [
-        RenderJob, User, Role, Organization, OrganizationLog,
-        RenderTask, RenderTaskAttempt, RenderTaskAttemptLog, RenderJobLog,
-        Plugin, GlobalPlugin, Slave
-    ],
+const config: ServerConfig = {
+    port: port,
+    db: {
+        type: "postgres",
+        url: "postgres://qgcbdjnqsqglbk:c162720c6eb3337c24f1d5ee195bf020084b06002d7dc92520356eda22a2302b@ec2-46-137-124-19.eu-west-1.compute.amazonaws.com:5432/ddskobtu04bh2l",
+        entities: [
+            RenderJob, User, Role, Organization, OrganizationLog,
+            RenderTask, RenderTaskAttempt, RenderTaskAttemptLog, RenderJobLog,
+            Plugin, GlobalPlugin, Slave
+        ],
+        extra: {
+            ssl: {
+                rejectUnauthorized: false,
+            },
+        },
+    }
 };
 
-const server = new Server(config as ServerConfig, additionalConfig);
+const server = new Server(config);
 server.useController(new HelloWorld());
 server.useController(new Test());
 server.useController(new UsersController());
