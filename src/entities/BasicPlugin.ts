@@ -7,7 +7,8 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, PrimaryGeneratedColumn, Timestamp} from "typeorm";
+import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {Moment} from "moment";
 
 /**
  * BasicPlugin - Base class for plugin entities.
@@ -41,9 +42,17 @@ export default class BasicPlugin extends BaseEntity {
     @Column()
     deleted: boolean;
 
-    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    created_at: Timestamp;
+    @Column({
+        name: "created_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP"
+    })
+    createdAt: Moment;
 
-    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    updated_at: Timestamp;
+    @Column({
+        name: "updated_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP"
+    })
+    updatedAt: Moment;
 }

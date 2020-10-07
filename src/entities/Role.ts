@@ -7,9 +7,10 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn, Timestamp} from "typeorm";
+import {BaseEntity, Column, Entity, IsNull, ManyToMany, ManyToOne, PrimaryGeneratedColumn, Timestamp} from "typeorm";
 import Organization from "./Organization";
 import User from "./User";
+import {Moment} from "moment";
 
 
 /**
@@ -26,14 +27,14 @@ export default class Role extends BaseEntity {
     @Column()
     name: string;
 
-    @Column()
+    @Column({nullable: true})
     description: string;
 
     @Column()
     color: string;
 
     @Column()
-    permission_level: number;
+    permissionLevel: number;
 
     @ManyToOne(type => Organization, organization => organization.roles)
     organization: Organization;
@@ -41,9 +42,17 @@ export default class Role extends BaseEntity {
     @ManyToMany(type => User, user => user.roles)
     users: User;
 
-    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    created_at: Timestamp;
+    @Column({
+        name: "created_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP"
+    })
+    createdAt: Moment;
 
-    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    updated_at: Timestamp;
+    @Column({
+        name: "updated_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP"
+    })
+    updatedAt: Moment;
 }

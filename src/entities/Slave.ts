@@ -12,6 +12,7 @@ import Organization from "./Organization";
 import RenderTask from "./RenderTask";
 import RenderJobLog from "./RenderJobLog";
 import Plugin from "./Plugin";
+import {Moment} from "moment";
 
 /**
  * Slave - typeorm entity for slave data.
@@ -36,9 +37,17 @@ export default class Slave extends BaseEntity {
     @ManyToMany(type => Organization, org => org.slaves)
     organizations: Organization[];
 
-    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    created_at: Timestamp;
+    @Column({
+        name: "created_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP"
+    })
+    createdAt: Moment;
 
-    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    updated_at: Timestamp;
+    @Column({
+        name: "updated_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP"
+    })
+    updatedAt: Moment;
 }

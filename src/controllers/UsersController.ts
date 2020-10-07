@@ -12,10 +12,11 @@ import {Context} from "koa";
 import * as argon2 from "argon2";
 
 import User from "../entities/User";
-import {RegisterUserValidator} from "../validators/UserRequestValidator";
+import {UserRegisterValidator} from "../validators/UserRequestValidator";
 import Authenticator from "../core/Authenticator";
 import {HttpError} from "koa";
 
+import OutUser from "../interfaces/OutUser";
 
 /**
  * UsersController - controller for /users and /users/:user_id routes.
@@ -27,7 +28,7 @@ export default class UsersController extends Controller {
         super("/users");
 
         this.get("/", this.getAllUsers);
-        this.post("/", RegisterUserValidator, this.registerUser);
+        this.post("/", UserRegisterValidator, this.registerUser);
         this.get("/:user_id", this.getUserById);
 
 
@@ -40,7 +41,7 @@ export default class UsersController extends Controller {
      */
     public async getAllUsers(ctx: Context): Promise<void> {
         ctx.body = await User.find({
-            select: ["id", "username", "email", "deleted", "created_at", "updated_at"]
+            select: ["id", "username", "email", "deleted", "createdAt", "updatedAt"]
         });
     }
 
@@ -52,27 +53,26 @@ export default class UsersController extends Controller {
     public async registerUser(ctx: Context): Promise<void> {
 
         if (await User.findOne({username: ctx.request.body.username})) {
-            let err = new HttpError("user with this username already exists");
-            err.status = 400;
-            throw err;
+            ctx.throw(400, "user with this username already exists");
         }
         if (await User.findOne({email: ctx.request.body.email})) {
-            let err = new HttpError("user with this email already exists");
-            err.status = 400;
-            throw err;
+            ctx.throw(400, "user with this email already exists");
         }
 
         const user = new User();
         user.username = ctx.request.body.username;
         user.email = ctx.request.body.email;
         user.password = await argon2.hash(ctx.request.body.password);
-
-        let result = await user.save();
-        result.bearer = Authenticator.createJwt({id: user.id, username: user.username});
-        result = await result.save();
-
-        result.password = undefined;
-        result.deleted = undefined;
+        const savedUser = await user.save();
+        const result: OutUser = {
+            id: savedUser.id,
+            username: savedUser.username,
+            email: savedUser.email,
+            deleted: savedUser.deleted,
+            createdAt: savedUser.createdAt,
+            updatedAt: savedUser.updatedAt,
+            bearer: Authenticator.createJwt({id: savedUser.id, username: savedUser.username})
+        };
         ctx.body = result;
     }
 
@@ -85,8 +85,12 @@ export default class UsersController extends Controller {
         // TODO: check params for injections
         // TODO: if not found, return 404
         const user = await User.findOne(ctx.params.user_id, {
-            select: ["id", "username", "email", "deleted", "created_at", "updated_at"]
+            select: ["id", "username", "email", "deleted", "createdAt", "updatedAt"]
         });
+        if(!user) {
+            ctx.throw(404);
+        }
+
         ctx.body = user;
     }
 }

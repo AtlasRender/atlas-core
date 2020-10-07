@@ -14,7 +14,7 @@ import * as validateMiddleware from "koa-joi-validate-middleware";
  * RegisterUserValidator - validator for user registration request.
  * @author Denis Afendikov
  */
-export const RegisterUserValidator = validateMiddleware.create({
+export const UserRegisterValidator = validateMiddleware.create({
     body: Joi.object({
         // TODO: data from config.
         username: Joi.string().alphanum().min(3).max(50).required(),
@@ -27,7 +27,7 @@ export const RegisterUserValidator = validateMiddleware.create({
  * LoginUserValidator - validator for user l request.
  * @author Denis Afendikov
  */
-export const LoginUserValidator = validateMiddleware.create({
+export const UserLoginValidator = validateMiddleware.create({
     body: Joi.object({
         // TODO: data from config.
         username: Joi.string().alphanum().min(3).max(50).required(),

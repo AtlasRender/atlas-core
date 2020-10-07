@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 
-import {Column, Entity, ManyToOne, Timestamp} from "typeorm";
+import {Entity} from "typeorm";
 import BasicPlugin from "./BasicPlugin";
 
 /**

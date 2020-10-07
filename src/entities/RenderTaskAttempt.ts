@@ -7,10 +7,10 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Timestamp} from "typeorm";
-import RenderJob from "./RenderJob";
+import {BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import RenderTask from "./RenderTask";
 import RenderTaskAttemptLog from "./RenderTaskAttemptLog";
+import {Moment} from "moment";
 
 /**
  * RenderTaskAttempt - typeorm entity for task attempt data.
@@ -35,9 +35,17 @@ export default class RenderTaskAttempt extends BaseEntity {
     @OneToMany(type => RenderTaskAttemptLog, log => log.renderTaskAttempt)
     logs: RenderTaskAttemptLog[];
 
-    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    created_at: Timestamp;
+    @Column({
+        name: "created_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP"
+    })
+    createdAt: Moment;
 
-    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    updated_at: Timestamp;
+    @Column({
+        name: "updated_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP"
+    })
+    updatedAt: Moment;
 }

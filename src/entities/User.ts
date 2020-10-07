@@ -7,19 +7,10 @@
  * All rights reserved.
  */
 
-import {
-    BaseEntity,
-    Column,
-    Entity,
-    IsNull,
-    JoinTable,
-    ManyToMany,
-    PrimaryGeneratedColumn,
-    Timestamp,
-    Unique
-} from "typeorm";
+import {BaseEntity, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
 import Role from "./Role";
 import Organization from "./Organization";
+import {Moment} from "moment";
 
 
 /**
@@ -42,9 +33,6 @@ export default class User extends BaseEntity {
     @Column()
     password: string;
 
-    @Column({default: ""})
-    bearer: string;
-
     @Column({default: false})
     deleted: boolean;
 
@@ -60,9 +48,17 @@ export default class User extends BaseEntity {
     })
     roles: Role[];
 
-    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    created_at: Timestamp;
+    @Column({
+        name: "created_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP"
+    })
+    createdAt: Moment;
 
-    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    updated_at: Timestamp;
+    @Column({
+        name: "updated_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP"
+    })
+    updatedAt: Moment;
 }
