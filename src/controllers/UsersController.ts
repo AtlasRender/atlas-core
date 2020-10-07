@@ -16,6 +16,7 @@ import {RegisterUserValidator} from "../validators/UserRequestValidator";
 import Authenticator from "../core/Authenticator";
 import {HttpError} from "koa";
 
+import OutUser from "../interfaces/OutUser";
 
 /**
  * UsersController - controller for /users and /users/:user_id routes.
@@ -40,7 +41,7 @@ export default class UsersController extends Controller {
      */
     public async getAllUsers(ctx: Context): Promise<void> {
         ctx.body = await User.find({
-            select: ["id", "username", "email", "deleted", "created_at", "updated_at"]
+            select: ["id", "username", "email", "deleted", "createdAt", "updatedAt"]
         });
     }
 
@@ -66,13 +67,13 @@ export default class UsersController extends Controller {
         user.username = ctx.request.body.username;
         user.email = ctx.request.body.email;
         user.password = await argon2.hash(ctx.request.body.password);
-
-        let result = await user.save();
-        result.bearer = Authenticator.createJwt({id: user.id, username: user.username});
-        result = await result.save();
-
-        result.password = undefined;
-        result.deleted = undefined;
+        let savedUser = await user.save();
+        savedUser.password = undefined;
+        savedUser.deleted = undefined;
+        const result: OutUser = {
+            ...savedUser,
+            bearer: Authenticator.createJwt({id: user.id, username: user.username})
+        }
         ctx.body = result;
     }
 
@@ -85,7 +86,7 @@ export default class UsersController extends Controller {
         // TODO: check params for injections
         // TODO: if not found, return 404
         const user = await User.findOne(ctx.params.user_id, {
-            select: ["id", "username", "email", "deleted", "created_at", "updated_at"]
+            select: ["id", "username", "email", "deleted", "createdAt", "updatedAt"]
         });
         ctx.body = user;
     }

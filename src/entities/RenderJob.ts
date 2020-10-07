@@ -7,11 +7,12 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Timestamp} from "typeorm";
+import {BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import Organization from "./Organization";
 import RenderTask from "./RenderTask";
 import RenderJobLog from "./RenderJobLog";
 import Plugin from "./Plugin";
+import {Moment} from "moment";
 
 /**
  * RenderJob - typeorm entity for job data.
@@ -45,9 +46,17 @@ export default class RenderJob extends BaseEntity {
     @ManyToOne(type => Plugin, plugin => plugin.renderJob)
     plugins: Plugin[];
 
-    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    created_at: Timestamp;
+    @Column({
+        name: "created_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP"
+    })
+    createdAt: Moment;
 
-    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
-    updated_at: Timestamp;
+    @Column({
+        name: "updated_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP"
+    })
+    updatedAt: Moment;
 }
