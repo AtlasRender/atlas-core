@@ -753,6 +753,13 @@
   dependencies:
     "@types/koa" "*"
 
+"@types/koa-cors@^0.0.0":
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/@types/koa-cors/-/koa-cors-0.0.0.tgz#7a0ef45acfed1ef6c046d5896e3974261d8a9d37"
+  integrity sha512-bqWPbf/MNHx5rwOdQXEkQxL7/DvD1sMQRC+PUDqnYf/i4WPUeLhePRssexznT9uQSNWhtfFi1lDanoY/srFb5g==
+  dependencies:
+    "@types/koa" "*"
+
 "@types/koa-router@^7.4.1":
   version "7.4.1"
   resolved "https://registry.yarnpkg.com/@types/koa-router/-/koa-router-7.4.1.tgz#3702a4cabe4558cc4eec70d5574acc04beecff7c"
@@ -3334,6 +3341,11 @@ koa-convert@^1.2.0:
     co "^4.6.0"
     koa-compose "^3.0.0"
 
+koa-cors@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/koa-cors/-/koa-cors-0.0.16.tgz#98107993a7909e34c042986c5ec6156d77f3432e"
+  integrity sha1-mBB5k6eQnjTAQphsXsYVbXfzQy4=
+
 koa-joi-validate-middleware@^1.1.7:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/koa-joi-validate-middleware/-/koa-joi-validate-middleware-1.1.7.tgz#50189c73b26c80c44287588207300d06c2161933"
@@ -3371,11 +3383,6 @@ koa-unless@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/koa-unless/-/koa-unless-1.0.7.tgz#b9df375e2b4da3043918d48622520c2c0b79f032"
   integrity sha1-ud83XitNowQ5GNSGIlIMLAt58DI=
-
-koa2-cors@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/koa2-cors/-/koa2-cors-2.0.6.tgz#9ad23df3a0b9bb84530b46f5944f3fb576086554"
-  integrity sha512-JRCcSM4lamM+8kvKGDKlesYk2ASrmSTczDtGUnIadqMgnHU4Ct5Gw7Bxt3w3m6d6dy3WN0PU4oMP43HbddDEWg==
 
 koa@^2.13.0:
   version "2.13.0"

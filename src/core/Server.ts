@@ -24,7 +24,7 @@ import {
 import * as destroyable from "server-destroy";
 import Controller from "./Controller";
 import Authenticator from "./Authenticator";
-import cors from 'koa2-cors'
+import * as cors from "koa-cors";
 
 
 
@@ -182,7 +182,6 @@ export default class Server extends Koa {
             }
         });
 
-        this.use(cors());
 
         // Getting controllers from directory in config.
         if (this.config.controllersDir) {
@@ -201,8 +200,15 @@ export default class Server extends Koa {
             console.warn(`Server: Warning: "config.controllersDir" is not defined, controllers will not be loaded.`);
         }
 
+
+        this.use(cors({
+            origin: "*",
+            credentials: true
+        }));
+
         // Applying router routes.
         this.use(this.router.routes()).use(this.router.allowedMethods());
+
 
         Server.current = this;
     }
