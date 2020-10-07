@@ -12,7 +12,7 @@ import {Context} from "koa";
 import * as argon2 from "argon2";
 
 import User from "../entities/User";
-import {RegisterUserValidator} from "../validators/UserRequestValidator";
+import {UserRegisterValidator} from "../validators/UserRequestValidator";
 import Authenticator from "../core/Authenticator";
 import {HttpError} from "koa";
 
@@ -28,7 +28,7 @@ export default class UsersController extends Controller {
         super("/users");
 
         this.get("/", this.getAllUsers);
-        this.post("/", RegisterUserValidator, this.registerUser);
+        this.post("/", UserRegisterValidator, this.registerUser);
         this.get("/:user_id", this.getUserById);
 
 
@@ -62,10 +62,7 @@ export default class UsersController extends Controller {
         const user = new User();
         user.username = ctx.request.body.username;
         user.email = ctx.request.body.email;
-        console.log("Hashing: " + ctx.request.body.password);
         user.password = await argon2.hash(ctx.request.body.password);
-        console.log("Hashed: " + user.password);
-
         const savedUser = await user.save();
         const result: OutUser = {
             id: savedUser.id,
@@ -90,6 +87,10 @@ export default class UsersController extends Controller {
         const user = await User.findOne(ctx.params.user_id, {
             select: ["id", "username", "email", "deleted", "createdAt", "updatedAt"]
         });
+        if(!user) {
+            ctx.throw(404);
+        }
+
         ctx.body = user;
     }
 }

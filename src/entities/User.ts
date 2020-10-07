@@ -30,7 +30,7 @@ export default class User extends BaseEntity {
     @Column({unique: true})
     email: string;
 
-    @Column({length: 500})
+    @Column()
     password: string;
 
     @Column({default: false})

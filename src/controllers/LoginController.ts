@@ -12,7 +12,7 @@ import {Context, HttpError} from "koa";
 import * as argon2 from "argon2";
 
 import User from "../entities/User";
-import {LoginUserValidator} from "../validators/UserRequestValidator";
+import {UserLoginValidator} from "../validators/UserRequestValidator";
 import Authenticator from "../core/Authenticator";
 import OutUser from "../interfaces/OutUser";
 
@@ -25,7 +25,7 @@ import OutUser from "../interfaces/OutUser";
 export default class LoginController extends Controller {
     constructor() {
         super("/login");
-        this.post("/", LoginUserValidator, this.loginHandler);
+        this.post("/", UserLoginValidator, this.loginHandler);
     }
 
     /**
@@ -38,7 +38,6 @@ export default class LoginController extends Controller {
         if (!user) {
             ctx.throw(401, "user with this username not exist");
         }
-        console.log("Verify: " + user.password);
         if (await argon2.verify(user.password, ctx.request.body.password)) {
             const result: OutUser = {
                 id: user.id,

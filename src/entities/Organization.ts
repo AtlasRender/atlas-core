@@ -37,22 +37,19 @@ export default class Organization extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    default_role_id: number;
-
     @Column({unique: true})
     name: string;
 
-    @Column({type: "text"})
+    @Column({type: "text", nullable: true})
     description: string;
 
-    @OneToOne(type => User)
+    @OneToOne(type => User, {eager: true})
     @JoinColumn()
-    owner_user: User;
+    ownerUser: User;
 
-    @OneToOne(type => Role)
+    @OneToOne(type => Role, {nullable: true})
     @JoinColumn()
-    default_role: Role;
+    defaultRole: Role;
 
     @ManyToMany(type => User, user => user.organizations)
     users: User[];
