@@ -12,7 +12,7 @@ import {Context} from "koa";
 import * as argon2 from "argon2";
 
 import User from "../entities/User";
-import {UserRegisterValidator} from "../validators/UserRequestValidator";
+import {UserRegisterValidator} from "../validators/UserRequestValidators";
 import Authenticator from "../core/Authenticator";
 import {HttpError} from "koa";
 

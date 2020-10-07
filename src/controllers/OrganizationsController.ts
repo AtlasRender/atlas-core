@@ -14,7 +14,7 @@ import {Context} from "koa";
 import User from "../entities/User";
 import Authenticator from "../core/Authenticator";
 import Organization from "../entities/Organization";
-import {OrganizationRegisterValidator} from "../validators/OrganizationRequestValidator";
+import {OrganizationRegisterValidator} from "../validators/OrganizationRequestValidators";
 
 
 /**
