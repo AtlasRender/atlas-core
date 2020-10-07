@@ -14,6 +14,7 @@ import * as argon2 from "argon2";
 import User from "../entities/User";
 import {RegisterUserValidator} from "../validators/UserRequestValidator";
 import Authenticator from "../core/Authenticator";
+import {HttpError} from "koa";
 
 
 /**
@@ -51,16 +52,14 @@ export default class UsersController extends Controller {
     public async registerUser(ctx: Context): Promise<void> {
 
         if (await User.findOne({username: ctx.request.body.username})) {
-            throw {
-                code: 400,
-                message: "user with this username already exists"
-            };
+            let err = new HttpError("user with this username already exists");
+            err.status = 400;
+            throw err;
         }
         if (await User.findOne({email: ctx.request.body.email})) {
-            throw {
-                code: 400,
-                message: "user with this email already exists"
-            };
+            let err = new HttpError("user with this email already exists");
+            err.status = 400;
+            throw err;
         }
 
         const user = new User();

@@ -171,7 +171,7 @@ export default class Server extends Koa {
                 await next();
             } catch (err) {
                 console.error(err);
-                ctx.status = err.code || 400;
+                ctx.status = err.code || err.status || 400;
                 ctx.body = {
                     success: false,
                     message: err.message,

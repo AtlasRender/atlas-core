@@ -8,7 +8,7 @@
  */
 
 import Controller from "../core/Controller";
-import {Context} from "koa";
+import {Context, HttpError} from "koa";
 import * as argon2 from "argon2";
 
 import User from "../entities/User";
@@ -35,16 +35,14 @@ export default class LoginController extends Controller {
     public async loginHandler(ctx: Context): Promise<void> {
         let user;
         if (!(user = await User.findOne({username: ctx.request.body.username}))) {
-            throw {
-                code: 401,
-                message: "user with this username not exist"
-            };
+            let err = new HttpError("user with this username not exist");
+            err.status = 401;
+            throw err;
         }
         if(await argon2.verify(user.password, ctx.request.body.username)) {
-            throw {
-                code: 401,
-                message: "password incorrect"
-            };
+            let err = new HttpError("password incorrect");
+            err.status = 401;
+            throw err;
         }
 
         user.bearer = Authenticator.createJwt({id: user.id, username: user.username});
