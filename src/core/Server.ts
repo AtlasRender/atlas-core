@@ -24,6 +24,7 @@ import {
 import * as destroyable from "server-destroy";
 import Controller from "./Controller";
 import Authenticator from "./Authenticator";
+import cors from 'koa2-cors'
 
 
 
@@ -180,6 +181,8 @@ export default class Server extends Koa {
                 // TODO: ctx.app.emit('error', err, ctx);
             }
         });
+
+        this.use(cors());
 
         // Getting controllers from directory in config.
         if (this.config.controllersDir) {
