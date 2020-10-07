@@ -10,6 +10,7 @@
 import * as Koa from "koa";
 import {Context, Next} from "koa";
 import * as Router from "koa-router";
+import * as bodyParser from "koa-bodyparser";
 import * as moment from "moment";
 import {importClassesFromDirectories} from "typeorm/util/DirectoryExportedClassesLoader";
 import {
@@ -20,7 +21,10 @@ import {
     Logger as TypeOrmLogger,
     QueryRunner
 } from "typeorm";
+// @ts-ignore
+import * as destroyable from "server-destroy";
 import Controller from "./Controller";
+import Authenticator from "./Authenticator";
 
 
 /**
@@ -94,18 +98,49 @@ export default class Server extends Koa {
     public readonly options: ServerOptions;
 
     /**
+     * hasInstance - flag, designed restrict several servers creation.
+     * @default false
+     */
+    private static hasInstance: boolean = false;
+
+    /**
+     * current - current active server instance.
+     * @default null
+     */
+    protected static current: Server | null = null;
+
+    /**
+     * getCurrent - returns current active server instance.
+     * @function
+     * @author Danil Andreev
+     */
+    public static getCurrent(): Server | null {
+        return this.current;
+    }
+
+    /**
      * Creates the Server instance. If you want to run the server - call the ___start()___ method.
      * @constructor
-     * @param config
-     * @param options
+     * @param config - Configuration of the server. Will be merged with ENV.
+     * @param options - Additional option for web server.
+     * @author Danil Andreev
      */
     constructor(config: ServerConfig, options: ServerOptions = {}) {
+        if (Server.hasInstance)
+            throw new ReferenceError(`Server: Server instance already exists. Can not create multiple instances of Server.`);
+
+        // Initializing the Server
+        Server.hasInstance = true;
         console.log(`Server: initializing.`);
         super();
         this.config = config;
         this.router = new Router();
         this.controllers = [];
         this.options = options;
+
+
+        // bodyParser middleware
+        this.use(bodyParser());
 
         // Creating typeorm connection
         this.setupConnection().then(() => {
@@ -115,7 +150,33 @@ export default class Server extends Koa {
         // Creating additional functional for routing.
         this.use(async (ctx: Context, next: Next) => {
             console.log(`Server [${moment().format("l")} ${moment().format("LTS")}]: request from (${ctx.hostname}) to route "${ctx.url}".`);
-            await next();
+            // Calling next middleware and handling errors
+            await next().catch(error => {
+                // 401 Unauthorized
+                if (error.status === 401) {
+                    ctx.status = 401;
+                    ctx.body = "Protected resource, use Authorization header to get access";
+                } else {
+                    throw error;
+                }
+            });
+        });
+
+        // Applying JWT for routes.
+        this.use(Authenticator.getJwtMiddleware());
+
+        // error handler
+        this.use(async (ctx, next) => {
+            try {
+                await next();
+            } catch (err) {
+                console.error(err);
+                ctx.status = err.code || err.status || 400;
+                ctx.body = {
+                    success: false,
+                    message: err.message,
+                };
+            }
         });
 
         // Getting controllers from directory in config.
@@ -137,8 +198,23 @@ export default class Server extends Koa {
 
         // Applying router routes.
         this.use(this.router.routes()).use(this.router.allowedMethods());
+
+        Server.current = this;
     }
 
+    public destroy(): void {
+        // @ts-ignore
+        destroyable(this);
+        Server.hasInstance = false;
+        Server.current = null;
+        this.destroy();
+    }
+
+    /**
+     * setupConnection - method, designed to setup connection with database.
+     * @method
+     * @author Danil Andreev
+     */
     private async setupConnection(): Promise<void> {
         console.log("TypeORM: Setting up database connection...");
         this.DbConnection = await createConnection({
@@ -157,7 +233,7 @@ export default class Server extends Koa {
     /**
      * start - starts the wev server message handling cycle. If you want to run the server - call this method;
      * @method
-     * @param port - port on which server will start listening. If not set, will try to find it in config (config.port),
+     * @param port - Port on which server will start listening. If not set, will try to find it in config (config.port),
      * or map to default (3002)
      * @author Danil Andreev
      */
@@ -170,7 +246,7 @@ export default class Server extends Koa {
     /**
      * useController - add new controller class
      * @method
-     * @param controller - controller that will be applied to server
+     * @param controller - Controller that will be applied to server
      * @author Denis Afendikov
      */
     public useController(controller: Controller): void {

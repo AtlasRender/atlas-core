@@ -35,9 +35,9 @@ export default class RenderTaskAttempt extends BaseEntity {
     @OneToMany(type => RenderTaskAttemptLog, log => log.renderTaskAttempt)
     logs: RenderTaskAttemptLog[];
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     created_at: Timestamp;
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     updated_at: Timestamp;
 }

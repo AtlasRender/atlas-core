@@ -7,7 +7,17 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, Timestamp} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    Entity,
+    IsNull,
+    JoinTable,
+    ManyToMany,
+    PrimaryGeneratedColumn,
+    Timestamp,
+    Unique
+} from "typeorm";
 import Role from "./Role";
 import Organization from "./Organization";
 
@@ -23,16 +33,19 @@ export default class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({unique: true})
     username: string;
 
-    @Column()
+    @Column({unique: true})
     email: string;
 
     @Column()
     password: string;
 
-    @Column()
+    @Column({default: ""})
+    bearer: string;
+
+    @Column({default: false})
     deleted: boolean;
 
     @ManyToMany(type => Organization, org => org.users)
@@ -47,9 +60,9 @@ export default class User extends BaseEntity {
     })
     roles: Role[];
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     created_at: Timestamp;
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     updated_at: Timestamp;
 }

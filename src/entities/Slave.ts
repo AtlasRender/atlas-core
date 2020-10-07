@@ -36,9 +36,9 @@ export default class Slave extends BaseEntity {
     @ManyToMany(type => Organization, org => org.slaves)
     organizations: Organization[];
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     created_at: Timestamp;
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     updated_at: Timestamp;
 }

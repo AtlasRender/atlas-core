@@ -45,9 +45,9 @@ export default class RenderJob extends BaseEntity {
     @ManyToOne(type => Plugin, plugin => plugin.renderJob)
     plugins: Plugin[];
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     created_at: Timestamp;
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     updated_at: Timestamp;
 }

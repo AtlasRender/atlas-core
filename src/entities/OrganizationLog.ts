@@ -30,9 +30,9 @@ export default class OrganizationLog extends BaseEntity {
     @ManyToOne(type => Organization, org => org.logs)
     organization: Organization;
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     created_at: Timestamp;
 
-    @Column({type: "timestamp"})
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
     updated_at: Timestamp;
 }
