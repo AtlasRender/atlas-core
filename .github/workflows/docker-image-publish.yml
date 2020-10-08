@@ -64,6 +64,6 @@ jobs:
         with: 
           args: | 
             compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} 
-            sudo docker stop $(sudo docker ps -a -q)
-            sudo docker pull danilandreev/pathfinder-core
-            sudo docker run -d danilandreev/pathfinder-core
+            docker stop $(docker ps -a -q)
+            docker pull danilandreev/pathfinder-core
+            docker run -d danilandreev/pathfinder-core
