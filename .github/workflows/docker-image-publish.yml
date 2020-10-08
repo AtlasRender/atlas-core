@@ -62,8 +62,4 @@ jobs:
           PROJECT_ID: ${{secrets.GCE_PROJECT}}
           APPLICATION_CREDENTIALS: ${{secrets.GCE_SA_KEY}}
         with: 
-          args: | 
-            compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} 
-            docker stop $(docker ps -a -q)
-            docker pull danilandreev/pathfinder-core
-            docker run -d danilandreev/pathfinder-core
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command "docker stop $(docker ps -a -q) docker pull danilandreev/pathfinder-core docker run -d danilandreev/pathfinder-core"
