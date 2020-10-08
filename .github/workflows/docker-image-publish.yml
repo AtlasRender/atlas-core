@@ -69,4 +69,4 @@ jobs:
           PROJECT_ID: ${{secrets.GCE_PROJECT}}
           APPLICATION_CREDENTIALS: ${{secrets.GCE_SA_KEY}}
         with: 
-          args: ls
+          args: ssh ${{secrets.GCE_INSTANCE}} 
