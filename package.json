@@ -35,7 +35,7 @@
     "exec": "ts-node ./src/index.ts"
   },
   "dependencies": {
-    "@types/koa-cors": "^0.0.0",
+    "ajv": "^6.12.5",
     "argon2": "^0.27.0",
     "crypto-random-string": "^3.3.0",
     "dotenv": "^8.2.0",
@@ -64,6 +64,7 @@
     "@types/koa": "^2.11.4",
     "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-router": "^7.4.1",
+    "@types/koa-cors": "^0.0.0",
     "@types/node": "^14.0.14",
     "@types/server-destroy": "^1.0.0",
     "jest": "^26.4.2",
