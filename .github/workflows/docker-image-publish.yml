@@ -11,6 +11,7 @@ env:
   GCE_INSTANCE: ${{ secrets.GCE_INSTANCE }}
   GCE_INSTANCE_ZONE: ${{ secrets.GCE_INSTANCE_ZONE }}
 
+
 jobs:
   dockerhub:
     # if: github.event.pull_request.merged == 'true'
