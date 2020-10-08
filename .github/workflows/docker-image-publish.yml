@@ -8,8 +8,8 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCE_PROJECT }}
-  GCE_INSTANCE: my-githubactions-vm  # TODO: update to instance name
-  GCE_INSTANCE_ZONE: us-central1-a   # TODO: update to instance zone
+  GCE_INSTANCE: pathfinder-core-vm
+  GCE_INSTANCE_ZONE: us-central1-a
 
 jobs:
   dockerhub:
