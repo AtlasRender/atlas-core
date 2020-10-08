@@ -6,6 +6,7 @@ Pathfinder Core is a part of Pathfinder Render Manager, which process:
 * Automating
 * Plugins management
 
+
 ## Credits
 ### Author
 Andreev Danil | danssg08@gmail.com | https://github.com/DanilAndreev
