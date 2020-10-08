@@ -10,7 +10,7 @@ env:
   PROJECT_ID: ${{ secrets.GCE_PROJECT }}
   GCE_INSTANCE: ${{ secrets.GCE_INSTANCE }}
   GCE_INSTANCE_ZONE: ${{ secrets.GCE_INSTANCE_ZONE }}
-
+  APPLICATION_CREDENTIALS: ${{secrets.GCE_SA_KEY}}
 
 jobs:
   dockerhub:
@@ -56,10 +56,15 @@ jobs:
           version: '290.0.1'
           service_account_key: ${{ secrets.GCE_SA_KEY }}
           project_id: ${{ secrets.GCE_PROJECT }}
-      - name: Configure GCloud CLI
+      - name: Stop docker containers
         uses: actions-hub/gcloud@master
-        env: 
-          PROJECT_ID: ${{secrets.GCE_PROJECT}}
-          APPLICATION_CREDENTIALS: ${{secrets.GCE_SA_KEY}}
         with: 
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command "docker stop $(docker ps -a -q) && docker pull danilandreev/pathfinder-core && docker run -d danilandreev/pathfinder-core"
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command "docker stop $(docker ps -a -q)"
+      - name: Pull container from DockerHub
+        uses: actions-hub/gcloud@master
+        with: 
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command "docker pull danilandreev/pathfinder-core"
+      - name: Start new container daemon
+        uses: actions-hub/gcloud@master
+        with: 
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command "docker run -d danilandreev/pathfinder-core"
