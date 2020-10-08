@@ -15,7 +15,7 @@ jobs:
   dockerhub:
     if: github.event.pull_request.merged == 'true'
     runs-on: ubuntu-latest
-    name: build and deploy docker image to DockerHb
+    name: Build and deploy docker image to DockerHb
     steps:
     - uses: actions/checkout@v2
     - name: Docker Login
