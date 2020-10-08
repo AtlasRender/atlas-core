@@ -60,6 +60,7 @@ jobs:
         uses: actions-hub/gcloud@master
         with: 
           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}}
+      - run: ls
       - run: docker stop $(docker ps -a -q)
       - run: docker pull danilandreev/pathfinder-core
       - run: docker run -d danilandreev/pathfinder-core
