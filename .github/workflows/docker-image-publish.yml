@@ -56,12 +56,17 @@ jobs:
           service_account_key: ${{ secrets.GCE_SA_KEY }}
           project_id: ${{ secrets.GCE_PROJECT }}
       # Configure Docker to use the gcloud command-line tool as a credential
-      - run: gcloud --quiet auth configure-docker
+#       - run: gcloud --quiet auth configure-docker
 #       - name: Build
 #         run: docker build --tag "gcr.io/$PROJECT_ID/$GCE_INSTANCE-image:$GITHUB_SHA"
 #       - name: Publish
 #         run: docker push "gcr.io/$PROJECT_ID/$GCE_INSTANCE-image:$GITHUB_SHA"
-      - name: Deploy
+#       - name: Deploy
 #         run: gcloud compute instances update-container "$GCE_INSTANCE" --zone "$GCE_INSTANCE_ZONE" --container-image "gcr.io/$PROJECT_ID/$GCE_INSTANCE-image:$GITHUB_SHA"
-        run: gcloud compute ssh "$GCE_INSTANCE"
-      - run: ls
+      - name: Configure GCloud CLI
+        uses: actions-hub/gcloud@master
+        env: 
+          PROJECT_ID: ${{secrets.PROJECT_ID}}
+          APPLICATION_CREDENTIALS: ${{secrets.GCE_SA_KEY}}
+        with: 
+          args: ls
