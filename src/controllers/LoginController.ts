@@ -8,7 +8,7 @@
  */
 
 import Controller from "../core/Controller";
-import {Context, HttpError} from "koa";
+import {Context} from "koa";
 import * as argon2 from "argon2";
 
 import User from "../entities/User";

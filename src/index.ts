@@ -8,14 +8,12 @@
  */
 
 import * as dotenv from "dotenv";
-
-dotenv.config();
+import "globals";
 
 import HelloWorld from "./controllers/HelloWorld";
 import Test from "./controllers/Test";
-import Server, {ServerConfig, ServerOptions} from "./core/Server";
+import Server, {ServerConfig} from "./core/Server";
 //import * as config from "./config.json";
-
 // Entities
 import RenderJob from "./entities/RenderJob";
 import User from "./entities/User";
@@ -34,6 +32,8 @@ import GlobalPlugin from "./entities/GlobalPlugin";
 import UsersController from "./controllers/UsersController";
 import LoginController from "./controllers/LoginController";
 import OrganizationsController from "./controllers/OrganizationsController";
+
+dotenv.config();
 
 
 const port: number = +process.env.PORT || 3002;

@@ -7,6 +7,8 @@
     "username": "postgres",
     "password": "pathfinder",
     "database": "postgres",
-    "entities": ["/entities/*.entity.ts"]
+    "entities": [
+      "/entities/*.entity.ts"
+    ]
   }
 }

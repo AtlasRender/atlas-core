@@ -14,7 +14,6 @@ import * as argon2 from "argon2";
 import User from "../entities/User";
 import {UserRegisterValidator} from "../validators/UserRequestValidators";
 import Authenticator from "../core/Authenticator";
-import {HttpError} from "koa";
 
 import OutUser from "../interfaces/OutUser";
 
@@ -87,7 +86,7 @@ export default class UsersController extends Controller {
         const user = await User.findOne(ctx.params.user_id, {
             select: ["id", "username", "email", "deleted", "createdAt", "updatedAt"]
         });
-        if(!user) {
+        if (!user) {
             ctx.throw(404);
         }
 

@@ -7,11 +7,8 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Timestamp} from "typeorm";
+import {BaseEntity, Column, Entity, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
 import Organization from "./Organization";
-import RenderTask from "./RenderTask";
-import RenderJobLog from "./RenderJobLog";
-import Plugin from "./Plugin";
 import {Moment} from "moment";
 
 /**

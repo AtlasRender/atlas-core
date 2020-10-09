@@ -13,20 +13,12 @@ import * as Router from "koa-router";
 import * as bodyParser from "koa-bodyparser";
 import * as moment from "moment";
 import {importClassesFromDirectories} from "typeorm/util/DirectoryExportedClassesLoader";
-import {
-    Connection, ConnectionOptions,
-    createConnection,
-    EntitySchema,
-    Logger as TypeOrmLogger,
-    QueryRunner
-} from "typeorm";
+import {Connection, ConnectionOptions, createConnection, Logger as TypeOrmLogger, QueryRunner} from "typeorm";
 // @ts-ignore
 import * as destroyable from "server-destroy";
 import Controller from "./Controller";
 import Authenticator from "./Authenticator";
 import * as cors from "koa-cors";
-
-
 
 
 /**
@@ -177,6 +169,7 @@ export default class Server extends Koa {
                 ctx.body = {
                     success: false,
                     message: err.message,
+                    response: err.response
                 };
                 // TODO: ctx.app.emit('error', err, ctx);
             }
