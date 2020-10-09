@@ -13,7 +13,7 @@ import * as cryptoRandomString from "crypto-random-string";
 import * as Jwt from "koa-jwt";
 import * as jsonwebtoken from "jsonwebtoken";
 import {Moment} from "moment";
-import moment = require("moment");
+import * as moment from "moment";
 
 export interface UserJwt {
     /**
