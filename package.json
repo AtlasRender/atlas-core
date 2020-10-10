@@ -46,6 +46,7 @@
     "moment": "^2.29.0",
     "mysql": "^2.18.1",
     "pg": "^8.3.3",
+    "redis-typescript": "^0.1.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.3",
     "server-destroy": "^1.0.1",
