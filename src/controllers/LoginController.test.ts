@@ -3,16 +3,16 @@
  * Owner and project architect: Danil Andreev | danssg08@gmail.com |  https://github.com/DanilAndreev
  * File creator: Danil Andreev
  * Project: pathfinder-core
- * File last modified: 10/2/20, 4:54 PM
+ * File last modified: 10.10.2020, 23:17
  * All rights reserved.
  */
 
-import Test from "./Test";
 import Controller from "../core/Controller";
+import LoginController from "./LoginController";
 
-describe("controllers -> Test", () => {
-    test("Test is controller instance of Controller", () => {
-        const controller: Test = new Test();
+describe("controllers -> LoginController", () => {
+    test("Test if controller is instance of Controller", () => {
+        const controller: LoginController = new LoginController();
         expect(controller instanceof Controller).toBe(true);
     });
 });

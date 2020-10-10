@@ -21,46 +21,10 @@ import Authenticator from "./Authenticator";
 import * as cors from "koa-cors";
 import * as Redis from "redis";
 import * as Amqp from "amqp";
+import ServerConfig from "../interfaces/ServerConfig";
+import ServerOptions from "../interfaces/ServerOptions";
 
-/**
- * ServerConfig - configuration file for server.
- * @interface
- * @export ServerConfig
- * @author Danil Andreev
- */
-export interface ServerConfig {
-    /**
-     * controllersDir - directory where server should look for controllers.
-     * @author Danil Andreev
-     */
-    controllersDir?: string;
-    /**
-     * port - port, on which server will start.
-     * @author Danil Andreev
-     */
-    port?: number;
-    /**
-     * db - database connection options for typeorm
-     * @author Danil Andreev
-     */
-    db: ConnectionOptions;
-    /**
-     * redis - Redis connection options for redis-typescript.
-     */
-    redis: Redis.ClientOpts;
-    /**
-     * rabbit - RabbitMQ connection options for Amqp.
-     */
-    rabbit: Amqp.ConnectionOptions;
-}
 
-/**
- * ServerOptions - additional options for Server setup.
- * @interface
- * @author Danil Andreev
- */
-export interface ServerOptions {
-}
 
 /**
  * Server - basic web server controller. It can load controllers and write log.
@@ -150,6 +114,7 @@ export default class Server extends Koa {
         this.controllers = [];
         this.options = options;
 
+        // TODO: fix koa middleware deprecation!
         this.use(cors({
             origin: "*",
             credentials: true
