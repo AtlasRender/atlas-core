@@ -4296,6 +4296,11 @@ readdirp@~3.4.0:
   dependencies:
     picomatch "^2.2.1"
 
+redis-typescript@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/redis-typescript/-/redis-typescript-0.1.2.tgz#c4ef902a08f5c611c78df831614c4670914ea497"
+  integrity sha512-UbPtP4YjOJ5HKd67riqT5uuEYv1j9S9MKhcrahOXHLiXZA2QUfLXjYclUJz12oxtK5KRG0Lt6D1qo4ZiLaTJkw==
+
 reflect-metadata@^0.1.13:
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
