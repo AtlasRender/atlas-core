@@ -40,7 +40,7 @@ export interface ServerConfig {
     port?: number;
     /**
      * db - data base connection options for typeorm
-     * @author Danil Adnreev
+     * @author Danil Andreev
      */
     db: ConnectionOptions;
 }
