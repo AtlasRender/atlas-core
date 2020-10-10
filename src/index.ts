@@ -42,17 +42,28 @@ const config: ServerConfig = {
     port: port,
     db: {
         type: "postgres",
-        url: "postgres://qgcbdjnqsqglbk:c162720c6eb3337c24f1d5ee195bf020084b06002d7dc92520356eda22a2302b@ec2-46-137-124-19.eu-west-1.compute.amazonaws.com:5432/ddskobtu04bh2l",
+        // url: "postgres://postgres:postgres@104.197.241.243:5432/postgres",
+        host: "104.197.241.243",
+        port: 5432,
+        username: "postgres",
+        password: "postgres",
+        database: "postgres",
         entities: [
             RenderJob, User, Role, Organization, OrganizationLog,
             RenderTask, RenderTaskAttempt, RenderTaskAttemptLog, RenderJobLog,
             Plugin, GlobalPlugin, Slave
         ],
-        extra: {
-            ssl: {
-                rejectUnauthorized: false,
-            },
-        },
+    },
+    redis: {
+        port: 6379,
+        host: "104.197.241.243",
+    },
+    rabbit: {
+        host: "104.197.241.243",
+        port: 5672,
+        ssl: {
+            enabled: false
+        }
     }
 };
 

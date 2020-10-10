@@ -19,7 +19,8 @@ import * as destroyable from "server-destroy";
 import Controller from "./Controller";
 import Authenticator from "./Authenticator";
 import * as cors from "koa-cors";
-
+import * as Redis from "redis";
+import * as Amqp from "amqp";
 
 /**
  * ServerConfig - configuration file for server.
@@ -39,10 +40,18 @@ export interface ServerConfig {
      */
     port?: number;
     /**
-     * db - data base connection options for typeorm
+     * db - database connection options for typeorm
      * @author Danil Andreev
      */
     db: ConnectionOptions;
+    /**
+     * redis - Redis connection options for redis-typescript.
+     */
+    redis: Redis.ClientOpts;
+    /**
+     * rabbit - RabbitMQ connection options for Amqp.
+     */
+    rabbit: Amqp.ConnectionOptions;
 }
 
 /**
@@ -75,15 +84,25 @@ export default class Server extends Koa {
     protected controllers: Controller[];
 
     /**
-     * router - main server router. Other routers used by it;
+     * router - main server router. Other routers used by it.
      * @readonly
      */
     public readonly router: Router;
 
     /**
-     * DbConnection - connection object for typeorm
+     * DbConnection - connection object for typeorm.
      */
     protected DbConnection: Connection;
+
+    /**
+     * RedisConnection - connection object for redis-typescript.
+     */
+    protected RedisConnection: Redis.RedisClient;
+
+    /**
+     * RabbitMQConnection - connection object for RabbitMQ amqp.
+     */
+    protected RabbitMQConnection: Amqp.AMQPClient;
 
     /**
      * options - additional options for server;
@@ -131,14 +150,20 @@ export default class Server extends Koa {
         this.controllers = [];
         this.options = options;
 
+        this.use(cors({
+            origin: "*",
+            credentials: true
+        }));
 
         // bodyParser middleware
         this.use(bodyParser());
 
         // Creating typeorm connection
-        this.setupConnection(config.db).then(() => {
+        this.setupDbConnection(config.db).then(() => {
             console.log("TypeORM: connected to DB");
         });
+        this.setupRedisConnection(config.redis);
+        this.setupRabbitMQConnection(config.rabbit);
 
         // Creating additional functional for routing.
         this.use(async (ctx: Context, next: Next) => {
@@ -193,12 +218,6 @@ export default class Server extends Koa {
             console.warn(`Server: Warning: "config.controllersDir" is not defined, controllers will not be loaded.`);
         }
 
-
-        this.use(cors({
-            origin: "*",
-            credentials: true
-        }));
-
         // Applying router routes.
         this.use(this.router.routes()).use(this.router.allowedMethods());
 
@@ -215,16 +234,47 @@ export default class Server extends Koa {
     }
 
     /**
-     * setupConnection - method, designed to setup connection with database.
+     * setupDbConnection - method, designed to setup connection with database.
      * @method
      * @author Danil Andreev
      */
-    private async setupConnection(dbOptions: ConnectionOptions): Promise<void> {
+    private async setupDbConnection(dbOptions: ConnectionOptions): Promise<void> {
         console.log("TypeORM: Setting up database connection...");
         console.log(dbOptions);
         this.DbConnection = await createConnection(dbOptions);
         await this.DbConnection.synchronize();
+    }
 
+    /**
+     * setupRedisConnection - method, designed to setup connection with Redis.
+     * @method
+     * @param redisOptions
+     * @author Danil Andreev
+     */
+    private setupRedisConnection(redisOptions: Redis.ClientOpts): Server {
+        console.log("Redis: Setting up Redis connection...");
+        console.log(redisOptions);
+        this.RedisConnection = Redis.createClient(redisOptions);
+        this.RedisConnection.on("error", (error: Error) => {
+            throw error;
+        });
+        return this;
+    }
+
+    /**
+     * setupRabbitMQConnection - method, designed to setup connection with RabbitMQ.
+     * @method
+     * @param rabbitMQOptions - options for RabbitMQ connection options.
+     * @author Danil Andreev
+     */
+    private setupRabbitMQConnection(rabbitMQOptions: Amqp.ConnectionOptions): Server {
+        console.log("Redis: Setting up RabbitMQ connection...");
+        console.log(rabbitMQOptions);
+        this.RabbitMQConnection = Amqp.createConnection(rabbitMQOptions);
+        this.RabbitMQConnection.on("error", (error: Error) => {
+           throw error;
+        });
+        return this;
     }
 
     /**
