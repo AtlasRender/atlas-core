@@ -12,8 +12,8 @@ import {Context} from "koa";
 import * as cryptoRandomString from "crypto-random-string";
 import * as Jwt from "koa-jwt";
 import * as jsonwebtoken from "jsonwebtoken";
-import moment = require("moment");
 import {Moment} from "moment";
+import * as moment from "moment";
 
 export interface UserJwt {
     /**

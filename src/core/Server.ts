@@ -13,18 +13,12 @@ import * as Router from "koa-router";
 import * as bodyParser from "koa-bodyparser";
 import * as moment from "moment";
 import {importClassesFromDirectories} from "typeorm/util/DirectoryExportedClassesLoader";
-import {
-    Connection,
-    ConnectionOptions,
-    createConnection,
-    EntitySchema,
-    Logger as TypeOrmLogger,
-    QueryRunner
-} from "typeorm";
+import {Connection, ConnectionOptions, createConnection, Logger as TypeOrmLogger, QueryRunner} from "typeorm";
 // @ts-ignore
 import * as destroyable from "server-destroy";
 import Controller from "./Controller";
 import Authenticator from "./Authenticator";
+import * as cors from "koa-cors";
 
 
 /**
@@ -48,7 +42,7 @@ export interface ServerConfig {
      * db - data base connection options for typeorm
      * @author Danil Adnreev
      */
-    db?: ConnectionOptions;
+    db: ConnectionOptions;
 }
 
 /**
@@ -57,7 +51,6 @@ export interface ServerConfig {
  * @author Danil Andreev
  */
 export interface ServerOptions {
-    additionalEntities?: (string | Function | EntitySchema<any>)[];
 }
 
 /**
@@ -125,7 +118,7 @@ export default class Server extends Koa {
      * @param options - Additional option for web server.
      * @author Danil Andreev
      */
-    constructor(config: ServerConfig, options: ServerOptions = {}) {
+    constructor(config: ServerConfig, options?: ServerOptions) {
         if (Server.hasInstance)
             throw new ReferenceError(`Server: Server instance already exists. Can not create multiple instances of Server.`);
 
@@ -143,13 +136,14 @@ export default class Server extends Koa {
         this.use(bodyParser());
 
         // Creating typeorm connection
-        this.setupConnection().then(() => {
+        this.setupConnection(config.db).then(() => {
             console.log("TypeORM: connected to DB");
         });
 
         // Creating additional functional for routing.
         this.use(async (ctx: Context, next: Next) => {
-            console.log(`Server [${moment().format("l")} ${moment().format("LTS")}]: request from (${ctx.hostname}) to route "${ctx.url}".`);
+            console.log(`Server [${moment().format("l")} ${moment()
+                .format("LTS")}]: request from (${ctx.hostname}) to route "${ctx.url}".`);
             // Calling next middleware and handling errors
             await next().catch(error => {
                 // 401 Unauthorized
@@ -175,10 +169,12 @@ export default class Server extends Koa {
                 ctx.body = {
                     success: false,
                     message: err.message,
+                    response: err.response
                 };
                 // TODO: ctx.app.emit('error', err, ctx);
             }
         });
+
 
         // Getting controllers from directory in config.
         if (this.config.controllersDir) {
@@ -197,8 +193,15 @@ export default class Server extends Koa {
             console.warn(`Server: Warning: "config.controllersDir" is not defined, controllers will not be loaded.`);
         }
 
+
+        this.use(cors({
+            origin: "*",
+            credentials: true
+        }));
+
         // Applying router routes.
         this.use(this.router.routes()).use(this.router.allowedMethods());
+
 
         Server.current = this;
     }
@@ -216,17 +219,10 @@ export default class Server extends Koa {
      * @method
      * @author Danil Andreev
      */
-    private async setupConnection(): Promise<void> {
+    private async setupConnection(dbOptions: ConnectionOptions): Promise<void> {
         console.log("TypeORM: Setting up database connection...");
-        this.DbConnection = await createConnection({
-            type: "postgres",
-            host: "34.65.70.236",
-            port: 5432,
-            username: "postgres",
-            password: "pathfinder",
-            database: "postgres",
-            entities: [__dirname + "../entities/*.entity.ts", ...this.options.additionalEntities],
-        });
+        console.log(dbOptions);
+        this.DbConnection = await createConnection(dbOptions);
         await this.DbConnection.synchronize();
 
     }

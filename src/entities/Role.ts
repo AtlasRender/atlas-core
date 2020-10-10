@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, IsNull, ManyToMany, ManyToOne, PrimaryGeneratedColumn, Timestamp} from "typeorm";
+import {BaseEntity, Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import Organization from "./Organization";
 import User from "./User";
 import {Moment} from "moment";

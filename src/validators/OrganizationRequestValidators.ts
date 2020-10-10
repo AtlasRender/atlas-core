@@ -7,13 +7,33 @@
  * All rights reserved.
  */
 
-import * as Joi from "joi";
-import * as validateMiddleware from "koa-joi-validate-middleware";
 
-export const OrganizationRegisterValidator = validateMiddleware.create({
+import {bodyValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
+import {ajvInstance} from "../globals";
+
+export const OrganizationRegisterValidator = bodyValidator({
+        $id: "OrganizationRegisterValidator",
+        type: "object",
+        required: ["name"],
+        properties: {
+            name: {
+                // TODO: alphanumeric only
+                type: "string",
+                minLength: 3,
+                maxLength: 50
+            },
+            description: {
+                type: "string",
+                maxLength: 255
+            }
+        }
+    },
+    ajvInstance);
+
+/*({
     body: Joi.object({
         // TODO: data from config.
         name: Joi.string().alphanum().min(3).max(50).required(),
         description: Joi.string().max(500), //regex?: \^(?!\d)[a-zA-z\d ]+$\
     }),
-});
+})*/
