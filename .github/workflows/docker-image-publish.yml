@@ -57,27 +57,31 @@ jobs:
           service_account_key: ${{ secrets.GCE_SA_KEY }}
           project_id: ${{ secrets.GCE_PROJECT }}
 #           - run: docker stop $(docker ps -a -q)
-#       - name: Stop all docker containers
+      - name: Stop all docker containers
+        uses: actions-hub/gcloud@master
+        with: 
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} --command='sudo bash "deploy.sh"' ${{secrets.GCE_INSTANCE}} 
+#       - name: Clone git repository
 #         uses: actions-hub/gcloud@master
 #         with: 
-#           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} --command='sudo bash "deploy.sh"' ${{secrets.GCE_INSTANCE}} 
-      - name: Clone git repository
-        uses: actions-hub/gcloud@master
-        with: 
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo git clone "https://github.com/Pathfinder-Systems/pathfinder-core.git"'
-      - name: Delete old pathfinder-core-start.yaml
-        uses: actions-hub/gcloud@master
-        with: 
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo rm -f "docker-compose.yaml"'
-      - name: Move docker-compose configuration file to the root and rename it to pathfinder-core-start.yaml
-        uses: actions-hub/gcloud@master
-        with: 
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo mv "pathfinder-core/docker-compose/pathfinder-core-start.yaml" "docker-compose.yaml"'
-      - name: Start new container daemon
-        uses: actions-hub/gcloud@master
-        with: 
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo rm -rf "pathfinder-core"'
-      - name: Restart container
-        uses: actions-hub/gcloud@master
-        with: 
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo docker-compose restart'
+#           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo git clone "https://github.com/Pathfinder-Systems/pathfinder-core.git"'
+#       - name: Delete old pathfinder-core-start.yaml
+#         uses: actions-hub/gcloud@master
+#         with: 
+#           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo rm -f "docker-compose.yaml"'
+#       - name: Move docker-compose configuration file to the root and rename it to pathfinder-core-start.yaml
+#         uses: actions-hub/gcloud@master
+#         with: 
+#           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo mv "pathfinder-core/docker-compose/pathfinder-core-start.yaml" "docker-compose.yaml"'
+#       - name: Delete git repository
+#         uses: actions-hub/gcloud@master
+#         with: 
+#           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo rm -rf "pathfinder-core"'
+#       - name: Stop all containers
+#         uses: actions-hub/gcloud@master
+#         with: 
+#           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo docker-compose restart'
+#       - name: Restart container
+#         uses: actions-hub/gcloud@master
+#         with: 
+#           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo docker-compose restart'
