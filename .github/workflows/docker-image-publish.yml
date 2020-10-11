@@ -60,7 +60,7 @@ jobs:
       - name: Stop all docker containers
         uses: actions-hub/gcloud@master
         with: 
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} --command="sudo bash deploy.sh" ${{secrets.GCE_INSTANCE}} 
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} --command='sudo bash "deploy.sh"' ${{secrets.GCE_INSTANCE}} 
 #       - name: Start new container daemon
 #         uses: actions-hub/gcloud@master
 #         with: 
