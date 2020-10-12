@@ -51,15 +51,15 @@ jobs:
       - name: Write git-crypt base64 key from GitHub Secrets to file
         uses: actions-hub/gcloud@master
         with:
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo echo "${{secrets.GIT_CRYPT_KEY_B64}}" > "key_base64.txt"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo echo "${{secrets.GIT_CRYPT_KEY_B64}}" > "pathfinder-core/key_base64.txt"'
       - name: decrypt key from base64 to binary
         uses: actions-hub/gcloud@master
         with:
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo base64 -d "key_base64.txt" > "key"'
-      - name: decrypt key from base64 to binary
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo base64 -d "pathfinder-core/key_base64.txt" > "pathfinder-core/key"'
+      - name: Unlock repository with git-crypt
         uses: actions-hub/gcloud@master
         with:
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo git-crypt unlock "key"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'cd "pathfinder-core" && sudo git-crypt unlock "key"'
       - name: Delete old docker-compose scenario.
         uses: actions-hub/gcloud@master
         with: 
