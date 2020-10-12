@@ -12,7 +12,7 @@ env:
 jobs:
   gcloud: 
     runs-on: ubuntu-latest
-    name: Setup, Build, Publish, and Deploy to GCloud
+    name: Restart data storage services on GCloud
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -30,8 +30,32 @@ jobs:
 #           - run: docker stop $(docker ps -a -q)
       - name: Clone git repository
         uses: actions-hub/gcloud@master
-        with: 
+        with:
           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo git clone "https://github.com/Pathfinder-Systems/pathfinder-core.git"'
+      - name: Update apt-get repository
+        uses: actions-hub/gcloud@master
+        with:
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo apt-get update -y'
+      - name: Install git-crypt
+        uses: actions-hub/gcloud@master
+        with:
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo apt-get install -y "git-crypt"'
+      - name: Install base64 util
+        uses: actions-hub/gcloud@master
+        with:
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo apt install "cl-base64"'
+      - name: Write git-crypt base64 key from GitHub Secrets to file
+        uses: actions-hub/gcloud@master
+        with:
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo echo "${{secrets.GIT_CRYPT_KEY_B64}}" > "key_base64.txt"'
+      - name: decrypt key from base64 to binary
+        uses: actions-hub/gcloud@master
+        with:
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo base64 -d "key_base64.txt" > "key"'
+      - name: decrypt key from base64 to binary
+        uses: actions-hub/gcloud@master
+        with:
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo git-crypt unlock "key"'
       - name: Delete old docker-compose scenario.
         uses: actions-hub/gcloud@master
         with: 
