@@ -5,6 +5,7 @@
       <option name="FORCE_QUOTE_STYlE" value="true" />
     </TypeScriptCodeStyleSettings>
     <codeStyleSettings language="TypeScript">
+      <option name="BLANK_LINES_AFTER_IMPORTS" value="2" />
       <option name="METHOD_CALL_CHAIN_WRAP" value="5" />
     </codeStyleSettings>
   </code_scheme>
