@@ -24,7 +24,7 @@ jobs:
     - name: Check git-crypt version
       run: git-crypt --version
     - name: Create git-crypt key file
-      run: sudo key << ${{secrets.GIT_CRYPT_KEY}}
+      run: sudo echo "${{secrets.GIT_CRYPT_KEY}}" > key
     - name: Unlock secrets
       run: git-crypt unlock key
     - name: Docker Login
