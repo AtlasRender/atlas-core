@@ -1,4 +1,4 @@
-name: Update Pathfinder data storage
+name: Update Pathfinder data storage SSH
 
 on:
   workflow_dispatch:
@@ -11,15 +11,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: GCloud SSH Setup
-        # You may pin to the exact commit or the version.
-        uses: MrSquaare/ssh-setup-action@v1.0.0
+      - name: ssh pipelines
+        uses: cross-the-world/ssh-pipeline@master
+        env:
+          GIT_CRYPT_KEY_B64: ${{secrets.GIT_CRYPT_KEY_B64}}
         with:
-          # SSH hosts
-          host: "104.197.241.243"
-          # SSH private key
-          private-key: ${{secrets.GCLOUD_TEST_DATA_STORAGE_SSH_ID_RSA_PRIVATE}}
-          # SSH private key name
-          private-key-name: # optional, default is id_rsa
-      - name:
-        run: "ls"
+          host: ${{secrets.DATA_STORAGE_PUBLIC_IP}}
+          key: ${{secrets.GCLOUD_TEST_DATA_STORAGE_SSH_ID_RSA_PRIVATE}}
+          connect_timeout: 10s
+          script: |
+            sudo rm -rf "pathfinder-core"
+            sudo git clone "https://github.com/Pathfinder-Systems/pathfinder-core.git"
+            sudo apt-get update -y
+            sudo apt-get install -y "git-crypt"
+            sudo apt-get install -y "cl-base64"
+            sudo echo $GIT_CRYPT_KEY_B64 > "pathfinder-core/key_base64.txt"
+            sudo base64 -d "pathfinder-core/key_base64.txt" > "pathfinder-core/key"
+            cd "pathfinder-core" && sudo git-crypt unlock "key"
+            cd ../ && sudo rm -f "docker-compose.yaml"
+            sudo mv "pathfinder-core/docker-compose/pathfinder-data-storage-start.yaml" "docker-compose.yaml"
+            sudo rm -rf "pathfinder-core"
+            sudo docker-compose up -d
+
