@@ -12,6 +12,7 @@ import Controller from "../core/Controller";
 import {Context} from "koa";
 import Organization from "../entities/Organization";
 import {OrganizationRegisterValidator} from "../validators/OrganizationRequestValidators";
+import RolesController from "./RolesController";
 
 
 /**
@@ -28,6 +29,12 @@ export default class OrganizationsController extends Controller {
         this.get("/:organization_id", this.getOrganizationById);
         // TODO: POST == edit
         this.delete("/:organization_id", this.deleteOrganizationById);
+
+
+        // connect RolesController
+        const rolesController = new RolesController();
+        this.use(rolesController.baseRoute, rolesController.routes(), rolesController.allowedMethods());
+
 
     }
 

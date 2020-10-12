@@ -37,7 +37,7 @@ import OrganizationsController from "./controllers/OrganizationsController";
 //import * as config from "./config.json";
 import {config} from "./config";
 
-
+console.log(config);
 const server = new Server(config);
 server.useController(new UsersController());
 server.useController(new LoginController());
