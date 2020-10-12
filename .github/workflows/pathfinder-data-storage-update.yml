@@ -26,57 +26,57 @@ jobs:
 #       - name: Restart using bash script on server
 #         uses: actions-hub/gcloud@master
 #         with: 
-#           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} --command='sudo bash "deploy.sh"' ${{secrets.GCE_INSTANCE}} 
+#           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} --command='sudo bash "deploy.sh"' ${{secrets.GCE_INSTANCE_STORAGE}}
 #           - run: docker stop $(docker ps -a -q)
       - name: Clean up repo directory
         uses: actions-hub/gcloud@master
         with:
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo rm -rf "pathfinder-core"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'sudo rm -rf "pathfinder-core"'
       - name: Clone git repository
         uses: actions-hub/gcloud@master
         with:
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo git clone "https://github.com/Pathfinder-Systems/pathfinder-core.git"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'sudo git clone "https://github.com/Pathfinder-Systems/pathfinder-core.git"'
       - name: Update apt-get repository
         uses: actions-hub/gcloud@master
         with:
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo apt-get update -y'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'sudo apt-get update -y'
       - name: Install git-crypt
         uses: actions-hub/gcloud@master
         with:
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo apt-get install -y "git-crypt"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'sudo apt-get install -y "git-crypt"'
       - name: Install base64 util
         uses: actions-hub/gcloud@master
         with:
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo apt-get install -y "cl-base64"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'sudo apt-get install -y "cl-base64"'
       - name: Write git-crypt base64 key from GitHub Secrets to file
         uses: actions-hub/gcloud@master
         with:
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo echo "${{secrets.GIT_CRYPT_KEY_B64}}" > "pathfinder-core/key_base64.txt"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'sudo echo "${{secrets.GIT_CRYPT_KEY_B64}}" > "pathfinder-core/key_base64.txt"'
       - name: decrypt key from base64 to binary
         uses: actions-hub/gcloud@master
         with:
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo base64 -d "pathfinder-core/key_base64.txt" > "pathfinder-core/key"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'sudo base64 -d "pathfinder-core/key_base64.txt" > "pathfinder-core/key"'
       - name: Unlock repository with git-crypt
         uses: actions-hub/gcloud@master
         with:
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'cd "pathfinder-core" && sudo git-crypt unlock "key"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'cd "pathfinder-core" && sudo git-crypt unlock "key"'
       - name: Delete old docker-compose scenario.
         uses: actions-hub/gcloud@master
         with: 
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo rm -f "docker-compose.yaml"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'sudo rm -f "docker-compose.yaml"'
       - name: Move docker-compose configuration file to the root and rename it to docker-compose.yaml
         uses: actions-hub/gcloud@master
         with: 
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo mv "pathfinder-core/docker-compose/pathfinder-data-storage-start.yaml" "docker-compose.yaml"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'sudo mv "pathfinder-core/docker-compose/pathfinder-data-storage-start.yaml" "docker-compose.yaml"'
       - name: Delete git repository
         uses: actions-hub/gcloud@master
         with: 
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo rm -rf "pathfinder-core"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'sudo rm -rf "pathfinder-core"'
 #       - name: Stop all containers
 #         uses: actions-hub/gcloud@master
 #         with: 
-#           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo docker-compose restart'
+#           args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'sudo docker-compose restart'
       - name: Execute scenario as daemons
         uses: actions-hub/gcloud@master
         with: 
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo docker-compose up -d'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_STORAGE_ZONE }} ${{secrets.GCE_INSTANCE_STORAGE}} --command 'sudo docker-compose up -d'
