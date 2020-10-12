@@ -25,6 +25,7 @@ export default class RolesController extends Controller {
         super(":organization_id/roles");
 
         this.get("/", this.getRoles);
+        this.post("/roles", this.addRole);
 
     }
 
@@ -40,5 +41,29 @@ export default class RolesController extends Controller {
         }
 
         ctx.body = org.roles;
+    }
+
+    /**
+     * Route __[POST]__ ___/:org_id/roles - get information about all organization's roles.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async addRole(ctx: Context): Promise<void> {
+        const org = await Organization.findOne(ctx.params.organizations_id);
+        if (!org) {
+            ctx.throw(404);
+        }
+        // TODO: users who have permission to add roles
+        if(ctx.state.user.id !== org.ownerUser.id) {
+            ctx.throw(401);
+        }
+
+        let role = new Role();
+        role.name = ctx.body.name;
+        role.description = ctx.body.description;
+        role.color = ctx.body.color;
+        role.permissionLevel = ctx.body.permissionLevel;
+        role.organization = org;
+        ctx.body = await role.save();
     }
 }

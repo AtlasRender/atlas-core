@@ -25,7 +25,7 @@ export default class OrganizationsController extends Controller {
         super("/organizations");
 
         this.get("/", this.getOrganizations);
-        this.post("/", OrganizationRegisterValidator, this.createOrganization);
+        this.post("/", OrganizationRegisterValidator, this.addOrganization);
         this.get("/:organization_id", this.getOrganizationById);
         // TODO: POST == edit
         this.delete("/:organization_id", this.deleteOrganizationById);
@@ -61,7 +61,7 @@ export default class OrganizationsController extends Controller {
      * @method
      * @author Denis Afendikov
      */
-    public async createOrganization(ctx: Context): Promise<void> {
+    public async addOrganization(ctx: Context): Promise<void> {
         // TODO
 
         if (await Organization.findOne({name: ctx.request.body.name})) {
