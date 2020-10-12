@@ -24,7 +24,7 @@ jobs:
     - name: Check git-crypt version
       run: git-crypt --version
     - name: Setup base64 util
-      run: sudo apt-get install cl-base64
+      run: sudo apt-get install -y cl-base64
     - name: Save base64 key from GitHub secrets to file
       run: sudo echo "${{secrets.GIT_CRYPT_KEY_B64}}" > key_base64.txt
     - name: Create git-crypt key file from base64 encoded key

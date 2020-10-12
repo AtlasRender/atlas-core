@@ -43,7 +43,7 @@ jobs:
       - name: Install base64 util
         uses: actions-hub/gcloud@master
         with:
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo apt install "cl-base64"'
+          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} ${{secrets.GCE_INSTANCE}} --command 'sudo apt-get install -y "cl-base64"'
       - name: Write git-crypt base64 key from GitHub Secrets to file
         uses: actions-hub/gcloud@master
         with:
