@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="postgres@google" uuid="5abb0c95-7d6c-47dd-a588-46e2f719d239">
-      <driver-ref>postgresql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://34.65.70.236:5432/postgres</jdbc-url>
-    </data-source>
     <data-source source="LOCAL" name="postgres@heroku" uuid="2d0d433b-0095-402d-86ff-efe4738f72f4">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://ec2-46-137-124-19.eu-west-1.compute.amazonaws.com:5432/ddskobtu04bh2l</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="postgres@104.197.241.243" uuid="6d93cf7f-dcf3-464a-a150-a540bee9dcf7">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://104.197.241.243:5432/postgres</jdbc-url>
     </data-source>
   </component>
 </project>
