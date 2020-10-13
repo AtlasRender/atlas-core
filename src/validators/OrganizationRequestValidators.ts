@@ -30,10 +30,14 @@ export const OrganizationRegisterValidator = bodyValidator({
     },
     ajvInstance);
 
-/*({
-    body: Joi.object({
-        // TODO: data from config.
-        name: Joi.string().alphanum().min(3).max(50).required(),
-        description: Joi.string().max(500), //regex?: \^(?!\d)[a-zA-z\d ]+$\
-    }),
-})*/
+export const OrganizationUserAddDeleteValidator = bodyValidator({
+        $id: "OrganizationUserAddDeleteValidator",
+        type: "object",
+        required: ["userId"],
+        properties: {
+            userId: {
+                type: "integer"
+            }
+        }
+    },
+    ajvInstance);

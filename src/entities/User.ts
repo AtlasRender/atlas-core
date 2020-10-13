@@ -37,9 +37,6 @@ export default class User extends BaseEntity {
     deleted: boolean;
 
     @ManyToMany(type => Organization, org => org.users)
-    @JoinTable({
-        name: "user_organizations"
-    })
     organizations: Organization[];
 
     @ManyToMany(type => Role, role => role.users)

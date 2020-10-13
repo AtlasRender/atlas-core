@@ -52,6 +52,9 @@ export default class Organization extends BaseEntity {
     defaultRole: Role;
 
     @ManyToMany(type => User, user => user.organizations)
+    @JoinTable({
+        name: "user_organizations"
+    })
     users: User[];
 
     @ManyToMany(type => Slave, slave => slave.organizations)

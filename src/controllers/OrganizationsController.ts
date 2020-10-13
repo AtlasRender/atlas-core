@@ -11,8 +11,13 @@
 import Controller from "../core/Controller";
 import {Context} from "koa";
 import Organization from "../entities/Organization";
-import {OrganizationRegisterValidator} from "../validators/OrganizationRequestValidators";
+import {
+    OrganizationRegisterValidator,
+    OrganizationUserAddDeleteValidator
+} from "../validators/OrganizationRequestValidators";
 import RolesController from "./RolesController";
+import User from "../entities/User";
+import RequestError from "../errors/RequestError";
 
 
 /**
@@ -30,6 +35,10 @@ export default class OrganizationsController extends Controller {
         // TODO: POST == edit
         this.delete("/:organization_id", this.deleteOrganizationById);
 
+        this.get("/:organization_id/users", this.getOrganizationUsers);
+        this.post("/:organization_id/users", OrganizationUserAddDeleteValidator, this.addOrganizationUser);
+        // body == {users: [ids]}
+        this.delete("/:organization_id/users", OrganizationUserAddDeleteValidator, this.deleteOrganizationUser);
 
         // connect RolesController
         const rolesController = new RolesController();
@@ -68,10 +77,16 @@ export default class OrganizationsController extends Controller {
             ctx.throw(400, "org with this name already exists");
         }
 
+        const authUser: User = await User.findOne(ctx.state.user.id);
+        if(!authUser) {
+            throw new RequestError(401, "Forbidden.");
+        }
+
         let organization = new Organization();
-        organization.ownerUser = ctx.state.user;
+        organization.ownerUser = authUser;
         organization.name = ctx.request.body.name;
         organization.description = ctx.request.body.description;
+        organization.users = [authUser];
         ctx.body = await organization.save();
     }
 
@@ -102,5 +117,99 @@ export default class OrganizationsController extends Controller {
             ctx.throw(401);
         }
         ctx.body = await Organization.delete(org.id);
+    }
+
+
+    /**
+     * Route __[GET]__ ___/organizations/:organization_id/users___ - get all organization users.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async getOrganizationUsers(ctx: Context): Promise<void> {
+        const org = await Organization.findOne(ctx.params.organizations_id, {relations: ["users"]});
+        if (!org) {
+            ctx.throw(404);
+        }
+
+        // TODO: NEEDS FIX! THIS IS SHIT
+        for (let user of org.users) {
+            delete user.password;
+        }
+        ctx.body = org.users;
+    }
+
+    /**
+     * Route __[POST]__ ___/organizations/:organization_id/users___ - add user to organization.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async addOrganizationUser(ctx: Context) {
+        const org = await Organization.findOne(ctx.params.organizations_id, {relations: ["users"]});
+        if (!org) {
+            ctx.throw(404);
+        }
+
+        // TODO: checking if logged user has permissions to add new user
+
+        const addUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
+        if (!addUser) {
+            throw new RequestError(400, "User not exists.");
+        }
+
+        // if user already in org
+        if (org.users.map(usr => usr.id).indexOf(addUser.id) !== -1) {
+            // TODO: determine code
+            throw new RequestError(401, "User already in organisation");
+        }
+
+        addUser.roles.push(org.defaultRole);
+        try {
+            await addUser.save();
+        } catch (err) {
+            // TODO
+        }
+
+        org.users.push(addUser);
+        try {
+            await org.save();
+        } catch (err) {
+            // TODO
+        }
+        ctx.body = {success: true};
+    }
+
+    /**
+     * Route __[DELETE]__ ___/organizations/:organization_id/users___ - add user to organization.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async deleteOrganizationUser(ctx: Context) {
+        const org = await Organization.findOne(ctx.params.organizations_id, {relations: ["users"]});
+        if (!org) {
+            ctx.throw(404);
+        }
+        // TODO: checking if logged user has permissions to delete new user
+
+        const deleteUser = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
+        if (!deleteUser) {
+            throw new RequestError(400, "User not exists.");
+        }
+
+        // if user not in org
+        if (org.users.map(usr => usr.id).indexOf(deleteUser.id) === -1) {
+            // TODO: determine code
+            throw new RequestError(401, "User not in organisation");
+        }
+
+        deleteUser.roles = deleteUser.roles.filter((elem) => {
+            return elem.organization.id === org.id;
+        });
+
+        org.users = org.users.filter(user => user.id !== deleteUser.id);
+
+        await deleteUser.save();
+        await org.save();
+
+        ctx.body = {success: true};
     }
 }
