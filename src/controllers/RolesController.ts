@@ -22,7 +22,7 @@ import Organization from "../entities/Organization";
  */
 export default class RolesController extends Controller {
     constructor() {
-        super(":organization_id/roles");
+        super("/:organization_id/roles");
 
         this.get("/", this.getRoles);
         this.post("/roles", this.addRole);
@@ -35,7 +35,7 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async getRoles(ctx: Context): Promise<void> {
-        const org = await Organization.findOne(ctx.params.organizations_id);
+        const org = await Organization.findOne(ctx.params.organizations_id, {relations: ["roles"]});
         if (!org) {
             ctx.throw(404);
         }
