@@ -21,13 +21,12 @@ jobs:
           key: ${{secrets.GCLOUD_TEST_DATA_STORAGE_SSH_ID_RSA_PRIVATE}}
           connect_timeout: 10s
           script: |
-            sudo echo "I am here" > "echo.txt"
             sudo rm -rf "pathfinder-core"
             sudo git clone "https://github.com/Pathfinder-Systems/pathfinder-core.git"
             sudo apt-get update -y
             sudo apt-get install -y "git-crypt"
             sudo apt-get install -y "cl-base64"
-            sudo echo $GIT_CRYPT_KEY_B64 > "pathfinder-core/key_base64.txt"
+            sudo echo "$GIT_CRYPT_KEY_B64" > "pathfinder-core/key_base64.txt"
             sudo base64 -d "pathfinder-core/key_base64.txt" > "pathfinder-core/key"
             cd "pathfinder-core" && sudo git-crypt unlock "key"
             cd ../ && sudo rm -f "docker-compose.yaml"
