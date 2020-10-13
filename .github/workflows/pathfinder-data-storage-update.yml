@@ -17,11 +17,10 @@ jobs:
           GIT_CRYPT_KEY_B64: ${{secrets.GIT_CRYPT_KEY_B64}}
         with:
           host: ${{secrets.DATA_STORAGE_PUBLIC_IP}}
-          user: "pathfinder"
+          user: "danssg08"
           key: ${{secrets.GCLOUD_TEST_DATA_STORAGE_SSH_ID_RSA_PRIVATE}}
           connect_timeout: 10s
           script: |
-            sudo su
             sudo rm -rf "pathfinder-core"
             sudo git clone "https://github.com/Pathfinder-Systems/pathfinder-core.git"
             sudo apt-get update -y
