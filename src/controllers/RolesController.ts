@@ -25,7 +25,10 @@ export default class RolesController extends Controller {
         super("/:organization_id/roles");
 
         this.get("/", this.getRoles);
-        this.post("/roles", this.addRole);
+        this.post("/", this.addRole);
+
+
+        this.get("/users", (ctx) => {ctx.body = "hello users"});
 
     }
 
