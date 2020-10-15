@@ -11,6 +11,7 @@
 import {bodyValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 import {ajvInstance} from "../globals";
 
+
 export const OrganizationRegisterValidator = bodyValidator({
         $id: "OrganizationRegisterValidator",
         type: "object",
@@ -41,3 +42,17 @@ export const OrganizationUserAddDeleteValidator = bodyValidator({
         }
     },
     ajvInstance);
+
+export const RoleAddValidator = bodyValidator({
+    $id: "RoleAddValidator",
+    type: "object",
+    required: ["name"],
+    properties: {
+        name: {
+            // TODO: alphanumeric only
+            type: "string",
+            minLength: 3,
+            maxLength: 50
+        },
+    }
+}, ajvInstance);

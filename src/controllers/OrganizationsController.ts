@@ -72,6 +72,8 @@ export default class OrganizationsController extends Controller {
             ctx.throw(400, "org with this name already exists");
         }
 
+        // TODO: uniqueness
+
         const authUser: User = await User.findOne(ctx.state.user.id);
         if (!authUser) {
             throw new RequestError(403, "Forbidden.");

@@ -10,7 +10,7 @@
 
 import Controller from "../core/Controller";
 import {Context} from "koa";
-import {OrganizationRegisterValidator} from "../validators/OrganizationRequestValidators";
+import {OrganizationRegisterValidator, RoleAddValidator} from "../validators/OrganizationRequestValidators";
 import Role from "../entities/Role";
 import Organization from "../entities/Organization";
 import RequestError from "../errors/RequestError";
@@ -26,7 +26,7 @@ export default class RolesController extends Controller {
         super(":organization_id/roles");
 
         this.get("/", this.getRoles);
-        this.post("/roles", this.addRole);
+        this.post("/roles", RoleAddValidator, this.addRole);
 
         this.delete("/:role_id", this.deleteRole);
 
@@ -57,6 +57,8 @@ export default class RolesController extends Controller {
         if (!org) {
             throw new RequestError(404, "Not found.");
         }
+        // TODO: check name uniqueness
+
         // TODO: users who have permission to add roles
         if(ctx.state.user.id !== org.ownerUser.id) {
             throw new RequestError(404, "Not found.");
