@@ -30,17 +30,21 @@ export default class Role extends BaseEntity {
     @Column({nullable: true})
     description: string;
 
-    @Column()
+    @Column({
+        default: "black"
+    })
     color: string;
 
-    @Column()
+    @Column({
+        default: 0
+    })
     permissionLevel: number;
 
     @ManyToOne(type => Organization, organization => organization.roles)
     organization: Organization;
 
     @ManyToMany(type => User, user => user.roles)
-    users: User;
+    users: User[];
 
     @Column({
         name: "created_at",
