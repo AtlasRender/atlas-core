@@ -20,6 +20,7 @@ import ServerConfig from "./interfaces/ServerConfig";
 import UsersController from "./controllers/UsersController";
 import LoginController from "./controllers/LoginController";
 import OrganizationsController from "./controllers/OrganizationsController";
+import UserTokensController from "./controllers/UserTokensController";
 //import * as config from "./config.json";
 import {config} from "./config";
 
@@ -27,4 +28,5 @@ const server = new Server(config);
 server.useController(new UsersController());
 server.useController(new LoginController());
 server.useController(new OrganizationsController());
+server.useController(new UserTokensController())
 server.start();

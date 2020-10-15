@@ -11,6 +11,7 @@
 import {bodyValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 import {ajvInstance} from "../globals";
 
+
 export const OrganizationRegisterValidator = bodyValidator({
         $id: "OrganizationRegisterValidator",
         type: "object",
@@ -30,8 +31,8 @@ export const OrganizationRegisterValidator = bodyValidator({
     },
     ajvInstance);
 
-export const OrganizationUserAddDeleteValidator = bodyValidator({
-        $id: "OrganizationUserAddDeleteValidator",
+export const IncludeBodyUserIdValidator = bodyValidator({
+        $id: "IncludeBodyUserIdValidator",
         type: "object",
         required: ["userId"],
         properties: {
@@ -41,3 +42,22 @@ export const OrganizationUserAddDeleteValidator = bodyValidator({
         }
     },
     ajvInstance);
+
+export const RoleAddValidator = bodyValidator({
+    $id: "RoleAddValidator",
+    type: "object",
+    required: ["name"],
+    properties: {
+        name: {
+            // TODO: alphanumeric only
+            type: "string",
+            minLength: 3,
+            maxLength: 50
+        },
+        permissionLevel: {
+            type: "number",
+            minimum: 0,
+            maximum: 1000
+        }
+    }
+}, ajvInstance);

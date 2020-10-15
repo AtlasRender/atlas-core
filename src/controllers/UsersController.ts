@@ -30,6 +30,8 @@ export default class UsersController extends Controller {
         this.post("/", UserRegisterValidator, this.registerUser);
         this.get("/:user_id", this.getUserById);
 
+        // TODO: GET users/organizations
+
 
     }
 
@@ -84,8 +86,16 @@ export default class UsersController extends Controller {
         // TODO: check params for injections
         // TODO: if not found, return 404
         const user = await User.findOne(ctx.params.user_id, {
-            select: ["id", "username", "email", "deleted", "createdAt", "updatedAt"]
+            select: ["id", "username", "email", "deleted", "createdAt", "updatedAt"],
+            relations: ["organizations"],
+            join: {
+                alias: "u",
+                leftJoinAndSelect: {
+                    organizations: "u.organizations",
+                }
+            }
         });
+        // TODO: check organizations and split by owning / member
         if (!user) {
             ctx.throw(404);
         }

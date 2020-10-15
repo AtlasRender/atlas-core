@@ -13,11 +13,12 @@ import {Context} from "koa";
 import Organization from "../entities/Organization";
 import {
     OrganizationRegisterValidator,
-    OrganizationUserAddDeleteValidator
+    IncludeBodyUserIdValidator
 } from "../validators/OrganizationRequestValidators";
 import RolesController from "./RolesController";
 import User from "../entities/User";
 import RequestError from "../errors/RequestError";
+import {getRepository} from "typeorm";
 
 
 /**
@@ -36,15 +37,13 @@ export default class OrganizationsController extends Controller {
         this.delete("/:organization_id", this.deleteOrganizationById);
 
         this.get("/:organization_id/users", this.getOrganizationUsers);
-        this.post("/:organization_id/users", OrganizationUserAddDeleteValidator, this.addOrganizationUser);
+        this.post("/:organization_id/users", IncludeBodyUserIdValidator, this.addOrganizationUser);
         // body == {users: [ids]}
-        this.delete("/:organization_id/users", OrganizationUserAddDeleteValidator, this.deleteOrganizationUser);
+        this.delete("/:organization_id/users", IncludeBodyUserIdValidator, this.deleteOrganizationUser);
 
         // connect RolesController
         const rolesController = new RolesController();
         this.use(rolesController.baseRoute, rolesController.routes(), rolesController.allowedMethods());
-
-
     }
 
     /**
@@ -53,15 +52,11 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async getOrganizations(ctx: Context): Promise<void> {
-        /*const orgs = await Organization.find({
-            relations: ["ownerUser"]
-        });*/
-
-        const orgs = await Organization.find();
-        // TODO: NEEDS FIX! THIS IS SHIT
-        for (let org of orgs) {
-            delete org.ownerUser.password;
-        }
+        const orgs = await getRepository(Organization)
+            .createQueryBuilder("org")
+            .leftJoin("org.ownerUser", "ownerUser")
+            .select(["org", "ownerUser.id", "ownerUser.username"])
+            .getMany();
         ctx.body = orgs;
     }
 
@@ -71,15 +66,13 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async addOrganization(ctx: Context): Promise<void> {
-        // TODO
-
         if (await Organization.findOne({name: ctx.request.body.name})) {
             ctx.throw(400, "org with this name already exists");
         }
 
         const authUser: User = await User.findOne(ctx.state.user.id);
-        if(!authUser) {
-            throw new RequestError(401, "Forbidden.");
+        if (!authUser) {
+            throw new RequestError(403, "Forbidden.");
         }
 
         let organization = new Organization();
@@ -96,9 +89,20 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async getOrganizationById(ctx: Context): Promise<void> {
-        const org = await Organization.findOne(ctx.params.organizations_id);
+        const org = await getRepository(Organization)
+            .createQueryBuilder("org")
+            .where("org.id = :id", {id: ctx.params.organization_id})
+            .leftJoin("org.ownerUser", "ownerUser")
+            .leftJoin("org.users", "user")
+            .select([
+                "org",
+                "ownerUser.id", "ownerUser.username",
+                "user.id", "user.username"
+            ])
+            .getOne();
+
         if (!org) {
-            ctx.throw(404);
+            throw new RequestError(404, "Not found.");
         }
         ctx.body = org;
     }
@@ -109,12 +113,12 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async deleteOrganizationById(ctx: Context): Promise<void> {
-        const org = await Organization.findOne(ctx.params.organizations_id);
+        const org = await Organization.findOne(ctx.params.organization_id);
         if (!org) {
             ctx.throw(404);
         }
         if (ctx.state.user.id != org.ownerUser.id) {
-            ctx.throw(401);
+            ctx.throw(403);
         }
         ctx.body = await Organization.delete(org.id);
     }
@@ -126,14 +130,17 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async getOrganizationUsers(ctx: Context): Promise<void> {
-        const org = await Organization.findOne(ctx.params.organizations_id, {relations: ["users"]});
+
+        const org = await getRepository(Organization)
+            .createQueryBuilder("org")
+            .where("org.id = :id", {id: ctx.params.organization_id})
+            .leftJoin("org.users", "user")
+            .select([
+                "org", "user.id", "user.username"
+            ])
+            .getOne();
         if (!org) {
             ctx.throw(404);
-        }
-
-        // TODO: NEEDS FIX! THIS IS SHIT
-        for (let user of org.users) {
-            delete user.password;
         }
         ctx.body = org.users;
     }
@@ -144,7 +151,7 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async addOrganizationUser(ctx: Context) {
-        const org = await Organization.findOne(ctx.params.organizations_id, {relations: ["users"]});
+        const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users"]});
         if (!org) {
             ctx.throw(404);
         }
@@ -159,7 +166,7 @@ export default class OrganizationsController extends Controller {
         // if user already in org
         if (org.users.map(usr => usr.id).indexOf(addUser.id) !== -1) {
             // TODO: determine code
-            throw new RequestError(401, "User already in organisation");
+            throw new RequestError(403, "User already in organisation");
         }
 
         addUser.roles.push(org.defaultRole);
@@ -184,7 +191,7 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async deleteOrganizationUser(ctx: Context) {
-        const org = await Organization.findOne(ctx.params.organizations_id, {relations: ["users"]});
+        const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users"]});
         if (!org) {
             ctx.throw(404);
         }
@@ -201,6 +208,10 @@ export default class OrganizationsController extends Controller {
             throw new RequestError(401, "User not in organisation");
         }
 
+        // TODO: find a way to remove many-to-many relation
+        /**
+         * @see RolesController::deleteRoleUser
+         * **/
         deleteUser.roles = deleteUser.roles.filter((elem) => {
             return elem.organization.id === org.id;
         });
