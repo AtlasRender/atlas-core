@@ -31,8 +31,8 @@ export const OrganizationRegisterValidator = bodyValidator({
     },
     ajvInstance);
 
-export const OrganizationUserAddDeleteValidator = bodyValidator({
-        $id: "OrganizationUserAddDeleteValidator",
+export const IncludeBodyUserIdValidator = bodyValidator({
+        $id: "IncludeBodyUserIdValidator",
         type: "object",
         required: ["userId"],
         properties: {
@@ -54,5 +54,10 @@ export const RoleAddValidator = bodyValidator({
             minLength: 3,
             maxLength: 50
         },
+        permissionLevel: {
+            type: "number",
+            minimum: 0,
+            maximum: 1000
+        }
     }
 }, ajvInstance);
