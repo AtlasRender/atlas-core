@@ -14,25 +14,7 @@ import * as Jwt from "koa-jwt";
 import * as jsonwebtoken from "jsonwebtoken";
 import {Moment} from "moment";
 import * as moment from "moment";
-
-export interface UserJwt {
-    /**
-     * username - user username.
-     */
-    username: string;
-    /**
-     * userId - user id.
-     */
-    userId: number;
-    /**
-     * expires - expiration timestamp of the token.
-     */
-    expires: string;
-    /**
-     * createdAt - timestamp when token was created.
-     */
-    createdAt: string;
-}
+import UserJwt from "./../interfaces/UserJwt"
 
 export interface JwtOptions {
     /**
