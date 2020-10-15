@@ -18,6 +18,7 @@ import {
 import RolesController from "./RolesController";
 import User from "../entities/User";
 import RequestError from "../errors/RequestError";
+import {getRepository} from "typeorm";
 
 
 /**
@@ -53,15 +54,11 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async getOrganizations(ctx: Context): Promise<void> {
-        /*const orgs = await Organization.find({
-            relations: ["ownerUser"]
-        });*/
-
-        const orgs = await Organization.find();
-        // TODO: NEEDS FIX! THIS IS SHIT
-        for (let org of orgs) {
-            delete org.ownerUser.password;
-        }
+        const orgs = await getRepository(Organization)
+            .createQueryBuilder("org")
+            .leftJoin("org.ownerUser", "ownerUser")
+            .select(["org", "ownerUser.id", "ownerUser.username"])
+            .getMany();
         ctx.body = orgs;
     }
 
@@ -71,14 +68,12 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async addOrganization(ctx: Context): Promise<void> {
-        // TODO
-
         if (await Organization.findOne({name: ctx.request.body.name})) {
             ctx.throw(400, "org with this name already exists");
         }
 
         const authUser: User = await User.findOne(ctx.state.user.id);
-        if(!authUser) {
+        if (!authUser) {
             throw new RequestError(401, "Forbidden.");
         }
 
@@ -96,7 +91,17 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async getOrganizationById(ctx: Context): Promise<void> {
-        const org = await Organization.findOne(ctx.params.organizations_id);
+        const org = await getRepository(Organization)
+            .createQueryBuilder("org")
+            .leftJoin("org.ownerUser", "ownerUser")
+            .leftJoin("org.users", "user")
+            .select([
+                "org",
+                "ownerUser.id", "ownerUser.username",
+                "user.id", "user.username"
+            ])
+            .getOne();
+
         if (!org) {
             ctx.throw(404);
         }
@@ -126,14 +131,17 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async getOrganizationUsers(ctx: Context): Promise<void> {
-        const org = await Organization.findOne(ctx.params.organizations_id, {relations: ["users"]});
+
+        const org = await getRepository(Organization)
+            .createQueryBuilder("org")
+            .where("org.id = :id", {id: ctx.params.organization_id})
+            .leftJoin("org.users", "user")
+            .select([
+                "org", "user.id", "user.username"
+            ])
+            .getOne();
         if (!org) {
             ctx.throw(404);
-        }
-
-        // TODO: NEEDS FIX! THIS IS SHIT
-        for (let user of org.users) {
-            delete user.password;
         }
         ctx.body = org.users;
     }
