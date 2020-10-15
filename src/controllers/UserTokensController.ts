@@ -80,13 +80,14 @@ export default class UserTokensController extends Controller {
     public async getAllTokens(ctx: Context) {
         const user: UserJwt = ctx.state.user;
         const tokens = await getRepository<UserToken>(UserToken)
-            .createQueryBuilder("token")
+            .createQueryBuilder("user_token")
             .select([
-                "token.id",
-                "token.name",
-                "token.description",
-                "token.createdAt"
+                "user_token.id",
+                "user_token.name",
+                "user_token.description",
+                "user_token.createdAt"
             ])
+            .where("user_token.user = :id", {id: user.id})
             .getMany();
         ctx.body = tokens;
     }
