@@ -30,6 +30,8 @@ export default class UsersController extends Controller {
         this.post("/", UserRegisterValidator, this.registerUser);
         this.get("/:user_id", this.getUserById);
 
+        // TODO: GET users/organizations
+
 
     }
 

@@ -72,9 +72,11 @@ export default class OrganizationsController extends Controller {
             ctx.throw(400, "org with this name already exists");
         }
 
+        // TODO: uniqueness
+
         const authUser: User = await User.findOne(ctx.state.user.id);
         if (!authUser) {
-            throw new RequestError(401, "Forbidden.");
+            throw new RequestError(403, "Forbidden.");
         }
 
         let organization = new Organization();
@@ -93,6 +95,7 @@ export default class OrganizationsController extends Controller {
     public async getOrganizationById(ctx: Context): Promise<void> {
         const org = await getRepository(Organization)
             .createQueryBuilder("org")
+            .where("org.id = :id", {id: ctx.params.organization_id})
             .leftJoin("org.ownerUser", "ownerUser")
             .leftJoin("org.users", "user")
             .select([
@@ -103,7 +106,7 @@ export default class OrganizationsController extends Controller {
             .getOne();
 
         if (!org) {
-            ctx.throw(404);
+            throw new RequestError(404, "Not found.");
         }
         ctx.body = org;
     }
@@ -119,7 +122,7 @@ export default class OrganizationsController extends Controller {
             ctx.throw(404);
         }
         if (ctx.state.user.id != org.ownerUser.id) {
-            ctx.throw(401);
+            ctx.throw(403);
         }
         ctx.body = await Organization.delete(org.id);
     }
@@ -167,7 +170,7 @@ export default class OrganizationsController extends Controller {
         // if user already in org
         if (org.users.map(usr => usr.id).indexOf(addUser.id) !== -1) {
             // TODO: determine code
-            throw new RequestError(401, "User already in organisation");
+            throw new RequestError(403, "User already in organisation");
         }
 
         addUser.roles.push(org.defaultRole);

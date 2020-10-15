@@ -39,9 +39,7 @@ export default class Role extends BaseEntity {
     @ManyToOne(type => Organization, organization => organization.roles)
     organization: Organization;
 
-    @ManyToMany(type => User, user => user.roles, {
-        cascade: true
-    })
+    @ManyToMany(type => User, user => user.roles)
     users: User;
 
     @Column({

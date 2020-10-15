@@ -10,9 +10,10 @@
 
 import Controller from "../core/Controller";
 import {Context} from "koa";
-import {OrganizationRegisterValidator} from "../validators/OrganizationRequestValidators";
+import {OrganizationRegisterValidator, RoleAddValidator} from "../validators/OrganizationRequestValidators";
 import Role from "../entities/Role";
 import Organization from "../entities/Organization";
+import RequestError from "../errors/RequestError";
 
 
 /**
@@ -22,13 +23,13 @@ import Organization from "../entities/Organization";
  */
 export default class RolesController extends Controller {
     constructor() {
-        super("/:organization_id/roles");
+        super(":organization_id/roles");
 
         this.get("/", this.getRoles);
-        this.post("/", this.addRole);
+        this.post("/roles", RoleAddValidator, this.addRole);
 
+        this.delete("/:role_id", this.deleteRole);
 
-        this.get("/users", (ctx) => {ctx.body = "hello users"});
 
     }
 
@@ -38,9 +39,9 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async getRoles(ctx: Context): Promise<void> {
-        const org = await Organization.findOne(ctx.params.organizations_id, {relations: ["roles"]});
+        const org = await Organization.findOne(ctx.params.organizations_id);
         if (!org) {
-            ctx.throw(404);
+            throw new RequestError(404, "Not found.");
         }
 
         ctx.body = org.roles;
@@ -52,13 +53,15 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async addRole(ctx: Context): Promise<void> {
-        const org = await Organization.findOne(ctx.params.organizations_id);
+        const org: Organization = await Organization.findOne(ctx.params.organizations_id);
         if (!org) {
-            ctx.throw(404);
+            throw new RequestError(404, "Not found.");
         }
+        // TODO: check name uniqueness
+
         // TODO: users who have permission to add roles
         if(ctx.state.user.id !== org.ownerUser.id) {
-            ctx.throw(401);
+            throw new RequestError(404, "Not found.");
         }
 
         let role = new Role();
@@ -68,5 +71,24 @@ export default class RolesController extends Controller {
         role.permissionLevel = ctx.body.permissionLevel;
         role.organization = org;
         ctx.body = await role.save();
+    }
+
+    /**
+     * Route __[DELETE]__ ___/:org_id/roles/:role_id - get information about all organization's roles.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async deleteRole(ctx: Context): Promise<void> {
+        const org: Organization = await Organization.findOne(ctx.params.organizations_id);
+        if (!org) {
+            throw new RequestError(404, "Organization not found.");
+        }
+
+        const role: Role = await Role.findOne(ctx.params.role_id);
+        if(!role) {
+            throw new RequestError(404, "Role not found.");
+        }
+
+        ctx.body = await role.remove();
     }
 }
