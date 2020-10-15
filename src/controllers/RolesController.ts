@@ -13,6 +13,7 @@ import {Context} from "koa";
 import {OrganizationRegisterValidator} from "../validators/OrganizationRequestValidators";
 import Role from "../entities/Role";
 import Organization from "../entities/Organization";
+import RequestError from "../errors/RequestError";
 
 
 /**
@@ -27,6 +28,9 @@ export default class RolesController extends Controller {
         this.get("/", this.getRoles);
         this.post("/roles", this.addRole);
 
+        this.delete("/:role_id", this.deleteRole);
+
+
     }
 
     /**
@@ -37,7 +41,7 @@ export default class RolesController extends Controller {
     public async getRoles(ctx: Context): Promise<void> {
         const org = await Organization.findOne(ctx.params.organizations_id);
         if (!org) {
-            ctx.throw(404);
+            throw new RequestError(404, "Not found.");
         }
 
         ctx.body = org.roles;
@@ -49,13 +53,13 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async addRole(ctx: Context): Promise<void> {
-        const org = await Organization.findOne(ctx.params.organizations_id);
+        const org: Organization = await Organization.findOne(ctx.params.organizations_id);
         if (!org) {
-            ctx.throw(404);
+            throw new RequestError(404, "Not found.");
         }
         // TODO: users who have permission to add roles
         if(ctx.state.user.id !== org.ownerUser.id) {
-            ctx.throw(401);
+            throw new RequestError(404, "Not found.");
         }
 
         let role = new Role();
@@ -65,5 +69,24 @@ export default class RolesController extends Controller {
         role.permissionLevel = ctx.body.permissionLevel;
         role.organization = org;
         ctx.body = await role.save();
+    }
+
+    /**
+     * Route __[DELETE]__ ___/:org_id/roles/:role_id - get information about all organization's roles.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async deleteRole(ctx: Context): Promise<void> {
+        const org: Organization = await Organization.findOne(ctx.params.organizations_id);
+        if (!org) {
+            throw new RequestError(404, "Organization not found.");
+        }
+
+        const role: Role = await Role.findOne(ctx.params.role_id);
+        if(!role) {
+            throw new RequestError(404, "Role not found.");
+        }
+
+        ctx.body = await role.remove();
     }
 }
