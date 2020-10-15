@@ -74,3 +74,5 @@ export const bodyValidator = (schema: object, ajvInst: Ajv.Ajv) => middlewareFac
  * @author Denis Afendikov
  */
 export const queryValidator = (schema: object, ajvInst: Ajv.Ajv) => middlewareFactory(schema, "query", ajvInst);
+
+// TODO: add params validator
