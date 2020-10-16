@@ -56,7 +56,7 @@
     "typeorm": "^0.2.26"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.10.4",
+    "@babel/preset-typescript": "^7.12.1",
     "@types/amqp": "^0.2.4",
     "@types/argon2": "^0.15.0",
     "@types/crypto-random-string": "^2.0.0",
