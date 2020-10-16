@@ -16,6 +16,9 @@ import {UserRegisterValidator} from "../validators/UserRequestValidators";
 import Authenticator from "../core/Authenticator";
 
 import OutUser from "../interfaces/OutUser";
+import {getRepository} from "typeorm";
+import RequestError from "../errors/RequestError";
+
 
 /**
  * UsersController - controller for /users and /users/:user_id routes.
@@ -28,9 +31,14 @@ export default class UsersController extends Controller {
 
         this.get("/", this.getAllUsers);
         this.post("/", UserRegisterValidator, this.registerUser);
+
         this.get("/:user_id", this.getUserById);
+        this.post("/:user_id", this.editUser);
+        this.delete("/:user_id", this.deleteUser);
 
         // TODO: GET users/organizations
+
+        this.get("/:user_id/organizations", this.getUserOrganizations);
 
 
     }
@@ -85,21 +93,61 @@ export default class UsersController extends Controller {
     public async getUserById(ctx: Context): Promise<void> {
         // TODO: check params for injections
         // TODO: if not found, return 404
-        const user = await User.findOne(ctx.params.user_id, {
-            select: ["id", "username", "email", "deleted", "createdAt", "updatedAt"],
-            relations: ["organizations"],
-            join: {
-                alias: "u",
-                leftJoinAndSelect: {
-                    organizations: "u.organizations",
-                }
-            }
-        });
+        // const user = await User.findOne(ctx.params.user_id, {
+        //     select: ["id", "username", "email", "deleted", "createdAt", "updatedAt"],
+        //     relations: ["organizations"],
+        //     join: {
+        //         alias: "u",
+        //         leftJoinAndSelect: {
+        //             organizations: "u.organizations",
+        //         }
+        //     }
+        // });
+
+        const user = await getRepository(User)
+            .createQueryBuilder("user")
+            .where({id: ctx.params.user_id})
+            .leftJoin("user.organizations", "orgs")
+            .select([
+                "user.id", "user.username", "user.email", "user.deleted", "user.createdAt", "user.updatedAt",
+                "orgs"
+                ]
+            )
+            .getOne();
+
         // TODO: check organizations and split by owning / member
         if (!user) {
-            ctx.throw(404);
+            throw new RequestError(404, "User not exist.");
         }
 
         ctx.body = user;
+    }
+
+    /**
+     * Route __[POST]__ ___/users/:user_id - edit user information.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async editUser(ctx: Context): Promise<void> {
+
+    }
+
+    /**
+     * Route __[DELETE]__ ___/users/:user_id - delete user.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async deleteUser(ctx: Context): Promise<void> {
+
+    }
+
+
+    /**
+     * Route __[GET]__ ___/users/:user_id/organizations___ - get information about all user organizations.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async getUserOrganizations(ctx: Context): Promise<void> {
+
     }
 }
