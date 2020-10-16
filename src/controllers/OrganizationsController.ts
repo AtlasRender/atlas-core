@@ -18,7 +18,8 @@ import {
 import RolesController from "./RolesController";
 import User from "../entities/User";
 import RequestError from "../errors/RequestError";
-import {getRepository} from "typeorm";
+import {getConnection, getRepository} from "typeorm";
+import Role from "../entities/Role";
 
 
 /**
@@ -208,18 +209,11 @@ export default class OrganizationsController extends Controller {
             throw new RequestError(401, "User not in organisation");
         }
 
-        // TODO: find a way to remove many-to-many relation
-        /**
-         * @see RolesController::deleteRoleUser
-         * **/
-        deleteUser.roles = deleteUser.roles.filter((elem) => {
-            return elem.organization.id === org.id;
-        });
-
-        org.users = org.users.filter(user => user.id !== deleteUser.id);
-
-        await deleteUser.save();
-        await org.save();
+        await getConnection()
+            .createQueryBuilder()
+            .relation(Organization, "users")
+            .of(org)
+            .remove(deleteUser);
 
         ctx.body = {success: true};
     }
