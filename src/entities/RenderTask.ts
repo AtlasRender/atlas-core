@@ -7,7 +7,16 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import RenderJob from "./RenderJob";
 import RenderTaskAttempt from "./RenderTaskAttempt";
 import {Moment} from "moment";
@@ -35,17 +44,9 @@ export default class RenderTask extends BaseEntity {
     @OneToMany(type => RenderTaskAttempt, attempt => attempt.task)
     renderTaskAttempts: RenderTaskAttempt[];
 
-    @Column({
-        name: "created_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
+    @CreateDateColumn()
     createdAt: Moment;
 
-    @Column({
-        name: "updated_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
+    @UpdateDateColumn()
     updatedAt: Moment;
 }

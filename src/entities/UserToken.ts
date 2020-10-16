@@ -7,7 +7,15 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import {Moment} from "moment";
 import User from "./User";
 
@@ -35,10 +43,6 @@ export default class UserToken extends BaseEntity {
     @ManyToOne(type => User, user => user.tokens)
     user: User;
 
-    @Column({
-        name: "created_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
+    @CreateDateColumn()
     createdAt: Moment;
 }

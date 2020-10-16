@@ -21,7 +21,6 @@ export const UserRegisterValidator = bodyValidator({
         properties: {
             username: {
                 // TODO: alphanumeric only
-                // $id: "username",
                 type: "string",
                 minLength: 3,
                 maxLength: 50
@@ -36,18 +35,11 @@ export const UserRegisterValidator = bodyValidator({
                 maxLength: 50
             },
         }
-
-        /*body: Joi.object({
-            // TODO: data from config.
-            username: Joi.string().alphanum().min(3).max(50).required(),
-            email: Joi.string().email().required(),
-            password: Joi.string().min(6).max(30).required(),
-        }),*/
     },
     ajvInstance);
 
 /**
- * LoginUserValidator - validator for user l request.
+ * LoginUserValidator - validator for user login request.
  * @author Denis Afendikov
  */
 export const UserLoginValidator = bodyValidator({
@@ -57,7 +49,6 @@ export const UserLoginValidator = bodyValidator({
         properties: {
             username: {
                 // TODO: alphanumeric only
-                // $id: "username",
                 type: "string",
                 minLength: 3,
                 maxLength: 50
@@ -70,10 +61,35 @@ export const UserLoginValidator = bodyValidator({
         }
     },
     ajvInstance);
-/*validateMiddleware.create({
-    body: Joi.object({
-        // TODO: data from config.
-        username: Joi.string().alphanum().min(3).max(50).required(),
-        password: Joi.string().min(6).max(30).required(),
-    }),
-})*/
+
+/**
+ * UserEditValidator - validator for user edit request.
+ * @author Denis Afendikov
+ */
+export const UserEditValidator = bodyValidator({
+    $id: "UserEditValidator",
+    type: "object",
+    required: ["password"],
+    properties : {
+        username: {
+            // TODO: alphanumeric only
+            type: "string",
+            minLength: 3,
+            maxLength: 50
+        },
+        password: {
+            type: "string",
+            minLength: 6,
+            maxLength: 50
+        },
+        email: {
+            type: "string",
+            format: "email",
+        },
+        newPassword: {
+            type: "string",
+            minLength: 6,
+            maxLength: 50
+        }
+    }
+}, ajvInstance);

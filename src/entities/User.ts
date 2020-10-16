@@ -7,7 +7,16 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    OneToMany,
+    PrimaryGeneratedColumn, UpdateDateColumn
+} from "typeorm";
 import Role from "./Role";
 import Organization from "./Organization";
 import {Moment} from "moment";
@@ -46,20 +55,27 @@ export default class User extends BaseEntity {
     })
     roles: Role[];
 
-    @Column({
-        name: "created_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
-    createdAt: Moment;
-
-    @Column({
-        name: "updated_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
-    updatedAt: Moment;
-
     @OneToMany(type => UserToken, tokens => tokens.user)
     tokens: UserToken[];
+
+    // @Column({
+    //     name: "created_at",
+    //     type: "timestamp",
+    //     default: () => "CURRENT_TIMESTAMP"
+    // })
+    // createdAt: Moment;
+    //
+    // @Column({
+    //     name: "updated_at",
+    //     type: "timestamp",
+    //     default: () => "CURRENT_TIMESTAMP",
+    //     onUpdate: "CURRENT_TIMESTAMP"
+    // })
+    // updatedAt: Moment;
+
+    @CreateDateColumn()
+    createdAt: Moment;
+
+    @UpdateDateColumn()
+    updatedAt: Moment;
 }
