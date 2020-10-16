@@ -93,3 +93,20 @@ export const UserEditValidator = bodyValidator({
         }
     }
 }, ajvInstance);
+
+/**
+ * PasswordInBodyValidator - validator for password in request body.
+ * @author Denis Afendikov
+ */
+export const PasswordInBodyValidator = bodyValidator({
+    $id: "PasswordInBodyValidator",
+    type: "object",
+    required: ["password"],
+    properties : {
+        password: {
+            type: "string",
+            minLength: 6,
+            maxLength: 50
+        }
+    }
+}, ajvInstance);

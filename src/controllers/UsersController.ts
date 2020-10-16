@@ -12,7 +12,7 @@ import {Context} from "koa";
 import * as argon2 from "argon2";
 
 import User from "../entities/User";
-import {UserEditValidator, UserRegisterValidator} from "../validators/UserRequestValidators";
+import {PasswordInBodyValidator, UserEditValidator, UserRegisterValidator} from "../validators/UserRequestValidators";
 import Authenticator from "../core/Authenticator";
 
 import OutUser from "../interfaces/OutUser";
@@ -34,13 +34,9 @@ export default class UsersController extends Controller {
 
         this.get("/:user_id", this.getUserById);
         this.post("/:user_id", UserEditValidator, this.editUser);
-        this.delete("/:user_id", this.deleteUser);
-
-        // TODO: GET users/organizations
+        this.delete("/:user_id", PasswordInBodyValidator, this.deleteUser);
 
         this.get("/:user_id/organizations", this.getUserOrganizations);
-
-
     }
 
     /**
@@ -68,7 +64,7 @@ export default class UsersController extends Controller {
             ctx.throw(400, "user with this email already exists");
         }
 
-        const user = new User();
+        let user = new User();
         user.username = ctx.request.body.username;
         user.email = ctx.request.body.email;
         user.password = await argon2.hash(ctx.request.body.password);
@@ -92,7 +88,6 @@ export default class UsersController extends Controller {
      */
     public async getUserById(ctx: Context): Promise<void> {
         // TODO: check params for injections
-        // TODO: if not found, return 404
         const user = await getRepository(User)
             .createQueryBuilder("user")
             .where({id: ctx.params.user_id})
@@ -113,12 +108,12 @@ export default class UsersController extends Controller {
     }
 
     /**
-     * Route __[POST]__ ___/users/:user_id - edit user information.
+     * Route __[POST]__ ___/users/:user_id___ - edit user information.
      * @method
      * @author Denis Afendikov
      */
     public async editUser(ctx: Context): Promise<void> {
-        const user = await User.findOne(ctx.params.user_id);
+        let user = await User.findOne(ctx.params.user_id);
         if (!user) {
             throw new RequestError(404, "User not found.");
         }
@@ -157,12 +152,26 @@ export default class UsersController extends Controller {
     }
 
     /**
-     * Route __[DELETE]__ ___/users/:user_id - delete user.
+     * Route __[DELETE]__ ___/users/:user_id___ - delete user.
      * @method
      * @author Denis Afendikov
      */
     public async deleteUser(ctx: Context): Promise<void> {
+        let user = await User.findOne(ctx.params.user_id);
+        if (!user) {
+            throw new RequestError(404, "User not found.");
+        }
+        if (ctx.state.user.id !== user.id) {
+            throw new RequestError(403, "Forbidden.");
+        }
+        if (!await argon2.verify(user.password, ctx.request.body.password)) {
+            throw new RequestError(403, "Forbidden.", {errors: {password: "incorrect"}});
+        }
 
+        user.deleted = true;
+        await user.save();
+
+        ctx.body = {success: true};
     }
 
 
@@ -172,6 +181,22 @@ export default class UsersController extends Controller {
      * @author Denis Afendikov
      */
     public async getUserOrganizations(ctx: Context): Promise<void> {
+        const user = await getRepository(User)
+            .createQueryBuilder("user")
+            .where({id: ctx.params.user_id})
+            .leftJoin("user.organizations", "orgs")
+            .select([
+                    "user.id", "user.username",
+                    "orgs"
+                ]
+            )
+            .getOne();
 
+        // TODO: check organizations and split by owning / member
+        if (!user) {
+            throw new RequestError(404, "User not found.");
+        }
+
+        ctx.body = user.organizations;
     }
 }
