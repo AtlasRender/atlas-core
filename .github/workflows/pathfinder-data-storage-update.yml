@@ -32,5 +32,7 @@ jobs:
             cd ../ && sudo rm -f "docker-compose.yaml"
             sudo mv "pathfinder-core/docker-compose/pathfinder-data-storage-start-dev.yaml" "docker-compose.yaml"
             sudo rm -rf "pathfinder-core"
+            sudo docker-compose stop
+            sudo docker-compose pull
             sudo docker-compose up -d
 
