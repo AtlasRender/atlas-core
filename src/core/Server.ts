@@ -20,9 +20,11 @@ import Controller from "./Controller";
 import Authenticator from "./Authenticator";
 import * as cors from "koa-cors";
 import * as Redis from "redis";
-import * as Amqp from "amqp";
+// import * as Amqp from "amqp";
 import ServerConfig from "../interfaces/ServerConfig";
 import ServerOptions from "../interfaces/ServerOptions";
+
+import * as Amqp from "amqplib";
 
 
 
@@ -66,7 +68,7 @@ export default class Server extends Koa {
     /**
      * RabbitMQConnection - connection object for RabbitMQ amqp.
      */
-    protected RabbitMQConnection: Amqp.AMQPClient;
+    protected RabbitMQConnection: Amqp.Connection;
 
     /**
      * options - additional options for server;
@@ -232,14 +234,37 @@ export default class Server extends Koa {
      * @param rabbitMQOptions - options for RabbitMQ connection options.
      * @author Danil Andreev
      */
-    private setupRabbitMQConnection(rabbitMQOptions: Amqp.ConnectionOptions): Server {
+    private async setupRabbitMQConnection(rabbitMQOptions: Amqp.Options.Connect) {
         console.log("Redis: Setting up RabbitMQ connection...");
         console.log(rabbitMQOptions);
-        this.RabbitMQConnection = Amqp.createConnection(rabbitMQOptions);
-        this.RabbitMQConnection.on("error", (error: Error) => {
-           throw error;
+
+        this.RabbitMQConnection = await Amqp.connect(rabbitMQOptions, (error, connection) => {
+            if (error) throw error;
         });
-        return this;
+
+        let channel: Amqp.Channel = await this.RabbitMQConnection.createChannel()
+
+        await channel.assertQueue("test-queue");
+        await channel.prefetch(1);
+        await channel.consume("test-queue", async (message: Amqp.Message) => {
+           console.log(message);
+           channel.ack(message);
+        });
+
+
+
+        // this.RabbitMQConnection = Amqp.createConnection(rabbitMQOptions);
+        // this.RabbitMQConnection.on("error", (error: Error) => {
+        //     throw error;
+        // });
+        // this.RabbitMQConnection.on("ready", () => {
+        //     this.RabbitMQConnection.queue("test_queue", (queue: Amqp.QueueCallback) => {
+        //         queue.bind("#")
+        //         queue.subscribe((message) => {
+        //             console.log(message);
+        //         });
+        //     });
+        // });
     }
 
     /**

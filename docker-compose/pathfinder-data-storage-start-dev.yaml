@@ -1,0 +1,22 @@
+version: "3.3"
+services:
+  postgresql:
+    image: "postgres"
+    restart: always
+    ports:
+    - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "pathfinder-core-postgres"
+  redis:
+    image: "redis:alpine"
+    command: redis-server --requirepass pathfinder-core-redis
+    ports:
+    - "6379:6379"
+  rabbitmq:
+    image: "rabbitmq:3.8.2-management"
+    environment:
+      RABBITMQ_DEFAULT_USER: "pathfinder-core"
+      RABBITMQ_DEFAULT_PASS: "pathfinder-core-rabbit"
+    ports:
+    - "5672:5672"
+    - "15672:15672"

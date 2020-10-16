@@ -9,7 +9,7 @@
 
 import {ConnectionOptions} from "typeorm";
 import * as Redis from "redis";
-import * as Amqp from "amqp";
+import * as Amqp from "amqplib";
 
 /**
  * ServerConfig - configuration file for server.
@@ -40,5 +40,5 @@ export default interface ServerConfig {
     /**
      * rabbit - RabbitMQ connection options for Amqp.
      */
-    rabbit: Amqp.ConnectionOptions;
+    rabbit: Amqp.Options.Connect;
 }
