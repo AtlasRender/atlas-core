@@ -7,7 +7,15 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import Organization from "./Organization";
 import {Moment} from "moment";
 
@@ -31,17 +39,10 @@ export default class OrganizationLog extends BaseEntity {
     @ManyToOne(type => Organization, org => org.logs)
     organization: Organization;
 
-    @Column({
-        name: "created_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
+
+    @CreateDateColumn()
     createdAt: Moment;
 
-    @Column({
-        name: "updated_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
+    @UpdateDateColumn()
     updatedAt: Moment;
 }

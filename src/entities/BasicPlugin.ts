@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 
-import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
 import {Moment} from "moment";
 
 /**
@@ -42,17 +42,9 @@ export default class BasicPlugin extends BaseEntity {
     @Column()
     deleted: boolean;
 
-    @Column({
-        name: "created_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
+    @CreateDateColumn()
     createdAt: Moment;
 
-    @Column({
-        name: "updated_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
+    @UpdateDateColumn()
     updatedAt: Moment;
 }

@@ -9,14 +9,14 @@
 
 import {
     BaseEntity,
-    Column,
+    Column, CreateDateColumn,
     Entity,
     JoinColumn,
     JoinTable,
     ManyToMany,
     OneToMany,
     OneToOne,
-    PrimaryGeneratedColumn
+    PrimaryGeneratedColumn, UpdateDateColumn
 } from "typeorm";
 import User from "./User";
 import RenderJob from "./RenderJob";
@@ -75,17 +75,10 @@ export default class Organization extends BaseEntity {
     @OneToMany(type => Plugin, plugin => plugin.organization)
     plugins: Plugin[];
 
-    @Column({
-        name: "created_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
+
+    @CreateDateColumn()
     createdAt: Moment;
 
-    @Column({
-        name: "updated_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
+    @UpdateDateColumn()
     updatedAt: Moment;
 }
