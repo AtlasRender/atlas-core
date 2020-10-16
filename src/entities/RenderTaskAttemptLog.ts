@@ -8,7 +8,15 @@
  */
 
 
-import {BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import RenderTaskAttempt from "./RenderTaskAttempt";
 import {Moment} from "moment";
 
@@ -32,17 +40,9 @@ export default class RenderTaskAttemptLog extends BaseEntity {
     @ManyToOne(type => RenderTaskAttempt, attempt => attempt.logs)
     renderTaskAttempt: RenderTaskAttempt;
 
-    @Column({
-        name: "created_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
+    @CreateDateColumn()
     createdAt: Moment;
 
-    @Column({
-        name: "updated_at",
-        type: "timestamp",
-        default: () => "CURRENT_TIMESTAMP"
-    })
+    @UpdateDateColumn()
     updatedAt: Moment;
 }
