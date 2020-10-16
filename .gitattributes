@@ -1,4 +1,4 @@
 config.json filter=git-crypt diff=git-crypt
 config.ts filter=git-crypt diff=git-crypt
 .env filter=git-crypt diff=git-crypt
-docker-compose/pathfinder-data-storage-start.yaml filter=git-crypt diff=git-crypt
+docker-compose/pathfinder-data-storage*.yaml filter=git-crypt diff=git-crypt
