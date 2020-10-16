@@ -117,7 +117,7 @@ export default class Server extends Koa {
         // TODO: fix koa middleware deprecation!
         this.use(cors({
             origin: "*",
-            credentials: false
+            credentials: true
         }));
 
         // bodyParser middleware
