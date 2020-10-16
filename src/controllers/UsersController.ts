@@ -108,7 +108,7 @@ export default class UsersController extends Controller {
     }
 
     /**
-     * Route __[POST]__ ___/users/:user_id - edit user information.
+     * Route __[POST]__ ___/users/:user_id___ - edit user information.
      * @method
      * @author Denis Afendikov
      */
@@ -152,7 +152,7 @@ export default class UsersController extends Controller {
     }
 
     /**
-     * Route __[DELETE]__ ___/users/:user_id - delete user.
+     * Route __[DELETE]__ ___/users/:user_id___ - delete user.
      * @method
      * @author Denis Afendikov
      */
