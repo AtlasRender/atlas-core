@@ -22,10 +22,10 @@ export default class RequestError extends Error {
     public readonly response: any;
 
 
-    constructor(status: number, message: string, errors: any = {}) {
+    constructor(status: number, message: string, response: any = undefined) {
         super();
         this.status = status;
         this.message = message;
-        this.response = errors;
+        this.response = response;
     }
 }
