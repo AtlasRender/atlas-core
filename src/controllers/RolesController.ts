@@ -193,11 +193,12 @@ export default class RolesController extends Controller {
         if (role.users.map(usr => usr.id).indexOf(deleteUser.id) === 1) {
             throw new RequestError(403, "User does not own this role.");
         }
-
-        ctx.body = await getConnection()
+        await getConnection()
             .createQueryBuilder()
             .relation(Role, "users")
             .of(role)
             .remove(deleteUser);
+
+        ctx.body = {success: true};
     }
 }
