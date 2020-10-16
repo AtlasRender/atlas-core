@@ -74,3 +74,22 @@ export const bodyValidator = (schema: object, ajvInst: Ajv.Ajv) => middlewareFac
  * @author Denis Afendikov
  */
 export const queryValidator = (schema: object, ajvInst: Ajv.Ajv) => middlewareFactory(schema, "query", ajvInst);
+
+/**
+ * paramsValidator - returns middleware for validating request params.
+ * @function
+ * @param schema - Ajv schema for validation
+ * @param ajvInst - Ajv instance
+ * @author Denis Afendikov
+ */
+export const paramsValidator = (schema: object, ajvInst: Ajv.Ajv) => {
+    const validator = validatorFactory(schema, ajvInst);
+    return async function (ctx, next) {
+        try {
+            validator(ctx.params);
+        } catch (err) {
+            ctx.throw(err);
+        }
+        await next();
+    };
+}

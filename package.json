@@ -56,7 +56,7 @@
     "typeorm": "^0.2.26"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.10.4",
+    "@babel/preset-typescript": "^7.12.1",
     "@types/amqp": "^0.2.4",
     "@types/argon2": "^0.15.0",
     "@types/crypto-random-string": "^2.0.0",
@@ -65,11 +65,11 @@
     "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-cors": "^0.0.0",
     "@types/koa-router": "^7.4.1",
-    "@types/node": "^14.0.14",
     "@types/redis": "^2.8.28",
+    "@types/node": "^14.11.8",
     "@types/server-destroy": "^1.0.0",
     "jest": "^26.5.3",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.5",
     "ts-jest": "^26.4.1",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",

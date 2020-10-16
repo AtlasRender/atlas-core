@@ -43,7 +43,7 @@ export default class Organization extends BaseEntity {
     @Column({type: "text", nullable: true})
     description: string;
 
-    @OneToOne(type => User, {eager: true})
+    @OneToOne(type => User)
     @JoinColumn()
     ownerUser: User;
 
