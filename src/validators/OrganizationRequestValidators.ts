@@ -31,6 +31,24 @@ export const OrganizationRegisterValidator = bodyValidator({
     },
     ajvInstance);
 
+export const OrganizationEditValidator = bodyValidator({
+        $id: "OrganizationEditValidator",
+        type: "object",
+        properties: {
+            name: {
+                // TODO: alphanumeric only
+                type: "string",
+                minLength: 3,
+                maxLength: 50
+            },
+            description: {
+                type: "string",
+                maxLength: 255
+            }
+        }
+    },
+    ajvInstance);
+
 export const IncludeBodyUserIdValidator = bodyValidator({
         $id: "IncludeBodyUserIdValidator",
         type: "object",

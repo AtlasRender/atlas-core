@@ -24,7 +24,7 @@ import UserTokensController from "./controllers/UserTokensController";
 //import * as config from "./config.json";
 import {config} from "./config";
 
-const server = new Server(config);
+export const server = new Server(config);
 server.useController(new UsersController());
 server.useController(new LoginController());
 server.useController(new OrganizationsController());

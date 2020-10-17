@@ -13,7 +13,7 @@ import {Context} from "koa";
 import Organization from "../entities/Organization";
 import {
     OrganizationRegisterValidator,
-    IncludeBodyUserIdValidator
+    IncludeBodyUserIdValidator, OrganizationEditValidator
 } from "../validators/OrganizationRequestValidators";
 import RolesController from "./RolesController";
 import User from "../entities/User";
@@ -33,8 +33,9 @@ export default class OrganizationsController extends Controller {
 
         this.get("/", this.getOrganizations);
         this.post("/", OrganizationRegisterValidator, this.addOrganization);
+
         this.get("/:organization_id", this.getOrganizationById);
-        // TODO: POST == edit
+        this.post("/:organization_id", OrganizationEditValidator, this.editOrganizationById);
         this.delete("/:organization_id", this.deleteOrganizationById);
 
         this.get("/:organization_id/users", this.getOrganizationUsers);
@@ -106,6 +107,32 @@ export default class OrganizationsController extends Controller {
             throw new RequestError(404, "Not found.");
         }
         ctx.body = org;
+    }
+
+    /**
+     * Route __[POST]__ ___/organizations/:organization_id___ - edit information about organization.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async editOrganizationById(ctx: Context): Promise<void> {
+        let org = await Organization.findOne(ctx.params.organization_id);
+        if (!org) {
+            throw new RequestError(404, "Organization not found.");
+        }
+        if (ctx.state.user.id != org.ownerUser.id) {
+            throw new RequestError(403, "You are not owning this organization.");
+        }
+        if (ctx.request.body.name) {
+            if (await Organization.findOne({name: ctx.request.body.name})) {
+                throw new RequestError(409, "Organization with this name already exists.",
+                    {errors: {name: "exists"}});
+            } else {
+                org.name = ctx.request.body.name;
+            }
+        }
+        await org.save();
+
+        ctx.body = {success: true};
     }
 
     /**
