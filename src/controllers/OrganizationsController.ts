@@ -13,7 +13,7 @@ import {Context} from "koa";
 import Organization from "../entities/Organization";
 import {
     OrganizationRegisterValidator,
-    IncludeBodyUserIdValidator, OrganizationEditValidator
+    IncludeUserIdsInBodyValidator, OrganizationEditValidator
 } from "../validators/OrganizationRequestValidators";
 import RolesController from "./RolesController";
 import User from "../entities/User";
@@ -39,9 +39,9 @@ export default class OrganizationsController extends Controller {
         this.delete("/:organization_id", this.deleteOrganizationById);
 
         this.get("/:organization_id/users", this.getOrganizationUsers);
-        this.post("/:organization_id/users", IncludeBodyUserIdValidator, this.addOrganizationUser);
+        this.post("/:organization_id/users", IncludeUserIdsInBodyValidator, this.addOrganizationUsers);
         // body == {users: [ids]}
-        this.delete("/:organization_id/users", IncludeBodyUserIdValidator, this.deleteOrganizationUser);
+        this.delete("/:organization_id/users", IncludeUserIdsInBodyValidator, this.deleteOrganizationUsers);
 
         // connect RolesController
         const rolesController = new RolesController();
@@ -119,7 +119,7 @@ export default class OrganizationsController extends Controller {
         if (!org) {
             throw new RequestError(404, "Organization not found.");
         }
-        if (ctx.state.user.id != org.ownerUser.id) {
+        if (ctx.state.user.id !== org.ownerUser.id) {
             throw new RequestError(403, "You are not owning this organization.");
         }
         if (ctx.request.body.name) {
@@ -145,7 +145,7 @@ export default class OrganizationsController extends Controller {
         if (!org) {
             ctx.throw(404);
         }
-        if (ctx.state.user.id != org.ownerUser.id) {
+        if (ctx.state.user.id !== org.ownerUser.id) {
             ctx.throw(403);
         }
         ctx.body = await Organization.delete(org.id);
@@ -174,73 +174,112 @@ export default class OrganizationsController extends Controller {
     }
 
     /**
-     * Route __[POST]__ ___/organizations/:organization_id/users___ - add user to organization.
+     * Route __[POST]__ ___/organizations/:organization_id/users___ - add users to organization.
      * @method
      * @author Denis Afendikov
      */
-    public async addOrganizationUser(ctx: Context) {
+    public async addOrganizationUsers(ctx: Context) {
         const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users"]});
         if (!org) {
             ctx.throw(404);
         }
 
         // TODO: checking if logged user has permissions to add new user
-
-        const addUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
-        if (!addUser) {
-            throw new RequestError(400, "User not exists.");
+        if (ctx.state.user.id !== org.ownerUser.id) {
+            throw new RequestError(403, "You are not an owner.");
         }
 
-        // if user already in org
-        if (org.users.map(usr => usr.id).indexOf(addUser.id) !== -1) {
-            // TODO: determine code
-            throw new RequestError(403, "User already in organisation");
+        let errors = [];
+        for (const userId of ctx.request.body.userIds) {
+            const addUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
+            if (!addUser) {
+                throw new RequestError(400, "User not exists.", {errors: {notExist: userId}});
+            }
+
+            // if user already in org
+            if (org.users.map(usr => usr.id).indexOf(addUser.id) !== -1) {
+                errors.push({present: userId});
+            } else {
+                addUser.roles.push(org.defaultRole);
+                org.users.push(addUser);
+
+                await addUser.save();
+            }
+        }
+        await org.save();
+
+        if (!errors.length) {
+            throw new RequestError(409, "Some users are already in organization.", {errors});
         }
 
-        addUser.roles.push(org.defaultRole);
-        try {
-            await addUser.save();
-        } catch (err) {
-            // TODO
-        }
-
-        org.users.push(addUser);
-        try {
-            await org.save();
-        } catch (err) {
-            // TODO
-        }
+        // try {
+        //     await addUser.save();
+        // } catch (err) {
+        //     // TODO
+        // }
+        //
+        // org.users.push(addUser);
+        // try {
+        //     await org.save();
+        // } catch (err) {
+        //     // TODO
+        // }
         ctx.body = {success: true};
     }
 
     /**
-     * Route __[DELETE]__ ___/organizations/:organization_id/users___ - add user to organization.
+     * Route __[DELETE]__ ___/organizations/:organization_id/users___ - delete users from organization.
      * @method
      * @author Denis Afendikov
      */
-    public async deleteOrganizationUser(ctx: Context) {
-        const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users"]});
+    public async deleteOrganizationUsers(ctx: Context) {
+        const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users", "ownerUser"]});
         if (!org) {
             ctx.throw(404);
         }
-        // TODO: checking if logged user has permissions to delete new user
-
-        const deleteUser = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
-        if (!deleteUser) {
-            throw new RequestError(400, "User not exists.");
+        // checking if logged user has permissions to delete new user
+        if (ctx.state.user.id !== org.ownerUser.id) {
+            throw new RequestError(403, "You are not an owner.");
         }
 
-        // if user not in org
-        if (org.users.map(usr => usr.id).indexOf(deleteUser.id) === -1) {
-            // TODO: determine code
-            throw new RequestError(401, "User not in organisation");
-        }
+        let errors = [];
+        let usersToDelete = [];
+        for (const userId of ctx.request.body.userIds) {
+            const deleteUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
+            if (!deleteUser) {
+                throw new RequestError(400, "User not exists.", {errors: {notExist: userId}});
+            }
 
-        await getConnection()
-            .createQueryBuilder()
-            .relation(Organization, "users")
-            .of(org)
-            .remove(deleteUser);
+            // if user not in org
+            const user = org.users.find(usr => usr.id === deleteUser.id);
+            if (!user) {
+                errors.push({missing: userId});
+            } else {
+                // deleting roles
+                await getConnection()
+                    .createQueryBuilder()
+                    .relation(User, "roles")
+                    .of(deleteUser)
+                    .remove(deleteUser.roles);
+
+                // await getConnection()
+                //     .createQueryBuilder()
+                //     .relation(Organization, "users")
+                //     .of(org)
+                //     .remove(deleteUser);
+
+                //await deleteUser.save();
+                usersToDelete.push(user.id);
+            }
+        }
+        // [1, 2, 3] 3 - not in org
+        // delete [1, 2], throw error
+        org.users = org.users.filter(usr => !usersToDelete.includes(usr.id));
+        await org.save();
+
+        if (!errors.length) {
+            throw new RequestError(409, "Some users are not in organization.", {errors});
+        }
 
         ctx.body = {success: true};
     }

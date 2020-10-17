@@ -11,6 +11,7 @@
 import {bodyValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 import {ajvInstance} from "../globals";
 
+
 /**
  * OrganizationRegisterValidator - validator for organization creating request.
  * @author Denis Afendikov
@@ -60,13 +61,15 @@ export const OrganizationEditValidator = bodyValidator({
  * IncludeBodyUserIdValidator - validator for body userId field in request.
  * @author Denis Afendikov
  */
-export const IncludeBodyUserIdValidator = bodyValidator({
+export const IncludeUserIdsInBodyValidator = bodyValidator({
         $id: "IncludeBodyUserIdValidator",
         type: "object",
-        required: ["userId"],
+        required: ["userIds"],
         properties: {
-            userId: {
-                type: "integer"
+            userIds: {
+                type: "array",
+                items: {type: "integer"},
+                minItems: 1
             }
         }
     },
