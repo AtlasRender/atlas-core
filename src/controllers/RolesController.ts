@@ -96,7 +96,7 @@ export default class RolesController extends Controller {
     }
 
     /**
-     * Route __[GET]__ ___/:org_id/roles/:role_id - get information about organization's role.
+     * Route __[GET]__ ___/:org_id/roles/:role_id___ - get information about organization's role.
      * @method
      * @author Denis Afendikov
      */
@@ -119,7 +119,7 @@ export default class RolesController extends Controller {
     }
 
     /**
-     * Route __[POST]__ ___/:org_id/roles/:role_id - edit information about organization's role.
+     * Route __[POST]__ ___/:org_id/roles/:role_id___ - edit information about organization's role.
      * @method
      * @author Denis Afendikov
      */
