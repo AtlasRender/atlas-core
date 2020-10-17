@@ -193,7 +193,7 @@ export default class OrganizationsController extends Controller {
         for (const userId of ctx.request.body.userIds) {
             const addUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
             if (!addUser) {
-                throw new RequestError(400, "User not exists.", {errors: {userId: "missing"}});
+                throw new RequestError(400, "User not exists.", {errors: {userId: "not exist"}});
             }
 
             // if user already in org
@@ -240,23 +240,37 @@ export default class OrganizationsController extends Controller {
             throw new RequestError(403, "You are not an owner.");
         }
 
-        const deleteUser = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
-        if (!deleteUser) {
-            throw new RequestError(400, "User not exists.");
+        let errors = [];
+        for (const userId of ctx.request.body.userIds) {
+            const deleteUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
+            if (!deleteUser) {
+                throw new RequestError(400, "User not exists.", {errors: {userId: "not exist"}});
+            }
+
+            // if user already in org
+            if (org.users.map(usr => usr.id).indexOf(deleteUser.id) !== -1) {
+                errors.push({userId: "missing"});
+            } else {
+                //deleteUser.roles.push(org.defaultRole);
+
+                await getConnection()
+                    .createQueryBuilder()
+                    .relation(User, "roles")
+                    .of(deleteUser)
+                    .remove(deleteUser.roles)
+
+                await getConnection()
+                    .createQueryBuilder()
+                    .relation(Organization, "users")
+                    .of(org)
+                    .remove(deleteUser);
+
+                //await deleteUser.save();
+            }
         }
-
-
-        // if user not in org
-        if (org.users.map(usr => usr.id).indexOf(deleteUser.id) === -1) {
-            // TODO: determine code
-            throw new RequestError(409, "User not in organisation");
+        if (errors) {
+            throw new RequestError(409, "Some users are not in organization.", {errors});
         }
-
-        await getConnection()
-            .createQueryBuilder()
-            .relation(Organization, "users")
-            .of(org)
-            .remove(deleteUser);
 
         ctx.body = {success: true};
     }
