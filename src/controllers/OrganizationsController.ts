@@ -119,7 +119,7 @@ export default class OrganizationsController extends Controller {
         if (!org) {
             throw new RequestError(404, "Organization not found.");
         }
-        if (ctx.state.user.id != org.ownerUser.id) {
+        if (ctx.state.user.id !== org.ownerUser.id) {
             throw new RequestError(403, "You are not owning this organization.");
         }
         if (ctx.request.body.name) {
@@ -145,7 +145,7 @@ export default class OrganizationsController extends Controller {
         if (!org) {
             ctx.throw(404);
         }
-        if (ctx.state.user.id != org.ownerUser.id) {
+        if (ctx.state.user.id !== org.ownerUser.id) {
             ctx.throw(403);
         }
         ctx.body = await Organization.delete(org.id);
