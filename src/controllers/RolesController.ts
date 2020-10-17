@@ -13,7 +13,7 @@ import {Context} from "koa";
 import {
     IncludeBodyUserIdValidator,
     OrganizationRegisterValidator,
-    RoleAddValidator
+    RoleAddValidator, RoleEditValidator
 } from "../validators/OrganizationRequestValidators";
 import Role from "../entities/Role";
 import Organization from "../entities/Organization";
@@ -34,6 +34,8 @@ export default class RolesController extends Controller {
         this.get("/", this.getRoles);
         this.post("/", RoleAddValidator, this.addRole);
 
+        this.get("/:role_id", this.getRole);
+        this.post("/:role_id", RoleEditValidator, this.editRole);
         this.delete("/:role_id", this.deleteRole);
 
         // users
@@ -72,7 +74,11 @@ export default class RolesController extends Controller {
         if (!org) {
             throw new RequestError(404, "Not found.");
         }
-        // TODO: check name uniqueness
+        // check name uniqueness
+        if (await Role.findOne({name: ctx.request.body.name, organization: org})) {
+            throw new RequestError(418, "Role with this name already exist.",
+                {errors: {name: "exists"}});
+        }
 
         // TODO: users who have permission to add roles
         if (ctx.state.user.id !== org.ownerUser.id) {
@@ -90,7 +96,62 @@ export default class RolesController extends Controller {
     }
 
     /**
-     * Route __[DELETE]__ ___/:org_id/roles/:role_id - get information about all organization's roles.
+     * Route __[GET]__ ___/:org_id/roles/:role_id - get information about organization's role.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async getRole(ctx: Context): Promise<void> {
+        const org: Organization = await Organization.findOne(ctx.params.organization_id, {relations: ["ownerUser"]});
+        if (!org) {
+            throw new RequestError(404, "Not found.");
+        }
+        const role = await getRepository(Role)
+            .createQueryBuilder("role")
+            .where({id: ctx.params.role_id})
+            .leftJoin("role.users", "users")
+            .select(["role", "users.id", "users.username"])
+            .getOne();
+        if (!role) {
+            throw new RequestError(404, "Role not found.");
+        }
+
+        ctx.body = role;
+    }
+
+    /**
+     * Route __[POST]__ ___/:org_id/roles/:role_id - edit information about organization's role.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async editRole(ctx: Context): Promise<void> {
+        const org: Organization = await Organization.findOne(ctx.params.organization_id, {relations: ["ownerUser"]});
+        if (!org) {
+            throw new RequestError(404, "Not found.");
+        }
+        let role = await Role.findOne(ctx.params.role_id);
+        if(!role) {
+            throw new RequestError(404, "Role not found.");
+        }
+
+        // check name uniqueness
+        if (ctx.request.body.name) {
+            if (await Role.findOne({name: ctx.request.body.name, organization: org})) {
+                throw new RequestError(418, "Role with this name already exist.",
+                    {errors: {name: "exists"}});
+            } else {
+                role.name = ctx.request.body.name;
+            }
+        }
+        role.permissionLevel = ctx.request.body.permissionLevel || role.permissionLevel;
+        role.color = ctx.request.body.color || role.color;
+        role.description = ctx.request.body.description || role.description;
+        await role.save();
+
+        ctx.body = {success: true};
+    }
+
+    /**
+     * Route __[DELETE]__ ___/:org_id/roles/:role_id - delete role.
      * @method
      * @author Denis Afendikov
      */
@@ -201,4 +262,6 @@ export default class RolesController extends Controller {
 
         ctx.body = {success: true};
     }
+
+
 }
