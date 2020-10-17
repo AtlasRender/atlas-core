@@ -11,7 +11,7 @@
 import Controller from "../core/Controller";
 import {Context} from "koa";
 import {
-    IncludeBodyUserIdValidator,
+    IncludeUserIdsInBodyValidator,
     OrganizationRegisterValidator,
     RoleAddValidator, RoleEditValidator
 } from "../validators/OrganizationRequestValidators";
@@ -40,8 +40,8 @@ export default class RolesController extends Controller {
 
         // users
         this.get("/:role_id/users", this.getRoleUsers);
-        this.post("/:role_id/users", IncludeBodyUserIdValidator, this.addRoleUser);
-        this.delete("/:role_id/users", IncludeBodyUserIdValidator, this.deleteRoleUser);
+        this.post("/:role_id/users", IncludeUserIdsInBodyValidator, this.addRoleUser);
+        this.delete("/:role_id/users", IncludeUserIdsInBodyValidator, this.deleteRoleUser);
     }
 
     /**
@@ -65,7 +65,7 @@ export default class RolesController extends Controller {
     }
 
     /**
-     * Route __[POST]__ ___/:org_id/roles - get information about all organization's roles.
+     * Route __[POST]__ ___/:org_id/roles - add role.
      * @method
      * @author Denis Afendikov
      */
