@@ -66,9 +66,11 @@ export const IncludeUserIdsInBodyValidator = bodyValidator({
         type: "object",
         required: ["userId"],
         properties: {
-            userId: [
-                {type: "integer"}
-            ]
+            userIds: {
+                type: "array",
+                items: {type: "integer"},
+                minItems: 1
+            }
         }
     },
     ajvInstance);
