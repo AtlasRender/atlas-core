@@ -11,10 +11,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2      
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: yarn --frozen-lockfile
-      - run: yarn install
-      - run: yarn run test
+      - name: Setup git-crypt
+        run: sudo apt-get install -y git-crypt
+      - name: Check git-crypt version
+        run: git-crypt --version
+      - name: Setup base64 util
+        run: sudo apt-get install -y cl-base64
+      - name: Save base64 key from GitHub secrets to file
+        run: sudo echo "${{secrets.GIT_CRYPT_KEY_B64}}" > key_base64.txt
+      - name: Create git-crypt key file from base64 encoded key
+        run: sudo base64 -d key_base64.txt > key
+      - name: Unlock secrets
+        run: git-crypt unlock key
+      - name: Run yarn froze lockfile
+        run: yarn --frozen-lockfile
+      - name: Install dependencies
+        run: yarn install
+      - name: Run test suits
+        run: yarn run test
