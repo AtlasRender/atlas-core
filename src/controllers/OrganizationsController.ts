@@ -185,34 +185,43 @@ export default class OrganizationsController extends Controller {
         }
 
         // TODO: checking if logged user has permissions to add new user
-        if(ctx.state.user.id !== org.ownerUser.id) {
+        if (ctx.state.user.id !== org.ownerUser.id) {
             throw new RequestError(403, "You are not an owner.");
         }
 
-        const addUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
-        if (!addUser) {
-            throw new RequestError(400, "User not exists.");
+        let errors = [];
+        for (const userId of ctx.request.body.userIds) {
+            const addUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
+            if (!addUser) {
+                throw new RequestError(400, "User not exists.", {errors: {userId: "missing"}});
+            }
+
+            // if user already in org
+            if (org.users.map(usr => usr.id).indexOf(addUser.id) !== -1) {
+                errors.push({userId: "present"});
+            } else {
+                addUser.roles.push(org.defaultRole);
+                org.users.push(addUser);
+
+                await addUser.save();
+            }
+        }
+        if (errors) {
+            throw new RequestError(409, "Some users are already in organization.", {errors});
         }
 
-        // if user already in org
-        if (org.users.map(usr => usr.id).indexOf(addUser.id) !== -1) {
-            // TODO: determine code
-            throw new RequestError(409, "User already in organisation");
-        }
-
-        addUser.roles.push(org.defaultRole);
-        try {
-            await addUser.save();
-        } catch (err) {
-            // TODO
-        }
-
-        org.users.push(addUser);
-        try {
-            await org.save();
-        } catch (err) {
-            // TODO
-        }
+        // try {
+        //     await addUser.save();
+        // } catch (err) {
+        //     // TODO
+        // }
+        //
+        // org.users.push(addUser);
+        // try {
+        //     await org.save();
+        // } catch (err) {
+        //     // TODO
+        // }
         ctx.body = {success: true};
     }
 
@@ -227,7 +236,7 @@ export default class OrganizationsController extends Controller {
             ctx.throw(404);
         }
         // checking if logged user has permissions to delete new user
-        if(ctx.state.user.id !== org.ownerUser.id) {
+        if (ctx.state.user.id !== org.ownerUser.id) {
             throw new RequestError(403, "You are not an owner.");
         }
 
