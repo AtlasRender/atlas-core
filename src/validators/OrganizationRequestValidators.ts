@@ -64,7 +64,7 @@ export const OrganizationEditValidator = bodyValidator({
 export const IncludeUserIdsInBodyValidator = bodyValidator({
         $id: "IncludeBodyUserIdValidator",
         type: "object",
-        required: ["userId"],
+        required: ["userIds"],
         properties: {
             userIds: {
                 type: "array",
