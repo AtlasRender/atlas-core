@@ -12,7 +12,12 @@ import {Context} from "koa";
 import * as argon2 from "argon2";
 
 import User from "../entities/User";
-import {PasswordInBodyValidator, UserEditValidator, UserRegisterValidator} from "../validators/UserRequestValidators";
+import {
+    IncludeUsernameInQueryValidator,
+    PasswordInBodyValidator,
+    UserEditValidator,
+    UserRegisterValidator
+} from "../validators/UserRequestValidators";
 import Authenticator from "../core/Authenticator";
 
 import OutUser from "../interfaces/OutUser";
@@ -29,7 +34,7 @@ export default class UsersController extends Controller {
     constructor() {
         super("/users");
 
-        this.get("/", this.getAllUsers);
+        this.get("/", IncludeUsernameInQueryValidator, this.getAllUsers);
         this.post("/", UserRegisterValidator, this.registerUser);
 
         this.get("/:user_id", this.getUserById);
@@ -45,9 +50,14 @@ export default class UsersController extends Controller {
      * @author Denis Afendikov
      */
     public async getAllUsers(ctx: Context): Promise<void> {
-        ctx.body = await User.find({
-            select: ["id", "username", "email", "deleted", "createdAt", "updatedAt"]
-        });
+        ctx.body = await getRepository(User)
+            .createQueryBuilder("user")
+            .where("user.username like :username",
+                {username: `${ctx.request.query.username ?? ""}%`})
+            .select([
+                "user.id", "user.username", "user.email", "user.deleted", "user.createdAt", "user.updatedAt",
+            ])
+            .getMany();
     }
 
     /**

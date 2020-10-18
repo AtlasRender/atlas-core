@@ -123,7 +123,7 @@ export const IncludeUsernameInQueryValidator = queryValidator({
         username: {
             // TODO: alphanumeric only
             type: "string",
-            minLength: 3,
+            // minLength: 3,
             maxLength: 50
         },
     }
