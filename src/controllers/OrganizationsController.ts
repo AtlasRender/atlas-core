@@ -166,8 +166,9 @@ export default class OrganizationsController extends Controller {
             .createQueryBuilder("org")
             .where("org.id = :id", {id: ctx.params.organization_id})
             .leftJoin("org.users", "user")
+            .leftJoin("user.roles", "userRole")
             .select([
-                "org", "user.id", "user.username"
+                "org", "user.id", "user.username", "userRole"
             ])
             .getOne();
         if (!org) {

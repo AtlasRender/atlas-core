@@ -18,12 +18,12 @@ describe("controllers -> LoginController", () => {
         expect(controller instanceof Controller).toBe(true);
     });
 
-    test("Test without body", async () => {
+    test("Test without body", async (done) => {
         const res = await request(server.callback()).post("/login");
         expect(res.status).toBe(400);
         expect(res.body.success).toBe(false);
         expect(res.body.response.name).toBe("AJV_INVALID_PAYLOAD");
-
+        done();
     });
 
     afterAll(() => {
