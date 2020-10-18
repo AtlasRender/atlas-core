@@ -277,7 +277,7 @@ export default class OrganizationsController extends Controller {
     }
 
     /**
-     * Route __[GET]__ ___/organizations/:organization_id/availableUsers___ - delete users from organization.
+     * Route __[GET]__ ___/organizations/:organization_id/availableUsers___ - get users that are not in organization.
      * @method
      * @author Denis Afendikov
      */
