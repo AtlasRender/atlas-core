@@ -8,7 +8,7 @@
  */
 
 
-import {bodyValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
+import {bodyValidator, queryValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 import {ajvInstance} from "../globals";
 
 
@@ -58,7 +58,7 @@ export const OrganizationEditValidator = bodyValidator({
     ajvInstance);
 
 /**
- * IncludeBodyUserIdValidator - validator for body userId field in request.
+ * IncludeBodyUserIdValidator - validator for body userIds field in request.
  * @author Denis Afendikov
  */
 export const IncludeUserIdsInBodyValidator = bodyValidator({

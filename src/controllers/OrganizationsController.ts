@@ -12,14 +12,15 @@ import Controller from "../core/Controller";
 import {Context} from "koa";
 import Organization from "../entities/Organization";
 import {
-    OrganizationRegisterValidator,
-    IncludeUserIdsInBodyValidator, OrganizationEditValidator
+    IncludeUserIdsInBodyValidator,
+    OrganizationEditValidator,
+    OrganizationRegisterValidator
 } from "../validators/OrganizationRequestValidators";
 import RolesController from "./RolesController";
 import User from "../entities/User";
 import RequestError from "../errors/RequestError";
-import {getConnection, getRepository, In} from "typeorm";
-import Role from "../entities/Role";
+import {getRepository, In} from "typeorm";
+import {IncludeUsernameInQueryValidator} from "../validators/UserRequestValidators";
 
 
 /**
@@ -39,9 +40,11 @@ export default class OrganizationsController extends Controller {
         this.delete("/:organization_id", this.deleteOrganizationById);
 
         this.get("/:organization_id/users", this.getOrganizationUsers);
+        // body == {userIds: [ids]}
         this.post("/:organization_id/users", IncludeUserIdsInBodyValidator, this.addOrganizationUsers);
-        // body == {users: [ids]}
         this.delete("/:organization_id/users", IncludeUserIdsInBodyValidator, this.deleteOrganizationUsers);
+
+        this.get("/:organization_id/availableUsers", IncludeUsernameInQueryValidator, this.getAvailableUsers);
 
         // connect RolesController
         const rolesController = new RolesController();
@@ -255,20 +258,6 @@ export default class OrganizationsController extends Controller {
             if (!org.users.find(usr => usr.id === deleteUser.id)) {
                 errors.push({missing: deleteUser});
             } else {
-                // deleting roles
-                // TODO: test this
-                // const query = getConnection()
-                //     .createQueryBuilder()
-                //     .delete()
-                //     .from("user_roles", "user_roles")
-                //     .leftJoin(Role, "role")
-                //     .leftJoin("role.organization", "org")
-                //     .where("userId = :userId AND org.id = :orgId",
-                //         {userId: deleteUser.id, orgId: org.id})
-                // console.log(query.getSql());
-                // await query
-                //     .execute();
-
                 deleteUser.roles = deleteUser.roles.filter((role) => role.organization.id !== org.id);
                 usersToDelete.push(deleteUser.id);
                 await deleteUser.save();
@@ -286,5 +275,30 @@ export default class OrganizationsController extends Controller {
         }
 
         ctx.body = {success: true};
+    }
+
+    /**
+     * Route __[GET]__ ___/organizations/:organization_id/availableUsers___ - get users that are not in organization.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async getAvailableUsers(ctx: Context) {
+        const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users", "ownerUser"]});
+        if (!org) {
+            throw new RequestError(404, "Organization not found.");
+        }
+        const users = await getRepository(User)
+            .createQueryBuilder("user")
+            //.innerJoin("user.organizations", "orgs", "orgs.id == :orgId", {orgId: +org.id})
+            //.where(":orgId != orgs.id")
+            .where("user.id NOT IN (:...userIds)", {userIds: org.users.map(u => u.id)})
+            .andWhere("user.username like :username",
+                {username: `${ctx.request.query.username ?? ""}%`})
+            .select([
+                "user.id", "user.username", "user.email", "user.deleted", "user.createdAt", "user.updatedAt",
+            ])
+            .getMany();
+
+        ctx.body = users;
     }
 }
