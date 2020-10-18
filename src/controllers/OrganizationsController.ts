@@ -18,7 +18,7 @@ import {
 import RolesController from "./RolesController";
 import User from "../entities/User";
 import RequestError from "../errors/RequestError";
-import {getConnection, getRepository} from "typeorm";
+import {getConnection, getRepository, In} from "typeorm";
 import Role from "../entities/Role";
 
 
@@ -179,7 +179,7 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async addOrganizationUsers(ctx: Context) {
-        const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users"]});
+        const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users", "ownerUser"]});
         if (!org) {
             ctx.throw(404);
         }
@@ -190,15 +190,22 @@ export default class OrganizationsController extends Controller {
         }
 
         let errors = [];
-        for (const userId of ctx.request.body.userIds) {
-            const addUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
-            if (!addUser) {
-                throw new RequestError(400, "User not exists.", {errors: {notExist: userId}});
+        const users = await User.find({
+            where: {
+                id: In(ctx.request.body.userIds)
+            },
+            relations: ["roles"]
+        });
+        ctx.request.body.userIds.forEach(userId => {
+            if (!users.find(user => user.id === userId)) {
+                throw new RequestError(400, "User not exist.", {errors: {notExist: userId}});
             }
+        });
 
+        for (const addUser of users) {
             // if user already in org
-            if (org.users.map(usr => usr.id).indexOf(addUser.id) !== -1) {
-                errors.push({present: userId});
+            if (org.users.find(user => user.id === addUser.id)) {
+                errors.push({present: addUser.id});
             } else {
                 addUser.roles.push(org.defaultRole);
                 org.users.push(addUser);
@@ -208,22 +215,9 @@ export default class OrganizationsController extends Controller {
         }
         await org.save();
 
-        if (!errors.length) {
+        if (errors.length) {
             throw new RequestError(409, "Some users are already in organization.", {errors});
         }
-
-        // try {
-        //     await addUser.save();
-        // } catch (err) {
-        //     // TODO
-        // }
-        //
-        // org.users.push(addUser);
-        // try {
-        //     await org.save();
-        // } catch (err) {
-        //     // TODO
-        // }
         ctx.body = {success: true};
     }
 
@@ -243,41 +237,51 @@ export default class OrganizationsController extends Controller {
         }
 
         let errors = [];
-        let usersToDelete = [];
-        for (const userId of ctx.request.body.userIds) {
-            const deleteUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
-            if (!deleteUser) {
-                throw new RequestError(400, "User not exists.", {errors: {notExist: userId}});
+        const users = await User.find({
+            where: {
+                id: In(ctx.request.body.userIds)
+            },
+            relations: ["roles"]
+        });
+        ctx.request.body.userIds.forEach(userId => {
+            if (!users.find(user => user.id === userId)) {
+                throw new RequestError(400, "User not exist.", {errors: {notExist: userId}});
             }
+        });
 
+        let usersToDelete = [];
+        for (const deleteUser of users) {
             // if user not in org
-            const user = org.users.find(usr => usr.id === deleteUser.id);
-            if (!user) {
-                errors.push({missing: userId});
+            if (!org.users.find(usr => usr.id === deleteUser.id)) {
+                errors.push({missing: deleteUser});
             } else {
                 // deleting roles
-                await getConnection()
-                    .createQueryBuilder()
-                    .relation(User, "roles")
-                    .of(deleteUser)
-                    .remove(deleteUser.roles);
-
-                // await getConnection()
+                // TODO: test this
+                // const query = getConnection()
                 //     .createQueryBuilder()
-                //     .relation(Organization, "users")
-                //     .of(org)
-                //     .remove(deleteUser);
+                //     .delete()
+                //     .from("user_roles", "user_roles")
+                //     .leftJoin(Role, "role")
+                //     .leftJoin("role.organization", "org")
+                //     .where("userId = :userId AND org.id = :orgId",
+                //         {userId: deleteUser.id, orgId: org.id})
+                // console.log(query.getSql());
+                // await query
+                //     .execute();
 
-                //await deleteUser.save();
-                usersToDelete.push(user.id);
+                deleteUser.roles = deleteUser.roles.filter((role) => role.organization.id !== org.id);
+                usersToDelete.push(deleteUser.id);
+                await deleteUser.save();
             }
         }
         // [1, 2, 3] 3 - not in org
         // delete [1, 2], throw error
+        // TODO: if all users removed - remove organization
         org.users = org.users.filter(usr => !usersToDelete.includes(usr.id));
+
         await org.save();
 
-        if (!errors.length) {
+        if (errors.length) {
             throw new RequestError(409, "Some users are not in organization.", {errors});
         }
 
