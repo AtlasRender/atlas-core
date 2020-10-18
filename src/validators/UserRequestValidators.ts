@@ -8,7 +8,7 @@
  */
 
 import {ajvInstance} from "../globals";
-import {bodyValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
+import {bodyValidator, queryValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 
 /**
  * RegisterUserValidator - validator for user registration request.
@@ -108,5 +108,23 @@ export const PasswordInBodyValidator = bodyValidator({
             minLength: 6,
             maxLength: 50
         }
+    }
+}, ajvInstance);
+
+/**
+ * IncludeBodyUserIdValidator - validator for body username field in request.
+ * @author Denis Afendikov
+ */
+export const IncludeUsernameInQueryValidator = queryValidator({
+    $id: "IncludeUsernameInBodyValidator",
+    type: "object",
+    // required: ["username"],
+    properties: {
+        username: {
+            // TODO: alphanumeric only
+            type: "string",
+            minLength: 3,
+            maxLength: 50
+        },
     }
 }, ajvInstance);

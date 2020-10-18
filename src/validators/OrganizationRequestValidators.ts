@@ -8,7 +8,7 @@
  */
 
 
-import {bodyValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
+import {bodyValidator, queryValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 import {ajvInstance} from "../globals";
 
 
@@ -74,24 +74,6 @@ export const IncludeUserIdsInBodyValidator = bodyValidator({
         }
     },
     ajvInstance);
-
-/**
- * IncludeBodyUserIdValidator - validator for body username field in request.
- * @author Denis Afendikov
- */
-export const IncludeUsernameInBodyValidator = bodyValidator({
-    $id: "IncludeUsernameInBodyValidator",
-    type: "object",
-    required: ["username"],
-    properties: {
-        username: {
-            // TODO: alphanumeric only
-            type: "string",
-            // minLength: 3,
-            maxLength: 50
-        },
-    }
-}, ajvInstance);
 
 /**
  * RoleAddValidator - validator for role creating request.

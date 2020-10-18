@@ -12,14 +12,15 @@ import Controller from "../core/Controller";
 import {Context} from "koa";
 import Organization from "../entities/Organization";
 import {
-    OrganizationRegisterValidator,
-    IncludeUserIdsInBodyValidator, OrganizationEditValidator, IncludeUsernameInBodyValidator
+    IncludeUserIdsInBodyValidator,
+    OrganizationEditValidator,
+    OrganizationRegisterValidator
 } from "../validators/OrganizationRequestValidators";
 import RolesController from "./RolesController";
 import User from "../entities/User";
 import RequestError from "../errors/RequestError";
-import {getConnection, getRepository, In} from "typeorm";
-import Role from "../entities/Role";
+import {getRepository, In} from "typeorm";
+import {IncludeUsernameInQueryValidator} from "../validators/UserRequestValidators";
 
 
 /**
@@ -43,7 +44,7 @@ export default class OrganizationsController extends Controller {
         this.post("/:organization_id/users", IncludeUserIdsInBodyValidator, this.addOrganizationUsers);
         this.delete("/:organization_id/users", IncludeUserIdsInBodyValidator, this.deleteOrganizationUsers);
 
-        this.get("/:organization_id/availableUsers", IncludeUsernameInBodyValidator, this.getAvailableUsers);
+        this.get("/:organization_id/availableUsers", IncludeUsernameInQueryValidator, this.getAvailableUsers);
 
         // connect RolesController
         const rolesController = new RolesController();
@@ -292,7 +293,7 @@ export default class OrganizationsController extends Controller {
             //.where(":orgId != orgs.id")
             .where("user.id NOT IN (:...userIds)", {userIds: org.users.map(u => u.id)})
             .andWhere("user.username like :username",
-                {username: `${ctx.request.body.username}%`})
+                {username: `${ctx.request.query.username ?? ""}%`})
             .select([
                 "user.id", "user.username", "user.email", "user.deleted", "user.createdAt", "user.updatedAt",
             ])
