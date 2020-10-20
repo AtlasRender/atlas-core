@@ -58,11 +58,11 @@ export const OrganizationEditValidator = bodyValidator({
     ajvInstance);
 
 /**
- * IncludeBodyUserIdValidator - validator for body userIds field in request.
+ * IncludeUserIdsInBodyValidator - validator for body userIds field in request.
  * @author Denis Afendikov
  */
 export const IncludeUserIdsInBodyValidator = bodyValidator({
-        $id: "IncludeBodyUserIdValidator",
+        $id: "IncludeUserIdsInBodyValidator",
         type: "object",
         required: ["userIds"],
         properties: {
@@ -70,6 +70,22 @@ export const IncludeUserIdsInBodyValidator = bodyValidator({
                 type: "array",
                 items: {type: "integer"},
                 minItems: 1
+            }
+        }
+    },
+    ajvInstance);
+
+/**
+ * IncludeUserIdInBodyValidator - validator for body userIds field in request.
+ * @author Denis Afendikov
+ */
+export const IncludeUserIdInBodyValidator = bodyValidator({
+        $id: "IncludeUserIdInBodyValidator",
+        type: "object",
+        required: ["userId"],
+        properties: {
+            userId: {
+                type: "integer"
             }
         }
     },

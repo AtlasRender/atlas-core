@@ -112,7 +112,7 @@ export const PasswordInBodyValidator = bodyValidator({
 }, ajvInstance);
 
 /**
- * IncludeBodyUserIdValidator - validator for body username field in request.
+ * IncludeUsernameInQueryValidator - validator for query username field in request.
  * @author Denis Afendikov
  */
 export const IncludeUsernameInQueryValidator = queryValidator({

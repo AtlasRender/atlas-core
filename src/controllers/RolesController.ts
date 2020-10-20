@@ -11,6 +11,7 @@
 import Controller from "../core/Controller";
 import {Context} from "koa";
 import {
+    IncludeUserIdInBodyValidator,
     IncludeUserIdsInBodyValidator,
     OrganizationRegisterValidator,
     RoleAddValidator, RoleEditValidator
@@ -40,8 +41,8 @@ export default class RolesController extends Controller {
 
         // users
         this.get("/:role_id/users", this.getRoleUsers);
-        this.post("/:role_id/users", IncludeUserIdsInBodyValidator, this.addRoleUser);
-        this.delete("/:role_id/users", IncludeUserIdsInBodyValidator, this.deleteRoleUser);
+        this.post("/:role_id/users", IncludeUserIdInBodyValidator, this.addRoleUser);
+        this.delete("/:role_id/users", IncludeUserIdInBodyValidator, this.deleteRoleUser);
     }
 
     /**
@@ -216,8 +217,7 @@ export default class RolesController extends Controller {
             throw new RequestError(404, "User not found");
         }
 
-        // TODO: sql?
-        if (role.users.map(usr => usr.id).indexOf(addUser.id) !== -1) {
+        if (role.users.find(usr => usr.id !== addUser.id)) {
             throw new RequestError(403, "User already owns this role.");
         }
 
@@ -251,7 +251,7 @@ export default class RolesController extends Controller {
 
         // TODO: check if user has permission to add roles
 
-        if (role.users.map(usr => usr.id).indexOf(deleteUser.id) === 1) {
+        if (!role.users.find(usr => usr.id === deleteUser.id)) {
             throw new RequestError(403, "User does not own this role.");
         }
         await getConnection()
@@ -262,6 +262,4 @@ export default class RolesController extends Controller {
 
         ctx.body = {success: true};
     }
-
-
 }
