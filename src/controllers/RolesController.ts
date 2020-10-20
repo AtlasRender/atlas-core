@@ -212,12 +212,12 @@ export default class RolesController extends Controller {
             throw new RequestError(404, "Role not found.");
         }
 
-        const addUser: User = await User.findOne(ctx.request.body.userId);
+        const addUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
         if (!addUser) {
             throw new RequestError(404, "User not found");
         }
 
-        if (role.users.find(usr => usr.id !== addUser.id)) {
+        if (addUser.roles.find(userRole => userRole.id === role.id)) {
             throw new RequestError(403, "User already owns this role.");
         }
 
@@ -244,14 +244,14 @@ export default class RolesController extends Controller {
             throw new RequestError(404, "Role not found.");
         }
 
-        const deleteUser: User = await User.findOne(ctx.request.body.userId);
+        const deleteUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
         if (!deleteUser) {
             throw new RequestError(404, "User not found");
         }
 
         // TODO: check if user has permission to add roles
 
-        if (!role.users.find(usr => usr.id === deleteUser.id)) {
+        if (!deleteUser.roles.find(userRole => userRole.id === role.id)) {
             throw new RequestError(403, "User does not own this role.");
         }
         await getConnection()
