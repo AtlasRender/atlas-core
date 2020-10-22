@@ -52,7 +52,6 @@
     "redis": "^3.0.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.3",
-    "server-destroy": "^1.0.1",
     "typeorm": "^0.2.26"
   },
   "devDependencies": {
@@ -61,7 +60,6 @@
     "@types/argon2": "^0.15.0",
     "@types/crypto-random-string": "^2.0.0",
     "@types/jest": "^26.0.15",
-    "@types/koa": "^2.11.5",
     "@types/koa": "^2.11.6",
     "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-cors": "^0.0.0",
@@ -71,8 +69,8 @@
     "@types/server-destroy": "^1.0.0",
     "@types/supertest": "^2.0.10",
     "jest": "^26.6.0",
-    "supertest": "^5.0.0",
     "nodemon": "^2.0.5",
+    "supertest": "^5.0.0",
     "ts-jest": "^26.4.1",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
