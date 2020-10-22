@@ -27,7 +27,7 @@
   "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "start": "node dest/index.js",
     "dev": "tsc && node dest/index.js",
     "build": "tsc",
