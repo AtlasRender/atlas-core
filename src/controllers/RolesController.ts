@@ -138,7 +138,7 @@ export default class RolesController extends Controller {
         // check name uniqueness
         if (ctx.request.body.name && ctx.request.body.name != role.name) {
             if (await Role.findOne({name: ctx.request.body.name, organization: org})) {
-                throw new RequestError(418, "Role with this name already exist.",
+                throw new RequestError(409, "Role with this name already exist.",
                     {errors: {name: "exists"}});
             } else {
                 role.name = ctx.request.body.name;

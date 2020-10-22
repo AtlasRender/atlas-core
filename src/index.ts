@@ -8,6 +8,8 @@
  */
 
 import * as dotenv from "dotenv";
+
+
 dotenv.config();
 
 import "globals";
@@ -24,9 +26,10 @@ import UserTokensController from "./controllers/UserTokensController";
 //import * as config from "./config.json";
 import {config} from "./config";
 
+
 export const server = new Server(config);
 server.useController(new UsersController());
 server.useController(new LoginController());
 server.useController(new OrganizationsController());
-server.useController(new UserTokensController())
+server.useController(new UserTokensController());
 server.start();

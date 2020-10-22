@@ -8,6 +8,7 @@
  */
 
 import * as Koa from "koa";
+import * as http from "http";
 import {Context, Next} from "koa";
 import * as Router from "koa-router";
 import * as bodyParser from "koa-bodyparser";
@@ -25,6 +26,7 @@ import ServerConfig from "../interfaces/ServerConfig";
 import ServerOptions from "../interfaces/ServerOptions";
 
 import * as Amqp from "amqplib";
+import {AMQP_CONNECTION_QUEUE, AMQP_TASKS_QUEUE} from "../globals";
 
 
 
@@ -88,6 +90,12 @@ export default class Server extends Koa {
     protected static current: Server | null = null;
 
     /**
+     * server - server instance, returned by koaServer.listen().
+     * @private
+     */
+    private server: http.Server;
+
+    /**
      * getCurrent - returns current active server instance.
      * @function
      * @author Danil Andreev
@@ -128,9 +136,9 @@ export default class Server extends Koa {
         // Creating typeorm connection
         this.setupDbConnection(config.db).then(() => {
             console.log("TypeORM: connected to DB");
+            this.setupRedisConnection(config.redis);
+            this.setupRabbitMQConnection(config.rabbit).then();
         });
-        this.setupRedisConnection(config.redis);
-        this.setupRabbitMQConnection(config.rabbit);
 
         // Creating additional functional for routing.
         this.use(async (ctx: Context, next: Next) => {
@@ -192,14 +200,6 @@ export default class Server extends Koa {
         Server.current = this;
     }
 
-    public destroy(): void {
-        // @ts-ignore
-        destroyable(this);
-        Server.hasInstance = false;
-        Server.current = null;
-        this.destroy();
-    }
-
     /**
      * setupDbConnection - method, designed to setup connection with database.
      * @method
@@ -236,21 +236,20 @@ export default class Server extends Koa {
      */
     private async setupRabbitMQConnection(rabbitMQOptions: Amqp.Options.Connect) {
         console.log("Redis: Setting up RabbitMQ connection...");
-        console.log(rabbitMQOptions);
+        // console.log(rabbitMQOptions);
 
         this.RabbitMQConnection = await Amqp.connect(rabbitMQOptions, (error, connection) => {
             if (error) throw error;
         });
 
-        let channel: Amqp.Channel = await this.RabbitMQConnection.createChannel()
+        let channel: Amqp.Channel = await this.RabbitMQConnection.createChannel();
 
-        await channel.assertQueue("test-queue");
+        await channel.assertQueue(AMQP_CONNECTION_QUEUE);
         await channel.prefetch(1);
-        await channel.consume("test-queue", async (message: Amqp.Message) => {
-           console.log(message);
-           channel.ack(message);
+        await channel.consume(AMQP_CONNECTION_QUEUE, async (message: Amqp.Message) => {
+            console.log(message, message.content.toString());
+            channel.ack(message);
         });
-
 
 
         // this.RabbitMQConnection = Amqp.createConnection(rabbitMQOptions);
@@ -277,7 +276,38 @@ export default class Server extends Koa {
     public start(port?: string | number): void {
         const targetPort = port || this.config.port || 3002;
         console.log(`Server: server is listening on port ${targetPort}.`);
-        this.listen(targetPort);
+        this.server = this.listen(targetPort);
+    }
+
+    /**
+     * close - closes server connection.
+     * @method
+     * @author Denis Afendikov
+     */
+    public close(): void {
+        if (!this.server) {
+            throw new ReferenceError("Cannot close server. Server was not started.");
+        }
+        console.log("Server closing connection.");
+        this.DbConnection.close().then(() => {
+            console.log("Closed DbConnection.");
+        });
+        this.RabbitMQConnection.close()
+            .then(() => {
+                console.log("Closed RabbitMQConnection.");
+            })
+            .catch(console.error);
+        this.RedisConnection.quit(() => {
+            console.log("Closed RedisConnection.");
+        });
+
+        this.server.close((err: Error | undefined) => {
+            if (err) {
+                console.error("Server error while closing: ");
+                console.error(err);
+            }
+            console.log("Server closed connection");
+        });
     }
 
     /**

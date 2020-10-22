@@ -27,7 +27,7 @@
   "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "start": "node dest/index.js",
     "dev": "tsc && node dest/index.js",
     "build": "tsc",
@@ -60,7 +60,8 @@
     "@types/amqplib": "^0.5.14",
     "@types/argon2": "^0.15.0",
     "@types/crypto-random-string": "^2.0.0",
-    "@types/jest": "^26.0.14",
+    "@types/jest": "^26.0.15",
+    "@types/koa": "^2.11.5",
     "@types/koa": "^2.11.6",
     "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-cors": "^0.0.0",
