@@ -16,6 +16,7 @@ describe("controllers -> LoginController", () => {
     test("Test if controller is instance of Controller", () => {
         const controller: LoginController = new LoginController();
         expect(controller instanceof Controller).toBe(true);
+        setTimeout(() => {}, 2000);
     });
 
     test("Test without body", async (done) => {
@@ -26,7 +27,8 @@ describe("controllers -> LoginController", () => {
         done();
     });
 
-    afterAll(() => {
-        server.destroy();
+    afterAll((done) => {
+        server.close();
+        done();
     });
 });

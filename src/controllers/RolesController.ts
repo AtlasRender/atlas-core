@@ -11,6 +11,7 @@
 import Controller from "../core/Controller";
 import {Context} from "koa";
 import {
+    IncludeUserIdInBodyValidator,
     IncludeUserIdsInBodyValidator,
     OrganizationRegisterValidator,
     RoleAddValidator, RoleEditValidator
@@ -40,8 +41,8 @@ export default class RolesController extends Controller {
 
         // users
         this.get("/:role_id/users", this.getRoleUsers);
-        this.post("/:role_id/users", IncludeUserIdsInBodyValidator, this.addRoleUser);
-        this.delete("/:role_id/users", IncludeUserIdsInBodyValidator, this.deleteRoleUser);
+        this.post("/:role_id/users", IncludeUserIdInBodyValidator, this.addRoleUser);
+        this.delete("/:role_id/users", IncludeUserIdInBodyValidator, this.deleteRoleUser);
     }
 
     /**
@@ -76,7 +77,7 @@ export default class RolesController extends Controller {
         }
         // check name uniqueness
         if (await Role.findOne({name: ctx.request.body.name, organization: org})) {
-            throw new RequestError(418, "Role with this name already exist.",
+            throw new RequestError(409, "Role with this name already exist.",
                 {errors: {name: "exists"}});
         }
 
@@ -129,14 +130,15 @@ export default class RolesController extends Controller {
             throw new RequestError(404, "Not found.");
         }
         let role = await Role.findOne(ctx.params.role_id);
-        if(!role) {
+        if (!role) {
             throw new RequestError(404, "Role not found.");
         }
 
+        // if name changed
         // check name uniqueness
-        if (ctx.request.body.name) {
+        if (ctx.request.body.name && ctx.request.body.name != role.name) {
             if (await Role.findOne({name: ctx.request.body.name, organization: org})) {
-                throw new RequestError(418, "Role with this name already exist.",
+                throw new RequestError(409, "Role with this name already exist.",
                     {errors: {name: "exists"}});
             } else {
                 role.name = ctx.request.body.name;
@@ -211,13 +213,12 @@ export default class RolesController extends Controller {
             throw new RequestError(404, "Role not found.");
         }
 
-        const addUser: User = await User.findOne(ctx.request.body.userId);
+        const addUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
         if (!addUser) {
             throw new RequestError(404, "User not found");
         }
 
-        // TODO: sql?
-        if (role.users.map(usr => usr.id).indexOf(addUser.id) !== -1) {
+        if (addUser.roles.find(userRole => userRole.id === role.id)) {
             throw new RequestError(403, "User already owns this role.");
         }
 
@@ -244,14 +245,14 @@ export default class RolesController extends Controller {
             throw new RequestError(404, "Role not found.");
         }
 
-        const deleteUser: User = await User.findOne(ctx.request.body.userId);
+        const deleteUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
         if (!deleteUser) {
             throw new RequestError(404, "User not found");
         }
 
         // TODO: check if user has permission to add roles
 
-        if (role.users.map(usr => usr.id).indexOf(deleteUser.id) === 1) {
+        if (!deleteUser.roles.find(userRole => userRole.id === role.id)) {
             throw new RequestError(403, "User does not own this role.");
         }
         await getConnection()
@@ -262,6 +263,4 @@ export default class RolesController extends Controller {
 
         ctx.body = {success: true};
     }
-
-
 }
