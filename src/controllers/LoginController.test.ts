@@ -10,13 +10,21 @@
 import Controller from "../core/Controller";
 import LoginController from "./LoginController";
 import * as request from 'supertest'
-import {server} from "../index";
+import Server from "../core/Server";
+import {config} from "../config";
+// import {server} from "../index";
 
 describe("controllers -> LoginController", () => {
+    let server: Server;
+    beforeAll(async () => {
+        server = await Server.createServer(config);
+        server.useController(new LoginController());
+        server.start();
+    });
+
     test("Test if controller is instance of Controller", () => {
         const controller: LoginController = new LoginController();
         expect(controller instanceof Controller).toBe(true);
-        setTimeout(() => {}, 2000);
     });
 
     test("Test without body", async (done) => {

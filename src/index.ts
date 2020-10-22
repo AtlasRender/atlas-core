@@ -26,10 +26,11 @@ import UserTokensController from "./controllers/UserTokensController";
 //import * as config from "./config.json";
 import {config} from "./config";
 
+Server.createServer(config).then(server => {
+    server.useController(new UsersController());
+    server.useController(new LoginController());
+    server.useController(new OrganizationsController());
+    server.useController(new UserTokensController());
+    server.start();
+});
 
-export const server = new Server(config);
-server.useController(new UsersController());
-server.useController(new LoginController());
-server.useController(new OrganizationsController());
-server.useController(new UserTokensController());
-server.start();

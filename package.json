@@ -52,7 +52,6 @@
     "redis": "^3.0.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.3",
-    "server-destroy": "^1.0.1",
     "typeorm": "^0.2.26"
   },
   "devDependencies": {
@@ -70,8 +69,8 @@
     "@types/server-destroy": "^1.0.0",
     "@types/supertest": "^2.0.10",
     "jest": "^26.5.3",
-    "supertest": "^5.0.0",
     "nodemon": "^2.0.5",
+    "supertest": "^5.0.0",
     "ts-jest": "^26.4.1",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
