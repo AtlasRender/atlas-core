@@ -104,6 +104,15 @@ export default class Server extends Koa {
         return this.current;
     }
 
+    private constructor(config: ServerConfig, options?: ServerOptions) {
+        super();
+
+        this.config = config;
+        this.router = new Router();
+        this.controllers = [];
+        this.options = options;
+    }
+
     /**
      * Creates the Server instance. If you want to run the server - call the ___start()___ method.
      * @constructor
@@ -111,37 +120,33 @@ export default class Server extends Koa {
      * @param options - Additional option for web server.
      * @author Danil Andreev
      */
-    constructor(config: ServerConfig, options?: ServerOptions) {
+    public static async createServer(config: ServerConfig, options?: ServerOptions): Promise<Server> {
         if (Server.hasInstance)
             throw new ReferenceError(`Server: Server instance already exists. Can not create multiple instances of Server.`);
 
         // Initializing the Server
         Server.hasInstance = true;
+        Server.current = new Server(config, options);
         console.log(`Server: initializing.`);
-        super();
-        this.config = config;
-        this.router = new Router();
-        this.controllers = [];
-        this.options = options;
 
         // TODO: fix koa middleware deprecation!
-        this.use(cors({
+        Server.current.use(cors({
             origin: "*",
             credentials: true
         }));
 
         // bodyParser middleware
-        this.use(bodyParser());
+        Server.current.use(bodyParser());
 
         // Creating typeorm connection
-        this.setupDbConnection(config.db).then(() => {
-            console.log("TypeORM: connected to DB");
-            this.setupRedisConnection(config.redis);
-            this.setupRabbitMQConnection(config.rabbit).then();
-        });
+        await Server.current.setupDbConnection(config.db);
+        console.log("TypeORM: connected to DB");
+
+        Server.current.setupRedisConnection(config.redis);
+        await Server.current.setupRabbitMQConnection(config.rabbit);
 
         // Creating additional functional for routing.
-        this.use(async (ctx: Context, next: Next) => {
+        Server.current.use(async (ctx: Context, next: Next) => {
             console.log(`Server [${moment().format("l")} ${moment()
                 .format("LTS")}]: request from (${ctx.hostname}) to route "${ctx.url}".`);
             // Calling next middleware and handling errors
@@ -157,10 +162,10 @@ export default class Server extends Koa {
         });
 
         // Applying JWT for routes.
-        this.use(Authenticator.getJwtMiddleware());
+        Server.current.use(Authenticator.getJwtMiddleware());
 
         // error handler
-        this.use(async (ctx, next) => {
+        Server.current.use(async (ctx, next) => {
             try {
                 await next();
             } catch (err) {
@@ -177,27 +182,27 @@ export default class Server extends Koa {
 
 
         // Getting controllers from directory in config.
-        if (this.config.controllersDir) {
-            const found: any[] = importClassesFromDirectories(new Logger(), [this.config.controllersDir]);
+        if (Server.current.config.controllersDir) {
+            const found: any[] = importClassesFromDirectories(new Logger(), [Server.current.config.controllersDir]);
             const controllers: any[] = [];
             for (const item of found) {
                 if (item.prototype instanceof Controller)
                     controllers.push(item);
             }
             console.log(`Server: found controllers: [ ${controllers.map(item => item.name).join(", ")} ]`);
-            this.controllers = controllers.map(controller => new controller());
+            Server.current.controllers = controllers.map(controller => new controller());
 
-            for (const controller of this.controllers)
-                this.router.use(controller.baseRoute, controller.routes(), controller.allowedMethods());
+            for (const controller of Server.current.controllers)
+                Server.current.router.use(controller.baseRoute, controller.routes(), controller.allowedMethods());
         } else {
             console.warn(`Server: Warning: "config.controllersDir" is not defined, controllers will not be loaded.`);
         }
 
         // Applying router routes.
-        this.use(this.router.routes()).use(this.router.allowedMethods());
+        Server.current.use(Server.current.router.routes()).use(Server.current.router.allowedMethods());
 
 
-        Server.current = this;
+        return Server.current;
     }
 
     /**
