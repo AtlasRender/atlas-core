@@ -9,6 +9,19 @@
 
 import * as Ajv from "ajv";
 
+/**
+ * AMQP_CONNECTION_QUEUE - queue name for slaves connection reports.
+ */
+export const AMQP_CONNECTION_QUEUE = "slave_connection"
+/**
+ * AMQP_TASKS_QUEUE - queue name for render tasks.
+ */
+export const AMQP_TASKS_QUEUE = "render_tasks"
+/**
+ * AMQP_REPORTS_QUEUE - queue name for slaves runtime reports.
+ */
+export const AMQP_REPORTS_QUEUE = "slave_reports"
+
 export const ajvInstance = new Ajv({
     allErrors: true,
     useDefaults: true,
@@ -17,3 +30,4 @@ export const ajvInstance = new Ajv({
     schemaId: "auto",
     messages: false,
 });
+
