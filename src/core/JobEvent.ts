@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 
-import JobEventable from "../interfaces/JobEvent";
+import JobEventable from "../interfaces/JobEventable";
 import {Moment} from "moment";
 import moment = require("moment");
 
@@ -41,7 +41,7 @@ export default class JobEvent implements JobEventable {
         this.type = event.type;
         this.data = event.data;
         this.message = event.message;
-        this.createdAt = moment();
+        this.createdAt = event.createdAt || moment();
     }
 
     public toBuffer() {

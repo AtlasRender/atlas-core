@@ -7,6 +7,14 @@
  * All rights reserved.
  */
 
+import {Moment} from "moment";
+
+
+/**
+ * JobEventable - basic interface for job events.
+ * @interface
+ * @author Danil Andreev
+ */
 export default interface JobEventable {
     /**
      * type - event type.
@@ -20,4 +28,8 @@ export default interface JobEventable {
      * message - optional event message.
      */
     message?: string;
+    /**
+     * createdAt - timestamp of event creation.
+     */
+    createdAt?: Moment;
 }
