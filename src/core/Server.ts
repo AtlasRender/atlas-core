@@ -26,6 +26,8 @@ import ServerConfig from "../interfaces/ServerConfig";
 import ServerOptions from "../interfaces/ServerOptions";
 
 import * as Amqp from "amqplib";
+import {AMQP_CONNECTION_QUEUE, AMQP_TASKS_QUEUE} from "../globals";
+
 
 
 /**
@@ -134,9 +136,9 @@ export default class Server extends Koa {
         // Creating typeorm connection
         this.setupDbConnection(config.db).then(() => {
             console.log("TypeORM: connected to DB");
+            this.setupRedisConnection(config.redis);
+            this.setupRabbitMQConnection(config.rabbit).then();
         });
-        this.setupRedisConnection(config.redis);
-        this.setupRabbitMQConnection(config.rabbit).then();
 
         // Creating additional functional for routing.
         this.use(async (ctx: Context, next: Next) => {
@@ -234,7 +236,7 @@ export default class Server extends Koa {
      */
     private async setupRabbitMQConnection(rabbitMQOptions: Amqp.Options.Connect) {
         console.log("Redis: Setting up RabbitMQ connection...");
-        console.log(rabbitMQOptions);
+        // console.log(rabbitMQOptions);
 
         this.RabbitMQConnection = await Amqp.connect(rabbitMQOptions, (error, connection) => {
             if (error) throw error;
@@ -242,10 +244,10 @@ export default class Server extends Koa {
 
         let channel: Amqp.Channel = await this.RabbitMQConnection.createChannel();
 
-        await channel.assertQueue("test-queue");
+        await channel.assertQueue(AMQP_CONNECTION_QUEUE);
         await channel.prefetch(1);
-        await channel.consume("test-queue", async (message: Amqp.Message) => {
-            console.log(message);
+        await channel.consume(AMQP_CONNECTION_QUEUE, async (message: Amqp.Message) => {
+            console.log(message, message.content.toString());
             channel.ack(message);
         });
 
