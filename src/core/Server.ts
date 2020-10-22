@@ -114,6 +114,24 @@ export default class Server extends Koa {
     }
 
     /**
+     * getRabbit - returns RabbitMQ connection object.
+     * @method
+     * @author Danil Andreev
+     */
+    public getRabbit(): Amqp.Connection {
+        return this.RabbitMQConnection;
+    }
+
+    /**
+     * getRedis - returns Redis connection object.
+     * @method
+     * @author Danil Andreev
+     */
+    public getRedis(): Redis.RedisClient {
+        return this.RedisConnection;
+    }
+
+    /**
      * Creates the Server instance. If you want to run the server - call the ___start()___ method.
      * @constructor
      * @param config - Configuration of the server. Will be merged with ENV.

@@ -8,6 +8,7 @@
  */
 
 import * as Ajv from "ajv";
+import exp = require("constants");
 
 /**
  * AMQP_CONNECTION_QUEUE - queue name for slaves connection reports.
@@ -21,6 +22,10 @@ export const AMQP_TASKS_QUEUE = "render_tasks"
  * AMQP_REPORTS_QUEUE - queue name for slaves runtime reports.
  */
 export const AMQP_REPORTS_QUEUE = "slave_reports"
+/**
+ * AMQP_JOBS_QUEUE - queue name for hobs management.
+ */
+export const AMQP_JOBS_QUEUE = "jobs";
 
 export const ajvInstance = new Ajv({
     allErrors: true,
