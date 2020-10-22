@@ -77,7 +77,7 @@ export default class RolesController extends Controller {
         }
         // check name uniqueness
         if (await Role.findOne({name: ctx.request.body.name, organization: org})) {
-            throw new RequestError(418, "Role with this name already exist.",
+            throw new RequestError(409, "Role with this name already exist.",
                 {errors: {name: "exists"}});
         }
 
@@ -130,12 +130,13 @@ export default class RolesController extends Controller {
             throw new RequestError(404, "Not found.");
         }
         let role = await Role.findOne(ctx.params.role_id);
-        if(!role) {
+        if (!role) {
             throw new RequestError(404, "Role not found.");
         }
 
+        // if name changed
         // check name uniqueness
-        if (ctx.request.body.name) {
+        if (ctx.request.body.name && ctx.request.body.name != role.name) {
             if (await Role.findOne({name: ctx.request.body.name, organization: org})) {
                 throw new RequestError(418, "Role with this name already exist.",
                     {errors: {name: "exists"}});
