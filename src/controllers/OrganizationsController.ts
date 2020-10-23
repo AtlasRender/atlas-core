@@ -168,7 +168,6 @@ export default class OrganizationsController extends Controller {
             .createQueryBuilder("org")
             .where("org.id = :id", {id: ctx.params.organization_id})
             .leftJoin("org.users", "user")
-            // TODO: fix
             .leftJoin("user.roles", "userRoles", "userRoles.organization = org.id")
             .orderBy({"userRoles.permissionLevel": "DESC"})
             .select([
@@ -308,7 +307,7 @@ export default class OrganizationsController extends Controller {
     }
 
     /**
-     * Route __[GET]__ ___/organizations/:organization_id/users/:user_id - get user in context of organization.
+     * Route __[GET]__ ___/organizations/:organization_id/users/:user_id___ - get user in context of organization.
      * @method
      * @author Denis Afendikov
      */
