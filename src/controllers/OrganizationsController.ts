@@ -169,9 +169,10 @@ export default class OrganizationsController extends Controller {
             .where("org.id = :id", {id: ctx.params.organization_id})
             .leftJoin("org.users", "user")
             // TODO: fix
-            .leftJoin("user.roles", "userRole")
+            .leftJoin("user.roles", "userRoles", "userRoles.organization = org.id")
+            .orderBy({"userRoles.permissionLevel": "DESC"})
             .select([
-                "org", "user.id", "user.username", "userRole"
+                "org", "user.id", "user.username", "userRoles"
             ])
             .getOne();
         if (!org) {
