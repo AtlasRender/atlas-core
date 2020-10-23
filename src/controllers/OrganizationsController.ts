@@ -46,6 +46,8 @@ export default class OrganizationsController extends Controller {
 
         this.get("/:organization_id/availableUsers", IncludeUsernameInQueryValidator, this.getAvailableUsers);
 
+        this.get("/:organization_id/users/:user_id", this.getOrgUserById);
+
         // connect RolesController
         const rolesController = new RolesController();
         this.use(rolesController.baseRoute, rolesController.routes(), rolesController.allowedMethods());
@@ -166,6 +168,7 @@ export default class OrganizationsController extends Controller {
             .createQueryBuilder("org")
             .where("org.id = :id", {id: ctx.params.organization_id})
             .leftJoin("org.users", "user")
+            // TODO: fix
             .leftJoin("user.roles", "userRole")
             .select([
                 "org", "user.id", "user.username", "userRole"
@@ -301,5 +304,37 @@ export default class OrganizationsController extends Controller {
             .getMany();
 
         ctx.body = users;
+    }
+
+    /**
+     * Route __[GET]__ ___/organizations/:organization_id/users/:user_id - get user in context of organization.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async getOrgUserById(ctx: Context) {
+        const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users", "ownerUser"]});
+        if (!org) {
+            throw new RequestError(404, "Organization not found.");
+        }
+        const user = await getRepository(User)
+            .createQueryBuilder("user")
+            .leftJoin("user.organizations", "userOrg", "userOrg.id = :orgId",
+                {orgId: org.id})
+            .where({id: ctx.params.user_id})
+            .andWhere("userOrg.id = :orgId", {orgId: org.id})
+            .leftJoin("user.roles", "userRoles", "userRoles.organization = :orgId",
+                {orgId: org.id})
+            .orderBy({"userRoles.permissionLevel": "DESC"})
+            .select([
+                "user.id", "user.username", "user.email", "user.deleted", "user.createdAt", "user.updatedAt",
+                "userRoles"
+            ])
+            .getOne();
+        if(!user) {
+            throw new RequestError(404, "User not found in this organization",
+                {errors: {user: 404}});
+        }
+
+        ctx.body = user;
     }
 }
