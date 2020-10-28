@@ -79,7 +79,7 @@ export default class OrganizationsController extends Controller {
 
         const authUser: User = await User.findOne(ctx.state.user.id);
         if (!authUser) {
-            throw new RequestError(403, "Forbidden.");
+            throw new RequestError(401, "Unauthorized.");
         }
 
         let organization = new Organization();

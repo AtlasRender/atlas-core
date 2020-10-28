@@ -80,15 +80,24 @@ export default class RolesController extends Controller {
         if (!org) {
             throw new RequestError(404, "Not found.");
         }
+        const user = await getRepository(User)
+            .createQueryBuilder("user")
+            .leftJoinAndSelect("user.organizations", "userOrg", "userOrg.id = :orgId",
+                {orgId: org.id})
+            .leftJoinAndSelect("user.roles", "userRole", "userRole.id = userOrg.id")
+            .getOne();
+
+        const canManageRoles = user.roles.some(role => role.canManageRoles);
+
+        // check if user has permission to add roles
+        if (!canManageRoles && user.id !== org.ownerUser.id) {
+            throw new RequestError(401, "Forbidden.");
+        }
+
         // check name uniqueness
         if (await Role.findOne({name: ctx.request.body.name, organization: org})) {
             throw new RequestError(409, "Role with this name already exist.",
                 {errors: {name: "exists"}});
-        }
-
-        // TODO: users who have permission to add roles
-        if (ctx.state.user.id !== org.ownerUser.id) {
-            throw new RequestError(404, "Not found.");
         }
 
         let role = new Role();
@@ -245,6 +254,8 @@ export default class RolesController extends Controller {
             throw new RequestError(404, "Organization not found.");
         }
 
+        // TODO: check if user has permission to add roles
+
         const role: Role = await Role.findOne(ctx.params.role_id, {relations: ["users"]});
         if (!role) {
             throw new RequestError(404, "Role not found.");
@@ -255,7 +266,6 @@ export default class RolesController extends Controller {
             throw new RequestError(404, "User not found");
         }
 
-        // TODO: check if user has permission to add roles
 
         if (!deleteUser.roles.find(userRole => userRole.id === role.id)) {
             throw new RequestError(403, "User does not own this role.");
