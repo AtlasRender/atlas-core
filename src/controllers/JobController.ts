@@ -14,6 +14,8 @@ import * as Amqp from "amqplib";
 import RequestError from "../errors/RequestError";
 import {AMQP_JOBS_QUEUE} from "../globals";
 import JobEvent, {JobEventType} from "../core/JobEvent";
+import Organization from "../entities/Organization";
+import RenderJob from "../entities/RenderJob";
 
 
 /**
@@ -35,14 +37,34 @@ export default class JobController extends Controller {
      * @author Danil Andreev
      */
     public async createJobHandler(ctx: Context) {
-        const job = ctx.request.body;
+        let renderJob: RenderJob = null;
+        try {
+            const inputJob = ctx.request.body;
+            // TODO: create validators
+
+            const organization: Organization = await Organization.findOne({where: {id: inputJob.organization}});
+            if (!organization) throw new ReferenceError(`Organization does not exist`);
+            //TODO: check user can create job.
+
+
+            // Create new render job
+            renderJob = new RenderJob();
+            renderJob.name = inputJob.name;
+            renderJob.description = inputJob.description;
+            renderJob.organization = organization;
+            renderJob.attempts_per_task_limit = inputJob.attempts_per_task_limit;
+            renderJob = await renderJob.save();
+        } catch (error) {
+            throw new RequestError(503, "Internal server error. Please, visit this resource later.");
+        }
         try {
             const channel: Amqp.Channel = await Server.getCurrent().getRabbit().createChannel();
             const jobEvent: JobEvent = new JobEvent({
                 type: JobEventType.CREATE_JOB,
-                data: job,
+                data: renderJob,
             });
-            if (channel.sendToQueue(AMQP_JOBS_QUEUE, jobEvent.toBuffer())) {
+            await channel.assertQueue(AMQP_JOBS_QUEUE);
+            if (channel.sendToQueue(AMQP_JOBS_QUEUE, Buffer.from(JSON.stringify(jobEvent)))) {
                 ctx.status = 200;
             } else {
                 throw new RequestError(409, "Unavailable to queue job");

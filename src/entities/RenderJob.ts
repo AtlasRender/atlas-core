@@ -44,7 +44,7 @@ export default class RenderJob extends BaseEntity {
     description: string;
 
     @ManyToOne(type => Organization, organization => organization.jobs)
-    organization: Organization[];
+    organization: Organization;
 
     @OneToMany(type => RenderTask, task => task.job)
     renderTasks: RenderTask[];

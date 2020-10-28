@@ -8,11 +8,10 @@
  */
 
 import * as Amqp from "amqplib";
-import {Channel} from "amqplib";
+import {Channel, Message} from "amqplib";
 import Server from "../core/Server";
 import {AMQP_JOBS_QUEUE, AMQP_TASKS_QUEUE} from "../globals";
 import JobEvent from "../core/JobEvent";
-import RenderJobFields from "../interfaces/RenderJobFields";
 import RenderTask from "../entities/RenderTask";
 import getFramesFromRange from "../utils/getFramesFromRange";
 import RenderJob from "../entities/RenderJob";
@@ -32,15 +31,16 @@ export default async function JobsProcessor() {
      * @throws ReferenceError
      * @author Danil Andreev
      */
-    async function handler(message: Amqp.Message) {
+    async function handler(message: Message) {
         const channel: Channel = await Server.getCurrent().getRabbit().createChannel();
         const event: JobEvent = new JobEvent(JSON.parse(message.content.toString()));
-        const job: RenderJobFields = event.data;
+        const inputJob: RenderJob = event.data;
         const frames: number[] = getFramesFromRange("");
 
+
         // Find render job in database.
-        const renderJob = RenderJob.findOne({where: {id: job.id}});
-        if (!renderJob) throw new ReferenceError(`Can not find specified render job. Render job "id" = '${job.id}' `);
+        const renderJob = RenderJob.findOne({where: {id: inputJob.id}});
+        if (!renderJob) throw new ReferenceError(`Can not find specified render job. Render job "id" = '${inputJob.id}' `);
 
         // Generate render tasks for each frame.
         const tasks: RenderTask[] = [];
@@ -57,12 +57,15 @@ export default async function JobsProcessor() {
         // Add tasks into RabbitMQ queue
         await channel.assertQueue(AMQP_TASKS_QUEUE);
         for (const task in tasks) {
-            channel.sendToQueue(AMQP_TASKS_QUEUE, new Buffer(JSON.stringify(task)));
+            channel.sendToQueue(AMQP_TASKS_QUEUE, Buffer.from(JSON.stringify(task)));
         }
     }
 
     const channel: Channel = await Server.getCurrent().getRabbit().createChannel();
     await channel.assertQueue(AMQP_JOBS_QUEUE);
     await channel.prefetch(1);
-    await channel.consume(AMQP_JOBS_QUEUE, handler);
+    await channel.consume(AMQP_JOBS_QUEUE, async (message: Message) => {
+        await handler(message);
+        channel.ack(message);
+    });
 }
