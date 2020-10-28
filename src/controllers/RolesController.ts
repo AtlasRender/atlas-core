@@ -82,6 +82,7 @@ export default class RolesController extends Controller {
         }
         const user = await getRepository(User)
             .createQueryBuilder("user")
+            .where({id: ctx.state.user.id})
             .leftJoinAndSelect("user.organizations", "userOrg", "userOrg.id = :orgId",
                 {orgId: org.id})
             .leftJoinAndSelect("user.roles", "userRole", "userRole.id = userOrg.id")
