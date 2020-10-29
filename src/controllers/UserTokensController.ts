@@ -15,13 +15,14 @@ import UserToken from "../entities/UserToken";
 import User from "../entities/User";
 import RequestError from "../errors/RequestError";
 import {getRepository} from "typeorm";
+import {UserTokenCreateBodyValidator} from "../validators/UserTokensValidators";
 
-// TODO: Add validators
+
 export default class UserTokensController extends Controller {
     constructor() {
         super("/tokens");
         this.get("/", this.getAllTokens);
-        this.post("/", this.createUserToken)
+        this.post("/", UserTokenCreateBodyValidator, this.createUserToken)
         this.delete("/:id", this.deleteToken);
     }
 
