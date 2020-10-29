@@ -160,7 +160,7 @@ export default class RolesController extends Controller {
 
         const canManageRoles = user.roles.some(role => role.canManageRoles);
 
-        // check if user has permission to add roles
+        // check if user has permission to edit roles
         if (!canManageRoles && user.id !== org.ownerUser.id) {
             throw new RequestError(403, "Forbidden.");
         }
@@ -215,7 +215,7 @@ export default class RolesController extends Controller {
 
         const canManageRoles = user.roles.some(role => role.canManageRoles);
 
-        // check if user has permission to add roles
+        // check if user has permission to delete roles
         if (!canManageRoles && user.id !== org.ownerUser.id) {
             throw new RequestError(403, "Forbidden.");
         }
@@ -265,6 +265,26 @@ export default class RolesController extends Controller {
             throw new RequestError(404, "Organization not found.");
         }
 
+        const user = await getRepository(User)
+            .createQueryBuilder("user")
+            .where({id: ctx.state.user.id})
+            .leftJoinAndSelect("user.organizations", "userOrg", "userOrg.id = :orgId",
+                {orgId: org.id})
+            .leftJoinAndSelect("user.roles", "userRole", "userRole.id = userOrg.id")
+            .getOne();
+
+        // check if user is part of this organization
+        if(!user.organizations.length) {
+            throw new RequestError(403, "You are not a member of this organization.")
+        }
+
+        const canManageUsers = user.roles.some(role => role.canManageUsers);
+
+        // check if user has permission to add user roles
+        if (!canManageUsers && user.id !== org.ownerUser.id) {
+            throw new RequestError(403, "Forbidden.");
+        }
+
         const role: Role = await Role.findOne(ctx.params.role_id, {relations: ["users"]});
         if (!role) {
             throw new RequestError(404, "Role not found.");
@@ -278,8 +298,6 @@ export default class RolesController extends Controller {
         if (addUser.roles.find(userRole => userRole.id === role.id)) {
             throw new RequestError(403, "User already owns this role.");
         }
-
-        // TODO: check if user has permission to add roles
 
         role.users.push(addUser);
         await role.save();
