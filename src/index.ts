@@ -25,12 +25,19 @@ import OrganizationsController from "./controllers/OrganizationsController";
 import UserTokensController from "./controllers/UserTokensController";
 //import * as config from "./config.json";
 import {config} from "./config";
+import JobController from "./controllers/JobController";
+import JobsProcessor from "./processors/JobsProcessor";
+import getFramesFromRange from "./utils/getFramesFromRange";
 
 Server.createServer(config).then(server => {
+    JobsProcessor().then();
+
     server.useController(new UsersController());
     server.useController(new LoginController());
     server.useController(new OrganizationsController());
     server.useController(new UserTokensController());
+    server.useController(new JobController());
+    getFramesFromRange("100 20-25");
     server.start();
 });
 
