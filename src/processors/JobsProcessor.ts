@@ -7,7 +7,6 @@
  * All rights reserved.
  */
 
-import * as Amqp from "amqplib";
 import {Channel, Message} from "amqplib";
 import Server from "../core/Server";
 import {AMQP_JOBS_QUEUE, AMQP_TASKS_QUEUE} from "../globals";
@@ -32,32 +31,38 @@ export default async function JobsProcessor() {
      * @author Danil Andreev
      */
     async function handler(message: Message) {
-        const channel: Channel = await Server.getCurrent().getRabbit().createChannel();
-        const event: JobEvent = new JobEvent(JSON.parse(message.content.toString()));
-        const inputJob: RenderJob = event.data;
-        const frames: number[] = getFramesFromRange("");
+        try {
+            const channel: Channel = await Server.getCurrent().getRabbit().createChannel();
+            const event: JobEvent = new JobEvent(JSON.parse(message.content.toString()));
+            const inputJob: RenderJob = event.data;
+            const frames: number[] = getFramesFromRange("");
 
 
-        // Find render job in database.
-        const renderJob = RenderJob.findOne({where: {id: inputJob.id}});
-        if (!renderJob) throw new ReferenceError(`Can not find specified render job. Render job "id" = '${inputJob.id}' `);
+            // Find render job in database.
+            const renderJob = await RenderJob.findOne({where: {id: inputJob.id}});
+            if (!renderJob)
+                throw new ReferenceError(`Can not find specified render job. Render job "id" = '${inputJob.id}' `);
 
-        // Generate render tasks for each frame.
-        const tasks: RenderTask[] = [];
-        for (const frame in frames) {
-            const task = new RenderTask();
-            task.frame = +frame;
-            task.status = "pending";
-            tasks.push(task);
-        }
+            // Generate render tasks for each frame.
+            const tasks: RenderTask[] = [];
+            for (const frame in frames) {
+                const task = new RenderTask();
+                task.frame = +frame;
+                task.status = "pending";
+                task.job = renderJob;
+                tasks.push(task);
+            }
 
-        // Insert generated render tasks to database.
-        await RenderTask.createQueryBuilder().insert().values(tasks).execute();
+            // Insert generated render tasks to database.
+            await RenderTask.createQueryBuilder().insert().values(tasks).execute();
 
-        // Add tasks into RabbitMQ queue
-        await channel.assertQueue(AMQP_TASKS_QUEUE);
-        for (const task in tasks) {
-            channel.sendToQueue(AMQP_TASKS_QUEUE, Buffer.from(JSON.stringify(task)));
+            // Add tasks into RabbitMQ queue
+            await channel.assertQueue(AMQP_TASKS_QUEUE);
+            for (const task in tasks) {
+                channel.sendToQueue(AMQP_TASKS_QUEUE, Buffer.from(JSON.stringify(task)));
+            }
+        } catch (error) {
+            //TODO: handle error
         }
     }
 

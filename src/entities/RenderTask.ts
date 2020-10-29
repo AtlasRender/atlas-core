@@ -38,6 +38,7 @@ export default class RenderTask extends BaseEntity {
     @Column({type: "varchar", default: 50})
     status: string;
 
+    //@Column({nullable: false})
     @ManyToOne(type => RenderJob, job => job.renderTasks)
     job: RenderJob;
 

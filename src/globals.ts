@@ -21,7 +21,7 @@ export const AMQP_TASKS_QUEUE = "render_tasks"
 /**
  * AMQP_REPORTS_QUEUE - queue name for slaves runtime reports.
  */
-export const AMQP_REPORTS_QUEUE = "slave_reports"
+export const AMQP_TASK_REPORTS_QUEUE = "slave_reports"
 /**
  * AMQP_JOBS_QUEUE - queue name for hobs management.
  */

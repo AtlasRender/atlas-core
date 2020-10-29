@@ -16,6 +16,7 @@ import {AMQP_JOBS_QUEUE} from "../globals";
 import JobEvent, {JobEventType} from "../core/JobEvent";
 import Organization from "../entities/Organization";
 import RenderJob from "../entities/RenderJob";
+import getFramesFromRange from "../utils/getFramesFromRange";
 
 
 /**
@@ -46,6 +47,11 @@ export default class JobController extends Controller {
             if (!organization) throw new ReferenceError(`Organization does not exist`);
             //TODO: check user can create job.
 
+            try {
+                getFramesFromRange(inputJob.frameRange);
+            } catch (error) {
+                throw new RequestError(400, error.message);
+            }
 
             // Create new render job
             renderJob = new RenderJob();
@@ -53,6 +59,7 @@ export default class JobController extends Controller {
             renderJob.description = inputJob.description;
             renderJob.organization = organization;
             renderJob.attempts_per_task_limit = inputJob.attempts_per_task_limit;
+            renderJob.frameRange = inputJob.frameRange;
             renderJob = await renderJob.save();
         } catch (error) {
             throw new RequestError(503, "Internal server error. Please, visit this resource later.");

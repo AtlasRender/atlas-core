@@ -7,26 +7,35 @@
  * All rights reserved.
  */
 
+import * as _ from "lodash";
+
+
 /**
  * getFramesFromRange - returns array of frame numbers from frame range notation.
  * @function
  * @param range - Input information in range notation.
- * @throws RangeError
  * @throws SyntaxError
  * @author Danil Andreev
  */
 export default function getFramesFromRange(range: string): number[] {
-    const tokens = range.split(" ");
-    const frames = [];
+    const tokens: string[] = range.split(" ");
+    const frames = new Set<number>();
     const rangeRe = /([0-9]+)-([0-9]+)/;
+    const singleRe = /([0-9]+)/;
     for (const token of tokens) {
-
-        if (rangeRe.test(range)) {
-            const [start, end] = rangeRe.exec(range);
+        if (rangeRe.test(token)) {
+            const [, start, end] = rangeRe.exec(token);
             if (+end < +start) continue;
-            //create array
+            const localFrames = _.range(+start, +end + 1);
+            for (const frame of localFrames) {
+                frames.add(frame);
+            }
+        } else if (singleRe.test(token)) {
+            frames.add(+token);
+        } else {
+            throw new SyntaxError(`Incorrect syntax at or near "${token}".`);
         }
     }
 
-    return [1, 2, 3];
+    return [...frames];
 }
