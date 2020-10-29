@@ -12,6 +12,8 @@ import Server from "../core/Server";
 import {AMQP_TASK_REPORTS_QUEUE} from "../globals";
 import RenderTask from "../entities/RenderTask";
 import RenderTaskAttempt from "../entities/RenderTaskAttempt";
+import Logger from "../core/Logger";
+import RenderTaskAttemptLog from "../entities/RenderTaskAttemptLog";
 
 
 /**
@@ -25,7 +27,6 @@ export default async function TaskReportsProcessor() {
     /**
      * handler - AMQP messages handler.
      * @param message - AMQP message.
-     * @throws ReferenceError
      * @author Danil Andreev
      */
     async function handler(message: Message) {
@@ -34,17 +35,65 @@ export default async function TaskReportsProcessor() {
             const renderTask = await RenderTask.findOne({where: {id: task}});
             if (!renderTask)
                 throw new ReferenceError(`Render task with id "${body.task}" does not exist`);
+            if (renderTask.renderTaskAttempts.some(item => item.status === "done"))
+                throw new ReferenceError(`Task with id "${renderTask.id}" is already finished with positive status.`);
 
-            const attempt = new RenderTaskAttempt();
-            attempt.slave = slave; // TODO: finish slave linking;
+            // TODO: is task is processing via other slave and last report was
+            //  long time ago - fail current task and start new with input slave.
+
+            let attempt = new RenderTaskAttempt();
+            attempt.slaveUID = slave.UID; // TODO: finish slave linking;
             attempt.task = task;
-            await attempt.save();
+            attempt.status = "processing";
+            attempt = await attempt.save();
+
+            const attemptLog = new RenderTaskAttemptLog();
+            attemptLog.renderTaskAttempt = attempt;
+            attemptLog.data = `Starting render process on slave "'${attempt.slaveUID}".`;
+            attemptLog.type = "info";
+            await attemptLog.save();
         };
         const handleReport = async (body) => {
-            const {task, reportType, slave} = body;
-            const attempt = RenderTaskAttempt.findOne();
+            // TODO: check "data" type
+            const {task, reportType, slave, data} = body;
+            if (!(reportType === "info" || reportType === "warning" || reportType === "error"))
+                throw new TypeError(`Incorrect type of reportType, expected "'info' | 'warning' | 'error', got "${reportType}"`);
+
+            const attempt: RenderTaskAttempt = await RenderTaskAttempt.findOne({where: {status: "processing", task}});
+            if (!attempt)
+                throw new ReferenceError(`No processing task has been found.`);
+            if (attempt.slaveUID !== slave.UID)
+                throw new ReferenceError(`Task attempt "${attempt.id}" belongs to another slave.`);
+
+            const attemptLog = new RenderTaskAttemptLog();
+            attemptLog.renderTaskAttempt = attempt;
+            attemptLog.type = reportType;
+            attemptLog.data = data;
+            await attemptLog.save();
         };
         const handleFinish = async (body) => {
+            // TODO: check "data" type
+            const {task, reportType, slave, data} = body;
+            if (!(reportType === "info" || reportType === "warning" || reportType === "error"))
+                throw new TypeError(`Incorrect type of reportType, expected "'info' | 'warning' | 'error', got "${reportType}"`);
+
+            const attempt = await RenderTaskAttempt.findOne({where: {status: "processing", task}});
+            if (!attempt)
+                throw new ReferenceError(`No processing task has been found.`);
+            if (attempt.slaveUID !== slave.UID)
+                throw new ReferenceError(`Task attempt "${attempt.id}" belongs to another slave.`);
+
+            const attemptLog = new RenderTaskAttemptLog();
+            attemptLog.renderTaskAttempt = attempt;
+            attemptLog.type = reportType;
+            attemptLog.data = data;
+            await attemptLog.save();
+
+            const renderTask = attempt.task;
+            renderTask.status = reportType === "error" ? "failed" : "done";
+
+            attempt.status = reportType === "error" ? "failed" : "done";
+            await Promise.all([attempt.save(), renderTask.save()]);
         };
 
         try {
@@ -61,12 +110,13 @@ export default async function TaskReportsProcessor() {
                     await handleFinish(body);
                     break;
                 default: {
-                    // TODO: handler error
+                    throw new TypeError(`Incorrect action type, expected "'start' | 'report' | 'finish'", got "${action}"`);
                 }
             }
-
         } catch (error) {
-
+            await Logger.error({
+                message: error.method
+            });
         }
     }
 

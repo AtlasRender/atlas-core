@@ -32,8 +32,8 @@ export default class RenderTaskAttempt extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    slave: number;
+    @Column({length: 100})
+    slaveUID: string;
 
     @Column({type: "varchar", default: 50})
     status: string;

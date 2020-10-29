@@ -42,7 +42,4 @@ export default class RenderTaskAttemptLog extends BaseEntity {
 
     @CreateDateColumn()
     createdAt: Moment;
-
-    @UpdateDateColumn()
-    updatedAt: Moment;
 }
