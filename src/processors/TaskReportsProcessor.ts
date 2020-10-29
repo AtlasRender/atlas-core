@@ -109,9 +109,8 @@ export default async function TaskReportsProcessor() {
                 case "finish":
                     await handleFinish(body);
                     break;
-                default: {
+                default:
                     throw new TypeError(`Incorrect action type, expected "'start' | 'report' | 'finish'", got "${action}"`);
-                }
             }
         } catch (error) {
             await Logger.error({
