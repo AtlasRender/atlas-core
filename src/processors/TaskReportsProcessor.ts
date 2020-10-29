@@ -114,7 +114,7 @@ export default async function TaskReportsProcessor() {
             }
         } catch (error) {
             await Logger.error({
-                message: error.method
+                message: error.message
             });
         }
     }
