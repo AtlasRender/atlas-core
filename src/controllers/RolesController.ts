@@ -83,11 +83,16 @@ export default class RolesController extends Controller {
             .leftJoinAndSelect("user.roles", "userRole", "userRole.id = userOrg.id")
             .getOne();
 
+        // check if user is part of this organization
+        if(!user.organizations.length) {
+            throw new RequestError(403, "You are not a member of this organization.")
+        }
+
         const canManageRoles = user.roles.some(role => role.canManageRoles);
 
         // check if user has permission to add roles
         if (!canManageRoles && user.id !== org.ownerUser.id) {
-            throw new RequestError(401, "Forbidden.");
+            throw new RequestError(403, "Forbidden.");
         }
 
         // check name uniqueness
