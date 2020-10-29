@@ -144,6 +144,28 @@ export default class RolesController extends Controller {
         if (!org) {
             throw new RequestError(404, "Not found.");
         }
+
+        const user = await getRepository(User)
+            .createQueryBuilder("user")
+            .where({id: ctx.state.user.id})
+            .leftJoinAndSelect("user.organizations", "userOrg", "userOrg.id = :orgId",
+                {orgId: org.id})
+            .leftJoinAndSelect("user.roles", "userRole", "userRole.id = userOrg.id")
+            .getOne();
+
+        // check if user is part of this organization
+        if(!user.organizations.length) {
+            throw new RequestError(403, "You are not a member of this organization.")
+        }
+
+        const canManageRoles = user.roles.some(role => role.canManageRoles);
+
+        // check if user has permission to add roles
+        if (!canManageRoles && user.id !== org.ownerUser.id) {
+            throw new RequestError(403, "Forbidden.");
+        }
+
+        // find role that will be edited
         let role = await Role.findOne(ctx.params.role_id);
         if (!role) {
             throw new RequestError(404, "Role not found.");
