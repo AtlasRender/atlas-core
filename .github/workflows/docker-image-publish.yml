@@ -57,6 +57,7 @@ jobs:
       
   github: 
     runs-on: ubuntu-latest
+    needs: [ dockerhub ]
     name: Publish image to github packages registry
     steps:
       - name: Check out the repo
