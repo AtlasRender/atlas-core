@@ -92,14 +92,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      # Setup gcloud CLI
-      - name: Setup GCloud environment
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      - name: ssh pipelines
+        uses: cross-the-world/ssh-pipeline@master
         with:
-          version: '290.0.1'
-          service_account_key: ${{ secrets.GCE_SA_KEY }}
-          project_id: ${{ secrets.GCE_PROJECT }}
-      - name: Restart using bash script on server
-        uses: actions-hub/gcloud@master
-        with: 
-          args: compute ssh --zone ${{ secrets.GCE_INSTANCE_ZONE }} --command='sudo bash "deploy.sh"' ${{secrets.GCE_INSTANCE}} 
+          host: "34.121.59.155"
+          user: "root"
+          key: ${{secrets.GCLOUD_TEST_CORE_SSH_ID_RSA_PRIVATE}}
+          connect_timeout: 10s
+          script: |
+            sudo rm -rf "atlas-core"
+            sudo git clone "https://github.com/AtlasRender/atlas-core.git"
+            sudo rm -f "docker-compose.yaml"
+            sudo mv "atlas-core/docker-compose/pathfinder-core-start.yaml" "docker-compose.yaml"
+            sudo rm -rf "atlas-core"
+            sudo docker-compose stop
+            sudo docker-compose down
+            sudo docker-compose pull
+            sudo docker-compose build
+            sudo docker-compose up -d
