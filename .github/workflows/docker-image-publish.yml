@@ -82,7 +82,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: pathfinder-systems/pathfinder-core/pathfinder-core-dev
+          repository: atlasrender/atlas-core/atlas-core-dev
           tag_with_ref: true
     
   gcloud: 
