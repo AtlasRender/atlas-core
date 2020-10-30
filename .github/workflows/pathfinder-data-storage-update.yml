@@ -22,16 +22,16 @@ jobs:
           connect_timeout: 10s
           script: |
             sudo rm -rf "pathfinder-core"
-            sudo git clone "https://github.com/Pathfinder-Systems/pathfinder-core.git"
+            sudo git clone "https://github.com/AtlasRender/atlas-core.git"
             sudo apt-get update -y
             sudo apt-get install -y "git-crypt"
             sudo apt-get install -y "cl-base64"
             sudo echo "$GIT_CRYPT_KEY_B64" > "pathfinder-core/key_base64.txt"
-            sudo base64 -d "pathfinder-core/key_base64.txt" > "pathfinder-core/key"
-            cd "pathfinder-core" && sudo git-crypt unlock "key"
+            sudo base64 -d "pathfinder-core/key_base64.txt" > "atlas-core/key"
+            cd "atlas-core" && sudo git-crypt unlock "key"
             cd ../ && sudo rm -f "docker-compose.yaml"
-            sudo mv "pathfinder-core/docker-compose/pathfinder-data-storage-start-dev.yaml" "docker-compose.yaml"
-            sudo rm -rf "pathfinder-core"
+            sudo mv "atlas-core/docker-compose/pathfinder-data-storage-start-dev.yaml" "docker-compose.yaml"
+            sudo rm -rf "atlas-core"
             sudo docker-compose stop
             sudo docker-compose down
             sudo docker-compose pull
