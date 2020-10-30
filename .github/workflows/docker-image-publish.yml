@@ -82,7 +82,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: danilandreev/pathfinder-core
+          repository: $GITHUB_REPOSITORY/pathfinder-core
           tag_with_ref: true
     
   gcloud: 
