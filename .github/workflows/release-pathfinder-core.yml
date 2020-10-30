@@ -1,4 +1,4 @@
-name: Release pathfinder-core
+name: Release atlas-core
 
 on:
   release:
@@ -66,5 +66,5 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: pathfinder-systems/pathfinder-core/pathfinder-core
+          repository: atlasrender/atlas-core/atlas-core
           tag_with_ref: true
