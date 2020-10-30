@@ -35,7 +35,7 @@ export default async function JobsProcessor() {
             const channel: Channel = await Server.getCurrent().getRabbit().createChannel();
             const event: JobEvent = new JobEvent(JSON.parse(message.content.toString()));
             const inputJob: RenderJob = event.data;
-            const frames: number[] = getFramesFromRange("");
+            const frames: number[] = getFramesFromRange(inputJob.frameRange);
 
 
             // Find render job in database.
@@ -58,7 +58,7 @@ export default async function JobsProcessor() {
 
             // Add tasks into RabbitMQ queue
             await channel.assertQueue(AMQP_TASKS_QUEUE);
-            for (const task in tasks) {
+            for (const task of tasks) {
                 channel.sendToQueue(AMQP_TASKS_QUEUE, Buffer.from(JSON.stringify(task)));
             }
         } catch (error) {

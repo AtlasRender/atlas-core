@@ -31,6 +31,7 @@ export default async function TaskReportsProcessor() {
      */
     async function handler(message: Message) {
         const handleStart = async (body) => {
+            console.log("handleStart");
             const {task, reportType, slave} = body;
             const renderTask = await RenderTask.findOne({where: {id: task}});
             if (!renderTask)
@@ -54,6 +55,7 @@ export default async function TaskReportsProcessor() {
             await attemptLog.save();
         };
         const handleReport = async (body) => {
+            console.log("handleReport");
             // TODO: check "data" type
             const {task, reportType, slave, data} = body;
             if (!(reportType === "info" || reportType === "warning" || reportType === "error"))
@@ -72,6 +74,7 @@ export default async function TaskReportsProcessor() {
             await attemptLog.save();
         };
         const handleFinish = async (body) => {
+            console.log("handleFinish");
             // TODO: check "data" type
             const {task, reportType, slave, data} = body;
             if (!(reportType === "info" || reportType === "warning" || reportType === "error"))
