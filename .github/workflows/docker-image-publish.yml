@@ -57,11 +57,25 @@ jobs:
       
   github: 
     runs-on: ubuntu-latest
-    needs: [ dockerhub ]
     name: Publish image to github packages registry
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+      - uses: styfle/cancel-workflow-action@0.6.0
+        with: 
+          access_token: ${{ github.token }}
+      - name: Setup git-crypt
+        run: sudo apt-get install -y git-crypt
+      - name: Check git-crypt version
+        run: git-crypt --version
+      - name: Setup base64 util
+        run: sudo apt-get install -y cl-base64
+      - name: Save base64 key from GitHub secrets to file
+        run: sudo echo "${{secrets.GIT_CRYPT_KEY_B64}}" > key_base64.txt
+      - name: Create git-crypt key file from base64 encoded key
+        run: sudo base64 -d key_base64.txt > key
+      - name: Unlock secrets
+        run: git-crypt unlock key
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v1
         with:
