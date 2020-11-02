@@ -30,7 +30,7 @@ jobs:
         id: gcloud
         with:
           # Base64 encoded service account key exported as JSON
-          account_key: ${{secrets.GCE_SA_KEY}}
+          account_key: ${{secrets.GCE_SA_KEY_BASE64}}
 
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v1
