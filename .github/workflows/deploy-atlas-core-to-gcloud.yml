@@ -1,0 +1,51 @@
+name: Deploy Atlas Core to GCloud
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: styfle/cancel-workflow-action@0.6.0
+        with: 
+          access_token: ${{ github.token }}
+      - name: Setup git-crypt
+        run: sudo apt-get install -y git-crypt
+      - name: Check git-crypt version
+        run: git-crypt --version
+      - name: Setup base64 util
+        run: sudo apt-get install -y cl-base64
+      - name: Save base64 key from GitHub secrets to file
+        run: sudo echo "${{secrets.GIT_CRYPT_KEY_B64}}" > key_base64.txt
+      - name: Create git-crypt key file from base64 encoded key
+        run: sudo base64 -d key_base64.txt > key
+      - name: Unlock secrets
+        run: git-crypt unlock key
+        
+      - name: GCloud Container Registry Docker Login
+        uses: elgohr/gcloud-login-action@0.2
+        id: gcloud
+        with:
+          # Base64 encoded service account key exported as JSON
+          account_key: ${{secrets.GCE_SA_KEY}}
+
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ steps.gcloud.outputs.username }}
+          password: ${{ steps.gcloud.outputs.password }}
+          registry: us.gcr.io
+          repository: atlasrender/atlas-core/atlas-core-dev
+          tag_with_ref: true
+
+
+#       - name: Publish to Registry
+#         uses: elgohr/Publish-Docker-Github-Action@master
+#         with:
+#           name: myDocker/repository
+#           username: ${{ steps.gcloud.outputs.username }}
+#           password: ${{ steps.gcloud.outputs.password }}
+#           registry: gcr.io, us.gcr.io, eu.gcr.io or asia.gcr.io
