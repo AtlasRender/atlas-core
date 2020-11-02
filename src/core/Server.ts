@@ -230,7 +230,7 @@ export default class Server extends Koa {
      */
     private async setupDbConnection(dbOptions: ConnectionOptions): Promise<void> {
         console.log("TypeORM: Setting up database connection...");
-        console.log(dbOptions);
+        // console.log(dbOptions);
         this.DbConnection = await createConnection(dbOptions);
         await this.DbConnection.synchronize();
     }
@@ -243,7 +243,6 @@ export default class Server extends Koa {
      */
     private setupRedisConnection(redisOptions: Redis.ClientOpts): Server {
         console.log("Redis: Setting up Redis connection...");
-        console.log(redisOptions);
         this.RedisConnection = Redis.createClient(redisOptions);
         this.RedisConnection.on("error", (error: Error) => {
             throw error;
@@ -259,8 +258,6 @@ export default class Server extends Koa {
      */
     private async setupRabbitMQConnection(rabbitMQOptions: Amqp.Options.Connect) {
         console.log("Redis: Setting up RabbitMQ connection...");
-        // console.log(rabbitMQOptions);
-
         this.RabbitMQConnection = await Amqp.connect(rabbitMQOptions, (error, connection) => {
             if (error) throw error;
         });
@@ -273,20 +270,6 @@ export default class Server extends Koa {
             console.log(message, message.content.toString());
             channel.ack(message);
         });
-
-
-        // this.RabbitMQConnection = Amqp.createConnection(rabbitMQOptions);
-        // this.RabbitMQConnection.on("error", (error: Error) => {
-        //     throw error;
-        // });
-        // this.RabbitMQConnection.on("ready", () => {
-        //     this.RabbitMQConnection.queue("test_queue", (queue: Amqp.QueueCallback) => {
-        //         queue.bind("#")
-        //         queue.subscribe((message) => {
-        //             console.log(message);
-        //         });
-        //     });
-        // });
     }
 
     /**

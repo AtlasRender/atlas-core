@@ -27,6 +27,11 @@ export const AMQP_TASK_REPORTS_QUEUE = "slave_reports"
  */
 export const AMQP_JOBS_QUEUE = "jobs";
 
+/**
+ * REDIS_USER_JWT_PRIVATE_KEY - user JWT private key.
+ */
+export const REDIS_USER_JWT_PRIVATE_KEY = "USER_JWT_PRIVATE_KEY";
+
 export const ajvInstance = new Ajv({
     allErrors: true,
     useDefaults: true,

@@ -15,6 +15,9 @@ import * as jsonwebtoken from "jsonwebtoken";
 import {Moment} from "moment";
 import * as moment from "moment";
 import UserJwt from "./../interfaces/UserJwt"
+import Server from "./Server";
+import {REDIS_USER_JWT_PRIVATE_KEY} from "../globals";
+import {promisify} from "util";
 
 export interface JwtOptions {
     /**
@@ -27,7 +30,7 @@ export default class Authenticator {
     /**
      * key - private key for token generating.
      */
-    public static readonly key = cryptoRandomString({length: 30, type: "base64"});
+    public static key = cryptoRandomString({length: 30, type: "base64"});
 
     /**
      * jwtMiddleware - Jwt middleware.
@@ -44,6 +47,24 @@ export default class Authenticator {
             secret: Authenticator.key,
             isRevoked: Authenticator.checkTokenRevoked,
         }).unless({path: [/^\/login/, "/users"]});
+    }
+
+    /**
+     * syncKey - synchronizes JWT private key from Redis.
+     * If key is not defined in Redis - it will create new key and save it to Redis.
+     * @method
+     * @author Danil Andreev
+     */
+    public static async syncKey() {
+        const client = Server.getCurrent().getRedis();
+        try {
+            Authenticator.key = await promisify(client.get).bind(client);
+            console.log("Authenticator: Synchronized JWT key from Redis");
+        } catch (error) {
+            console.log("Authenticator: JWT Key is missing on Redis. Generating new one.");
+            const newKey: string = cryptoRandomString({length: 30, type: "base64"});
+            Server.getCurrent().getRedis().set(REDIS_USER_JWT_PRIVATE_KEY, newKey);
+        }
     }
 
     /**

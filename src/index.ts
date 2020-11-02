@@ -28,9 +28,12 @@ import {config} from "./config";
 import JobController from "./controllers/JobController";
 import JobsProcessor from "./processors/JobsProcessor";
 import getFramesFromRange from "./utils/getFramesFromRange";
+import Authenticator from "./core/Authenticator";
 
-Server.createServer(config).then(server => {
-    JobsProcessor().then();
+async function startServer() {
+    const server = await Server.createServer(config);
+    await Authenticator.syncKey();
+    await JobsProcessor();
 
     server.useController(new UsersController());
     server.useController(new LoginController());
@@ -39,5 +42,6 @@ Server.createServer(config).then(server => {
     server.useController(new JobController());
     getFramesFromRange("100 20-25");
     server.start();
-});
+}
 
+startServer().then();
