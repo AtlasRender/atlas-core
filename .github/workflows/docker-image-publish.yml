@@ -84,29 +84,3 @@ jobs:
           registry: docker.pkg.github.com
           repository: atlasrender/atlas-core/atlas-core-dev
           tag_with_ref: true
-    
-  gcloud: 
-    runs-on: ubuntu-latest
-    needs: [ dockerhub ]
-    name: Deploy Docker container to GCloud
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: ssh pipelines
-        uses: cross-the-world/ssh-pipeline@master
-        with:
-          host: "34.121.59.155"
-          user: "root"
-          key: ${{secrets.GCLOUD_TEST_CORE_SSH_ID_RSA_PRIVATE}}
-          connect_timeout: 10s
-          script: |
-            sudo rm -rf "atlas-core"
-            sudo git clone "https://github.com/AtlasRender/atlas-core.git"
-            sudo rm -f "docker-compose.yaml"
-            sudo mv "atlas-core/docker-compose/pathfinder-core-start.yaml" "docker-compose.yaml"
-            sudo rm -rf "atlas-core"
-            sudo docker-compose stop
-            sudo docker-compose down
-            sudo docker-compose pull
-            sudo docker-compose build
-            sudo docker-compose up -d
