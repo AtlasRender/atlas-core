@@ -25,11 +25,7 @@ jobs:
         run: sudo base64 -d key_base64.txt > key
       - name: Unlock secrets
         run: git-crypt unlock key
-    
-      - name: Generate base64 GCloud SA key
-        id: gcloud.sa
-        run: 
-        
+            
       - name: GCloud Container Registry Docker Login
         uses: elgohr/gcloud-login-action@0.2
         id: gcloud
