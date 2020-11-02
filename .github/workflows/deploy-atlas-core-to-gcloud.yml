@@ -25,6 +25,10 @@ jobs:
         run: sudo base64 -d key_base64.txt > key
       - name: Unlock secrets
         run: git-crypt unlock key
+    
+      - name: Generate base64 GCloud SA key
+        id: gcloud.sa
+        run: 
         
       - name: GCloud Container Registry Docker Login
         uses: elgohr/gcloud-login-action@0.2
@@ -33,7 +37,7 @@ jobs:
           # Base64 encoded service account key exported as JSON
           account_key: ${{secrets.GCE_SA_KEY_BASE64}}
 
-      - name: Push to GitHub Packages
+      - name: Push to GCloud Container Registry
         uses: docker/build-push-action@v1
         with:
           username: ${{ steps.gcloud.outputs.username }}
@@ -41,12 +45,3 @@ jobs:
           registry: us.gcr.io
           repository: ${{secrets.GCLOUD_PROJECT_ID}}/atlas-core/atlas-core-dev
           tag_with_ref: true
-
-
-#       - name: Publish to Registry
-#         uses: elgohr/Publish-Docker-Github-Action@master
-#         with:
-#           name: myDocker/repository
-#           username: ${{ steps.gcloud.outputs.username }}
-#           password: ${{ steps.gcloud.outputs.password }}
-#           registry: gcr.io, us.gcr.io, eu.gcr.io or asia.gcr.io
