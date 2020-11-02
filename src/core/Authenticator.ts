@@ -56,9 +56,21 @@ export default class Authenticator {
      * @author Danil Andreev
      */
     public static async syncKey() {
-        const client = Server.getCurrent().getRedis();
         try {
-            Authenticator.key = await promisify(client.get).bind(client);
+            Authenticator.key = await new Promise<string>((resolve, reject) => {
+                const client = Server.getCurrent().getRedis();
+                client.get(REDIS_USER_JWT_PRIVATE_KEY, (error, response) => {
+                    if (error) {
+                        reject(error)
+                    } else {
+                        if (response) {
+                            resolve(response);
+                        } else {
+                            reject(new TypeError("Value is null!"));
+                        }
+                    }
+                });
+            });
             console.log("Authenticator: Synchronized JWT key from Redis");
         } catch (error) {
             console.log("Authenticator: JWT Key is missing on Redis. Generating new one.");
