@@ -7,6 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    name: Build and publish image to GCloud container registry
     steps:
       - uses: actions/checkout@v2
       - uses: styfle/cancel-workflow-action@0.6.0
@@ -38,7 +39,7 @@ jobs:
           username: ${{ steps.gcloud.outputs.username }}
           password: ${{ steps.gcloud.outputs.password }}
           registry: us.gcr.io
-          repository: atlasrender/atlas-core/atlas-core-dev
+          repository: ${{secrets.GCLOUD_PROJECT_ID}}/atlas-core/atlas-core-dev
           tag_with_ref: true
 
 
