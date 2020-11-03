@@ -70,7 +70,7 @@ jobs:
           chmod u+x ./kustomize
       - name: Deploy
         run: |-
-          kubectl set image "$IMAGE"="us.gcr.io/$PROJECT_ID/atlas-core/atlas-core-dev:latest"
+          kubectl set image "deployment/$DEPLOYMENT_NAME" "$IMAGE"="us.gcr.io/$PROJECT_ID/atlas-core/atlas-core-dev:latest"
           
           
 #       - name: Deploy
