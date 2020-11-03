@@ -19,7 +19,7 @@ import {Context} from "koa";
 export default class VersionsController extends Controller {
     constructor() {
         super("/version");
-        this.post("/", this.getCurrentVersion);
+        this.get("/", this.getCurrentVersion);
     }
 
     /**
