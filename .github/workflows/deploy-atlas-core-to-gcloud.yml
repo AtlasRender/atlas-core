@@ -41,3 +41,22 @@ jobs:
           registry: us.gcr.io
           repository: ${{secrets.GCLOUD_PROJECT_ID}}/atlas-core/atlas-core-dev
           tag_with_ref: true
+  
+  deploy: 
+    runs-on: ubuntu-latest
+    name: Deploy image to GCloud Kubernetes engine
+    steps:
+      - name: Setup GCloud environment
+        uses: google-github-actions/setup-gcloud@0.1.2
+        with:
+          service_account_key: ${{ secrets.GCE_SA_KEY }}
+      - name: Set up GCloud zone
+        run: gcloud config set compute/zone ${{ secrets.GKE_CORE_CLUSTER_ZONE }}
+      - name: Install kubectl
+        uses: gane5hvarma/kubectl-actions@v0.0.1
+      - name: Setup kubectl credentials
+        run: gcloud container clusters get-credentials ${{ secrets.GKE_CORE_CLUSTER }}
+      - name: Set new image for GKE
+        run: kubectl set image deployment/${{ secrets.GKE_CORE_APP }} atlas-core-dev-sha256-1=us.gcr.io/${{ secrets.GCLOUD_PROJECT_ID }}/atlas-core/atlas-core-dev:latest
+        
+        
