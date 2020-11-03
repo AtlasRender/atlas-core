@@ -28,11 +28,11 @@ import {config} from "./config";
 import JobController from "./controllers/JobController";
 import JobsProcessor from "./processors/JobsProcessor";
 import getFramesFromRange from "./utils/getFramesFromRange";
-import Authenticator from "./core/Authenticator";
+import VersionsController from "./controllers/VersionsController";
+
 
 async function startServer() {
     const server = await Server.createServer(config);
-    // await Authenticator.syncKey();
     await JobsProcessor();
 
     server.useController(new UsersController());
@@ -40,6 +40,7 @@ async function startServer() {
     server.useController(new OrganizationsController());
     server.useController(new UserTokensController());
     server.useController(new JobController());
+    server.useController(new VersionsController());
     getFramesFromRange("100 20-25");
     server.start();
 }
