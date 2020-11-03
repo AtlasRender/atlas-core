@@ -45,6 +45,7 @@ jobs:
   deploy: 
     runs-on: ubuntu-latest
     name: Deploy image to GCloud Kubernetes engine
+    needs: [build]
     steps:
       - name: Setup GCloud environment
         uses: google-github-actions/setup-gcloud@0.1.2
