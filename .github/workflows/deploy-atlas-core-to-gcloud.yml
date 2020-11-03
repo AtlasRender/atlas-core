@@ -70,10 +70,15 @@ jobs:
           chmod u+x ./kustomize
       - name: Deploy
         run: |-
-          ./kustomize edit set image $IMAGE="us.gcr.io/$PROJECT_ID/atlas-core/atlas-core-dev:latest"
-          ./kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment/$DEPLOYMENT_NAME
-          kubectl get services -o wide
+          kubectl set image $IMAGE="us.gcr.io/$PROJECT_ID/atlas-core/atlas-core-dev:latest"          
+          
+          
+#       - name: Deploy
+#         run: |-
+#           ./kustomize edit set image $IMAGE="us.gcr.io/$PROJECT_ID/atlas-core/atlas-core-dev:latest"
+#           ./kustomize build . | kubectl apply -f -
+#           kubectl rollout status deployment/$DEPLOYMENT_NAME
+#           kubectl get services -o wide
 
 
 
