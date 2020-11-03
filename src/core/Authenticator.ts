@@ -27,10 +27,10 @@ export interface JwtOptions {
 }
 
 export default class Authenticator {
-    /**
-     * key - private key for token generating.
-     */
-    public static key = cryptoRandomString({length: 30, type: "base64"});
+    // /**
+    //  * key - private key for token generating.
+    //  */
+    // public static key = cryptoRandomString({length: 30, type: "base64"});
 
     /**
      * jwtMiddleware - Jwt middleware.
@@ -44,20 +44,21 @@ export default class Authenticator {
      */
     public static init() {
         Authenticator.jwtMiddleware = Jwt({
-            secret: Authenticator.key,
+            secret: "KEY", // TODO: on each checks get key from Redis!
             isRevoked: Authenticator.checkTokenRevoked,
         }).unless({path: [/^\/login/, "/users"]});
     }
 
     /**
-     * syncKey - synchronizes JWT private key from Redis.
+     * getKey - gets JWT private key from Redis.
      * If key is not defined in Redis - it will create new key and save it to Redis.
      * @method
      * @author Danil Andreev
      */
-    public static async syncKey() {
+    public static async getKey() {
+        let key: string = "";
         try {
-            Authenticator.key = await new Promise<string>((resolve, reject) => {
+            key = await new Promise<string>((resolve, reject) => {
                 const client = Server.getCurrent().getRedis();
                 client.get(REDIS_USER_JWT_PRIVATE_KEY, (error, response) => {
                     if (error) {
@@ -71,12 +72,12 @@ export default class Authenticator {
                     }
                 });
             });
-            console.log("Authenticator: Synchronized JWT key from Redis");
         } catch (error) {
             console.log("Authenticator: JWT Key is missing on Redis. Generating new one.");
-            const newKey: string = cryptoRandomString({length: 30, type: "base64"});
-            Server.getCurrent().getRedis().set(REDIS_USER_JWT_PRIVATE_KEY, newKey);
+            const key: string = cryptoRandomString({length: 30, type: "base64"});
+            Server.getCurrent().getRedis().set(REDIS_USER_JWT_PRIVATE_KEY, key);
         }
+        return key;
     }
 
     /**
@@ -106,7 +107,7 @@ export default class Authenticator {
      * @param options - Additional options.
      * @author Danil Andreev
      */
-    public static createJwt(data: object, options: JwtOptions = {}): string {
+    public static async createJwt(data: object, options: JwtOptions = {}): Promise<string> {
         const createdAt: Moment = moment();
         if (options?.expires < createdAt)
             throw new RangeError(`Authenticator: "expires" can not be less than "createdAt"`);
@@ -115,7 +116,7 @@ export default class Authenticator {
             ...data,
             expires: expires.format(),
             createdAt: createdAt.format()
-        }, Authenticator.key);
+        }, await Authenticator.getKey());
         return token;
     }
 }
