@@ -28,11 +28,6 @@ export interface JwtOptions {
 }
 
 export default class Authenticator {
-    // /**
-    //  * key - private key for token generating.
-    //  */
-    // public static key = cryptoRandomString({length: 30, type: "base64"});
-
     /**
      * jwtMiddleware - Jwt middleware.
      */
