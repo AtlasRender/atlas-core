@@ -8,16 +8,17 @@
  */
 
 import * as Koa from "koa";
-import {Context} from "koa";
+import {Context, Next} from "koa";
 import * as cryptoRandomString from "crypto-random-string";
 import * as Jwt from "koa-jwt";
 import * as jsonwebtoken from "jsonwebtoken";
 import {Moment} from "moment";
 import * as moment from "moment";
-import UserJwt from "./../interfaces/UserJwt"
+import UserJwt from "./../interfaces/UserJwt";
 import Server from "./Server";
 import {REDIS_USER_JWT_PRIVATE_KEY} from "../globals";
 import {promisify} from "util";
+
 
 export interface JwtOptions {
     /**
@@ -62,7 +63,7 @@ export default class Authenticator {
                 const client = Server.getCurrent().getRedis();
                 client.get(REDIS_USER_JWT_PRIVATE_KEY, (error, response) => {
                     if (error) {
-                        reject(error)
+                        reject(error);
                     } else {
                         if (response) {
                             resolve(response);
