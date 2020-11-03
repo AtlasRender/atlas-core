@@ -42,7 +42,7 @@ export default class Authenticator {
         Authenticator.jwtMiddleware = Jwt({
             secret: "", // on each checks get key from Redis!
             isRevoked: Authenticator.checkTokenRevoked,
-        }).unless({path: [/^\/login/, "/users"]});
+        }).unless({path: [/^\/login/, "/users", "/version"]});
     }
 
     /**
@@ -77,13 +77,14 @@ export default class Authenticator {
     }
 
     /**
-     * checkTokenRevoked - returns false when token is not revoked ant true if it is.
+     * checkTokenRevoked - returns false when token is not revoked and true if it is.
      * @method
      * @param ctx - Context
      * @param decodedToken - Decoded jwt token
      * @param token - Raw jwt token
      */
     protected static async checkTokenRevoked(ctx: Context, decodedToken: UserJwt, token: string): Promise<boolean> {
+        // TODO
         return false;
     }
 
