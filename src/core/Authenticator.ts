@@ -43,9 +43,9 @@ export default class Authenticator {
      * @method
      * @author Danil Andreev
      */
-    public static async init() {
+    public static init() {
         Authenticator.jwtMiddleware = Jwt({
-            secret: await this.getKey(), // on each checks get key from Redis!
+            secret: "", // on each checks get key from Redis!
             isRevoked: Authenticator.checkTokenRevoked,
         }).unless({path: [/^\/login/, "/users"]});
     }
@@ -121,5 +121,3 @@ export default class Authenticator {
         return token;
     }
 }
-//
-// Authenticator.init().then();
