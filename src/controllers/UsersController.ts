@@ -86,7 +86,7 @@ export default class UsersController extends Controller {
             deleted: savedUser.deleted,
             createdAt: savedUser.createdAt,
             updatedAt: savedUser.updatedAt,
-            bearer: Authenticator.createJwt({id: savedUser.id, username: savedUser.username})
+            bearer: await Authenticator.createJwt({id: savedUser.id, username: savedUser.username})
         };
         ctx.body = result;
     }

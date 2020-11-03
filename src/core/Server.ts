@@ -163,6 +163,7 @@ export default class Server extends Koa {
         Server.current.setupRedisConnection(config.redis);
         await Server.current.setupRabbitMQConnection(config.rabbit);
 
+
         // Creating additional functional for routing.
         Server.current.use(async (ctx: Context, next: Next) => {
             console.log(`Server [${moment().format("l")} ${moment()
@@ -179,6 +180,13 @@ export default class Server extends Koa {
             });
         });
 
+        Authenticator.init();
+
+        // Set current JWT secret to state before each request.
+        Server.current.use(async (ctx, next) => {
+            ctx.state.secret = await Authenticator.getKey();
+            await next();
+        });
         // Applying JWT for routes.
         Server.current.use(Authenticator.getJwtMiddleware());
 
