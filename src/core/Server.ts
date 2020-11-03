@@ -163,6 +163,8 @@ export default class Server extends Koa {
         Server.current.setupRedisConnection(config.redis);
         await Server.current.setupRabbitMQConnection(config.rabbit);
 
+        await Authenticator.init();
+
         // Creating additional functional for routing.
         Server.current.use(async (ctx: Context, next: Next) => {
             console.log(`Server [${moment().format("l")} ${moment()

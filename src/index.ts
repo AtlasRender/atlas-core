@@ -32,7 +32,7 @@ import Authenticator from "./core/Authenticator";
 
 async function startServer() {
     const server = await Server.createServer(config);
-    await Authenticator.syncKey();
+    // await Authenticator.syncKey();
     await JobsProcessor();
 
     server.useController(new UsersController());
