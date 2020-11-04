@@ -28,6 +28,6 @@ export default class VersionsController extends Controller {
      * @author Denis Afendikov
      */
     public async getCurrentVersion(ctx: Context): Promise<void> {
-        ctx.body = {version: "1.0.0"};
+        ctx.body = {version: "0.1.0"};
     }
 }
