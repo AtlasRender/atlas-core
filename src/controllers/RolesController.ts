@@ -51,7 +51,9 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async getRoles(ctx: Context): Promise<void> {
-        //const org = await Organization.findOne(ctx.params.organization_id);
+        console.log("Route __[GET]__ ___/:org_id/roles - get information about all organization's roles.");
+        console.log("ctx.params: \n", ctx.params);
+        console.log("ctx.request.body: \n", ctx.request.body);
         const org: Organization = await getRepository(Organization)
             .createQueryBuilder("org")
             .where({id: ctx.params.organization_id})
