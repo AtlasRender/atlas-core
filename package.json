@@ -1,6 +1,6 @@
 {
   "name": "pathfinder-core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pathfinder Slave - part of Pathfinder system, designed to manipulate render software directly on render nodes",
   "keywords": [
     "monitoring",
