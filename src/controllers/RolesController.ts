@@ -61,10 +61,13 @@ export default class RolesController extends Controller {
             .getOne();
 
         if (!org) {
+            console.log("Thrown error 404 from roles controller.");
             throw new RequestError(404, "Not found.");
         }
+        console.log("Roles controller found organization.");
 
         ctx.body = org.roles;
+        console.log("Roles controller finished work.");
     }
 
     /**
