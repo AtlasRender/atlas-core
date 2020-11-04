@@ -183,10 +183,11 @@ export default class Server extends Koa {
         Authenticator.init();
 
         // Set current JWT secret to state before each request.
-        Server.current.use(async (ctx, next) => {
-            ctx.state.secret = await Authenticator.getKey();
-            await next();
-        });
+        // Server.current.use(async (ctx, next) => {
+        //     ctx.state.secret = await Authenticator.getKey();
+        //     await next();
+        // });
+
         // Applying JWT for routes.
         Server.current.use(Authenticator.getJwtMiddleware());
 

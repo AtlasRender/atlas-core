@@ -40,9 +40,20 @@ export default class Authenticator {
      */
     public static init() {
         Authenticator.jwtMiddleware = Jwt({
-            secret: "", // on each checks get key from Redis!
+            secret: Authenticator.secretLoader,
             isRevoked: Authenticator.checkTokenRevoked,
         }).unless({path: [/^\/login/, "/users", "/version"]});
+    }
+
+    /**
+     * secretLoader - JWT key loader for koa-jwt middleware generator.
+     * @method
+     * @param header - Request header
+     * @param payload - Request payload
+     * @author Danil Andreev
+     */
+    protected static async secretLoader(header: any, payload: any): Promise<string> {
+        return await Authenticator.getKey();
     }
 
     /**
