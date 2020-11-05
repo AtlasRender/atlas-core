@@ -70,6 +70,7 @@ export default async function JobsProcessor() {
     await channel.assertQueue(AMQP_JOBS_QUEUE);
     await channel.prefetch(1);
     await channel.consume(AMQP_JOBS_QUEUE, async (message: Message) => {
+        console.log("Processing job");
         await handler(message);
         channel.ack(message);
     });
