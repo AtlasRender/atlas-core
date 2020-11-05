@@ -74,6 +74,7 @@ export default class JobController extends Controller {
             });
             await channel.assertQueue(AMQP_JOBS_QUEUE);
             if (channel.sendToQueue(AMQP_JOBS_QUEUE, Buffer.from(JSON.stringify(jobEvent)))) {
+                console.log("Sent job to queue");
                 ctx.status = 200;
             } else {
                 throw new RequestError(409, "Unavailable to queue job");
