@@ -72,7 +72,7 @@ export default class JobController extends Controller {
                 type: JobEventType.CREATE_JOB,
                 data: renderJob,
             });
-            await channel.assertQueue(AMQP_JOBS_QUEUE);
+            await channel.assertQueue(AMQP_JOBS_QUEUE, {});
             if (channel.sendToQueue(AMQP_JOBS_QUEUE, Buffer.from(JSON.stringify(jobEvent)))) {
                 console.log("Sent job to queue");
                 ctx.status = 200;
@@ -81,6 +81,8 @@ export default class JobController extends Controller {
             }
             await channel.close();
         } catch (error) {
+            if (error instanceof RequestError)
+                throw error;
             throw new RequestError(503, "Internal server error. Please, visit this resource later.");
         }
     }

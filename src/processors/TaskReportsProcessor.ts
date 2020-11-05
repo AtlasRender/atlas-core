@@ -27,16 +27,18 @@ export default async function TaskReportsProcessor() {
     /**
      * handler - AMQP messages handler.
      * @param message - AMQP message.
+     * @param channel
      * @author Danil Andreev
      */
-    async function handler(message: Message) {
+    async function handler(message: Message, channel: Channel) {
         const handleStart = async (body) => {
-            console.log("handleStart");
+            console.log("handleStart -------------", body);
             const {task, reportType, slave} = body;
             console.log("HandleStart: Looking for render task");
-            const renderTask = await RenderTask.findOne({where: {id: task}});
+            const renderTask = await RenderTask.findOne({where: {id: task}, relations: ["renderTaskAttempts"]});
             if (!renderTask)
                 throw new ReferenceError(`Render task with id "${body.task}" does not exist`);
+            console.log("render task: ", renderTask);
             if (renderTask.renderTaskAttempts.some(item => item.status === "done"))
                 throw new ReferenceError(`Task with id "${renderTask.id}" is already finished with positive status.`);
 
@@ -45,7 +47,8 @@ export default async function TaskReportsProcessor() {
 
             console.log("HandleStart: Creating new attempt");
             let attempt = new RenderTaskAttempt();
-            attempt.slaveUID = slave.UID; // TODO: finish slave linking;
+            // attempt.slaveUID = slave.UID; // TODO: finish slave linking;
+            attempt.slaveUID = slave;
             attempt.task = task;
             attempt.status = "processing";
             attempt = await attempt.save();
@@ -60,7 +63,7 @@ export default async function TaskReportsProcessor() {
             console.log("HandleStart: Creating new attempt log finished");
         };
         const handleReport = async (body) => {
-            console.log("handleReport");
+            console.log("handleReport -----------------", body);
             // TODO: check "data" type
             const {task, reportType, slave, data} = body;
             if (!(reportType === "info" || reportType === "warning" || reportType === "error"))
@@ -69,7 +72,7 @@ export default async function TaskReportsProcessor() {
             const attempt: RenderTaskAttempt = await RenderTaskAttempt.findOne({where: {status: "processing", task}});
             if (!attempt)
                 throw new ReferenceError(`No processing task has been found.`);
-            if (attempt.slaveUID !== slave.UID)
+            if (attempt.slaveUID !== slave) // TODO: Change to slave.UID
                 throw new ReferenceError(`Task attempt "${attempt.id}" belongs to another slave.`);
 
             const attemptLog = new RenderTaskAttemptLog();
@@ -79,16 +82,16 @@ export default async function TaskReportsProcessor() {
             await attemptLog.save();
         };
         const handleFinish = async (body) => {
-            console.log("handleFinish");
+            console.log("handleFinish ----------", body);
             // TODO: check "data" type
             const {task, reportType, slave, data} = body;
             if (!(reportType === "info" || reportType === "warning" || reportType === "error"))
                 throw new TypeError(`Incorrect type of reportType, expected "'info' | 'warning' | 'error', got "${reportType}"`);
 
-            const attempt = await RenderTaskAttempt.findOne({where: {status: "processing", task}});
+            const attempt = await RenderTaskAttempt.findOne({where: {status: "processing", task}, relations: ["task"]});
             if (!attempt)
                 throw new ReferenceError(`No processing task has been found.`);
-            if (attempt.slaveUID !== slave.UID)
+            if (attempt.slaveUID !== slave) // TODO: Change to slave.UID
                 throw new ReferenceError(`Task attempt "${attempt.id}" belongs to another slave.`);
 
             const attemptLog = new RenderTaskAttemptLog();
@@ -124,7 +127,14 @@ export default async function TaskReportsProcessor() {
                 default:
                     throw new TypeError(`Incorrect action type, expected "'start' | 'report' | 'finish'", got "${action}"`);
             }
+            channel.ack(message);
         } catch (error) {
+            console.error(error);
+            if (error instanceof ReferenceError)
+                channel.ack(message);
+            else
+                channel.nack(message);
+
             await Logger.error({
                 message: error.message
             });
@@ -133,10 +143,9 @@ export default async function TaskReportsProcessor() {
 
     const channel: Channel = await Server.getCurrent().getRabbit().createChannel();
     await channel.assertQueue(AMQP_TASK_REPORTS_QUEUE);
-    await channel.prefetch(10);
+    await channel.prefetch(1);
     await channel.consume(AMQP_TASK_REPORTS_QUEUE, async (message: Message) => {
         console.log("Processing job report");
-        await handler(message);
-        channel.ack(message);
+        await handler(message, channel);
     });
 }

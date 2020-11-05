@@ -14,6 +14,8 @@ import JobEvent from "../core/JobEvent";
 import RenderTask from "../entities/RenderTask";
 import getFramesFromRange from "../utils/getFramesFromRange";
 import RenderJob from "../entities/RenderJob";
+import SystemLog from "../entities/SystemLog";
+import Logger from "../core/Logger";
 
 
 /**
@@ -27,12 +29,12 @@ export default async function JobsProcessor() {
     /**
      * handler - AMQP messages handler.
      * @param message - AMQP message.
+     * @param channel
      * @throws ReferenceError
      * @author Danil Andreev
      */
-    async function handler(message: Message) {
+    async function handler(message: Message, channel: Channel) {
         try {
-            const channel: Channel = await Server.getCurrent().getRabbit().createChannel();
             const event: JobEvent = new JobEvent(JSON.parse(message.content.toString()));
             const inputJob: RenderJob = event.data;
             const frames: number[] = getFramesFromRange(inputJob.frameRange);
@@ -57,11 +59,20 @@ export default async function JobsProcessor() {
             await RenderTask.createQueryBuilder().insert().values(tasks).execute();
 
             // Add tasks into RabbitMQ queue
-            await channel.assertQueue(AMQP_TASKS_QUEUE);
+            const channelTarget: Channel = await Server.getCurrent().getRabbit().createChannel();
+            await channelTarget.assertQueue(AMQP_TASKS_QUEUE);
             for (const task of tasks) {
-                channel.sendToQueue(AMQP_TASKS_QUEUE, Buffer.from(JSON.stringify(task)));
+                channelTarget.sendToQueue(AMQP_TASKS_QUEUE, Buffer.from(JSON.stringify(task)));
             }
+            await channelTarget.close();
+            channel.ack(message);
         } catch (error) {
+            if (error instanceof ReferenceError)
+                channel.ack(message);
+            else
+                channel.nack(message);
+
+            await Logger.error(error.message + " " + error.trace);
             //TODO: handle error
         }
     }
@@ -71,7 +82,6 @@ export default async function JobsProcessor() {
     await channel.prefetch(1);
     await channel.consume(AMQP_JOBS_QUEUE, async (message: Message) => {
         console.log("Processing job");
-        await handler(message);
-        channel.ack(message);
+        await handler(message, channel);
     });
 }
