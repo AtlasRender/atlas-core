@@ -17,6 +17,8 @@ import JobEvent, {JobEventType} from "../core/JobEvent";
 import Organization from "../entities/Organization";
 import RenderJob from "../entities/RenderJob";
 import getFramesFromRange from "../utils/getFramesFromRange";
+import {JobSubmitValidator} from "../validators/JobRequestValidators";
+import User from "../entities/User";
 
 
 /**
@@ -27,7 +29,7 @@ import getFramesFromRange from "../utils/getFramesFromRange";
 export default class JobController extends Controller {
     constructor() {
         super("/jobs");
-        this.post("/", this.createJobHandler);
+        this.post("/", JobSubmitValidator, this.createJobHandler);
     }
 
     /**
@@ -39,9 +41,9 @@ export default class JobController extends Controller {
      */
     public async createJobHandler(ctx: Context) {
         let renderJob: RenderJob = null;
+        const user = ctx.state.user;
         try {
             const inputJob = ctx.request.body;
-            // TODO: create validators
 
             const organization: Organization = await Organization.findOne({where: {id: inputJob.organization}});
             if (!organization) throw new ReferenceError(`Organization does not exist`);
@@ -76,6 +78,7 @@ export default class JobController extends Controller {
             } else {
                 throw new RequestError(409, "Unavailable to queue job");
             }
+            await channel.close();
         } catch (error) {
             throw new RequestError(503, "Internal server error. Please, visit this resource later.");
         }
