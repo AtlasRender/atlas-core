@@ -21,6 +21,8 @@ import Organization from "../entities/Organization";
 import RequestError from "../errors/RequestError";
 import {getConnection, getRepository} from "typeorm";
 import User from "../entities/User";
+import {findOneOrganizationByRequestParams} from "../middlewares/organizationRequestMiddlewares";
+import {canManageRoles} from "../middlewares/withRoleAccessMiddleware";
 
 
 /**
@@ -36,7 +38,13 @@ export default class RolesController extends Controller {
         this.post("/", RoleAddValidator, this.addRole);
 
         this.get("/:role_id", this.getRole);
-        this.post("/:role_id", RoleEditValidator, this.editRole);
+        this.post(
+            "/:role_id",
+            RoleEditValidator,
+            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+            canManageRoles,
+            this.editRole
+        );
         this.delete("/:role_id", this.deleteRole);
 
         // users
@@ -76,29 +84,7 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async addRole(ctx: Context): Promise<void> {
-        const org: Organization = await Organization.findOne(ctx.params.organization_id, {relations: ["ownerUser"]});
-        if (!org) {
-            throw new RequestError(404, "Not found.");
-        }
-        const user = await getRepository(User)
-            .createQueryBuilder("user")
-            .where({id: ctx.state.user.id})
-            .leftJoinAndSelect("user.organizations", "userOrg", "userOrg.id = :orgId",
-                {orgId: org.id})
-            .leftJoinAndSelect("user.roles", "userRole", "userRole.id = userOrg.id")
-            .getOne();
-
-        // check if user is part of this organization
-        if(!user.organizations.length) {
-            throw new RequestError(403, "You are not a member of this organization.")
-        }
-
-        const canManageRoles = user.roles.some(role => role.canManageRoles);
-
-        // check if user has permission to add roles
-        if (!canManageRoles && user.id !== org.ownerUser.id) {
-            throw new RequestError(403, "Forbidden.");
-        }
+        const org = ctx.state.organization;
 
         // check name uniqueness
         if (await Role.findOne({name: ctx.request.body.name, organization: org})) {
@@ -159,8 +145,8 @@ export default class RolesController extends Controller {
             .getOne();
 
         // check if user is part of this organization
-        if(!user.organizations.length) {
-            throw new RequestError(403, "You are not a member of this organization.")
+        if (!user.organizations.length) {
+            throw new RequestError(403, "You are not a member of this organization.");
         }
 
         const canManageRoles = user.roles.some(role => role.canManageRoles);
@@ -214,8 +200,8 @@ export default class RolesController extends Controller {
             .getOne();
 
         // check if user is part of this organization
-        if(!user.organizations.length) {
-            throw new RequestError(403, "You are not a member of this organization.")
+        if (!user.organizations.length) {
+            throw new RequestError(403, "You are not a member of this organization.");
         }
 
         const canManageRoles = user.roles.some(role => role.canManageRoles);
@@ -279,8 +265,8 @@ export default class RolesController extends Controller {
             .getOne();
 
         // check if user is part of this organization
-        if(!user.organizations.length) {
-            throw new RequestError(403, "You are not a member of this organization.")
+        if (!user.organizations.length) {
+            throw new RequestError(403, "You are not a member of this organization.");
         }
 
         const canManageUsers = user.roles.some(role => role.canManageUsers);
