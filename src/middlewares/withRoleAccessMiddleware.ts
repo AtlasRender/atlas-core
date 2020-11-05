@@ -34,7 +34,7 @@ export const canManageRoles: Middleware = async (ctx: Context, next: Next) => {
 
     const canManageRoles = user.roles.some(role => role.canManageRoles);
 
-    // check if user has permission to add roles
+    // check if user has permission to manage roles
     if (!canManageRoles && user.id !== ctx.state.organization.ownerUser.id) {
         throw new RequestError(403, "Forbidden.");
     }

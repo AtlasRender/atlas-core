@@ -35,7 +35,13 @@ export default class RolesController extends Controller {
         super("/:organization_id/roles");
 
         this.get("/", this.getRoles);
-        this.post("/", RoleAddValidator, this.addRole);
+        this.post(
+            "/",
+            RoleAddValidator,
+            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+            canManageRoles,
+            this.addRole
+        );
 
         this.get("/:role_id", this.getRole);
         this.post(
@@ -45,7 +51,12 @@ export default class RolesController extends Controller {
             canManageRoles,
             this.editRole
         );
-        this.delete("/:role_id", this.deleteRole);
+        this.delete(
+            "/:role_id",
+            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+            canManageRoles,
+            this.deleteRole
+        );
 
         // users
         this.get("/:role_id/users", this.getRoleUsers);
@@ -98,6 +109,13 @@ export default class RolesController extends Controller {
         role.color = ctx.request.body.color || "black"; // TODO random color
         role.permissionLevel = ctx.request.body.permissionLevel;
         role.organization = org;
+        role.canManageUsers = ctx.request.body.canManageUsers;
+        role.canManageRoles = ctx.request.body.canManageRoles;
+        role.canCreateJobs = ctx.request.body.canCreateJobs;
+        role.canDeleteJobs = ctx.request.body.canDeleteJobs;
+        role.canEditJobs = ctx.request.body.canEditJobs;
+        role.canManagePlugins = ctx.request.body.canManagePlugins;
+        role.canManageTeams = ctx.request.body.canManageTeams;
         await role.save();
         ctx.body = {success: true};
     }
@@ -131,30 +149,7 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async editRole(ctx: Context): Promise<void> {
-        const org: Organization = await Organization.findOne(ctx.params.organization_id, {relations: ["ownerUser"]});
-        if (!org) {
-            throw new RequestError(404, "Not found.");
-        }
-
-        const user = await getRepository(User)
-            .createQueryBuilder("user")
-            .where({id: ctx.state.user.id})
-            .leftJoinAndSelect("user.organizations", "userOrg", "userOrg.id = :orgId",
-                {orgId: org.id})
-            .leftJoinAndSelect("user.roles", "userRole", "userRole.id = userOrg.id")
-            .getOne();
-
-        // check if user is part of this organization
-        if (!user.organizations.length) {
-            throw new RequestError(403, "You are not a member of this organization.");
-        }
-
-        const canManageRoles = user.roles.some(role => role.canManageRoles);
-
-        // check if user has permission to edit roles
-        if (!canManageRoles && user.id !== org.ownerUser.id) {
-            throw new RequestError(403, "Forbidden.");
-        }
+        const org: Organization = ctx.state.organization;
 
         // find role that will be edited
         let role = await Role.findOne(ctx.params.role_id);
@@ -175,6 +170,13 @@ export default class RolesController extends Controller {
         role.permissionLevel = ctx.request.body.permissionLevel || role.permissionLevel;
         role.color = ctx.request.body.color || role.color;
         role.description = ctx.request.body.description || role.description;
+        role.canManageUsers = ctx.request.body.canManageUsers || role.canManageUsers;
+        role.canManageRoles = ctx.request.body.canManageRoles || role.canManageRoles;
+        role.canCreateJobs = ctx.request.body.canCreateJobs || role.canCreateJobs;
+        role.canDeleteJobs = ctx.request.body.canDeleteJobs || role.canDeleteJobs;
+        role.canEditJobs = ctx.request.body.canEditJobs || role.canEditJobs;
+        role.canManagePlugins = ctx.request.body.canManagePlugins || role.canManagePlugins;
+        role.canManageTeams = ctx.request.body.canManageTeams || role.canManageTeams;
         await role.save();
 
         ctx.body = {success: true};
@@ -186,31 +188,6 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async deleteRole(ctx: Context): Promise<void> {
-        const org: Organization = await Organization.findOne(ctx.params.organization_id);
-        if (!org) {
-            throw new RequestError(404, "Organization not found.");
-        }
-
-        const user = await getRepository(User)
-            .createQueryBuilder("user")
-            .where({id: ctx.state.user.id})
-            .leftJoinAndSelect("user.organizations", "userOrg", "userOrg.id = :orgId",
-                {orgId: org.id})
-            .leftJoinAndSelect("user.roles", "userRole", "userRole.id = userOrg.id")
-            .getOne();
-
-        // check if user is part of this organization
-        if (!user.organizations.length) {
-            throw new RequestError(403, "You are not a member of this organization.");
-        }
-
-        const canManageRoles = user.roles.some(role => role.canManageRoles);
-
-        // check if user has permission to delete roles
-        if (!canManageRoles && user.id !== org.ownerUser.id) {
-            throw new RequestError(403, "Forbidden.");
-        }
-
         const role: Role = await Role.findOne(ctx.params.role_id);
         if (!role) {
             throw new RequestError(404, "Role not found.");
