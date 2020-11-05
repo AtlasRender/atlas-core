@@ -14,12 +14,11 @@ import RequestError from "../errors/RequestError";
 
 
 /**
- * canManageRoles - Koa.Middleware for checking if logged user has permission to manage roles.
+ * findLoggedUser - find current logged user in context of organization
  * @param ctx - Context
- * @param next - Next
  */
-export const canManageRoles: Middleware = async (ctx: Context, next: Next) => {
-    const user = await getRepository(User)
+const findLoggedUser = async (ctx: Context): Promise<User> => {
+    const user: User = await getRepository(User)
         .createQueryBuilder("user")
         .where({id: ctx.state.user.id})
         .leftJoinAndSelect("user.organizations", "userOrg", "userOrg.id = :orgId",
@@ -31,13 +30,35 @@ export const canManageRoles: Middleware = async (ctx: Context, next: Next) => {
     if (!user.organizations.length) {
         throw new RequestError(403, "You are not a member of this organization.");
     }
+    return user;
+}
 
+/**
+ * canManageRoles - Koa.Middleware for checking if logged user has permission to manage roles.
+ * @param ctx - Context
+ * @param next - Next
+ */
+export const canManageRoles: Middleware = async (ctx: Context, next: Next) => {
+    const user = await findLoggedUser(ctx);
     const canManageRoles = user.roles.some(role => role.canManageRoles);
-
     // check if user has permission to manage roles
     if (!canManageRoles && user.id !== ctx.state.organization.ownerUser.id) {
         throw new RequestError(403, "Forbidden.");
     }
+    await next();
+};
 
+/**
+ * canManageUsers - Koa.Middleware for checking if logged user has permission to manage users.
+ * @param ctx - Context
+ * @param next - Next
+ */
+export const canManageUsers: Middleware = async (ctx: Context, next: Next) => {
+    const user = await findLoggedUser(ctx);
+    const canManageUsers = user.roles.some(role => role.canManageUsers);
+    // check if user has permission to manage users
+    if (!canManageUsers && user.id !== ctx.state.organization.ownerUser.id) {
+        throw new RequestError(403, "Forbidden.");
+    }
     await next();
 };
