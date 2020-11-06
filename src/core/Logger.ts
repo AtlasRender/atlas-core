@@ -11,6 +11,8 @@ import SystemLog from "../entities/SystemLog";
 
 export type LOG_LEVELS = "info" | "warning" | "error";
 
+export type LogPayload = object | string;
+
 /**
  * Logger - System logger. Creates records in database.
  * @class
@@ -24,10 +26,11 @@ export default class Logger {
      * @param payload - Payload of the message.
      * @author Danil Andreev
      */
-    public static async log(level: LOG_LEVELS, payload: object): Promise<SystemLog> {
+    public static async log(level: LOG_LEVELS, payload: LogPayload): Promise<SystemLog> {
+        const payloadFinal = typeof payload === "string" ? {message: payload} : payload;
         const record = new SystemLog();
         record.level = level;
-        record.payload = payload;
+        record.payload = payloadFinal;
         return await record.save();
     }
 
@@ -37,7 +40,7 @@ export default class Logger {
      * @param payload - Payload of the message.
      * @author Danil Andreev
      */
-    public static async info(payload: object): Promise<SystemLog> {
+    public static async info(payload: LogPayload): Promise<SystemLog> {
         const result = await Logger.log("info", payload);
         return result;
     }
@@ -48,7 +51,7 @@ export default class Logger {
      * @param payload - Payload of the message.
      * @author Danil Andreev
      */
-    public static async warn(payload: object): Promise<SystemLog> {
+    public static async warn(payload: LogPayload): Promise<SystemLog> {
         const result = await Logger.log("warning", payload);
         return result;
     }
@@ -59,7 +62,7 @@ export default class Logger {
      * @param payload - Payload of the message.
      * @author Danil Andreev
      */
-    public static async error(payload: object): Promise<SystemLog> {
+    public static async error(payload: LogPayload): Promise<SystemLog> {
         const result = await Logger.log("error", payload);
         return result;
     }

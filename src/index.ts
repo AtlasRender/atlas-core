@@ -15,8 +15,6 @@ dotenv.config();
 import "globals";
 
 import Server from "./core/Server";
-// Interfaces
-import ServerConfig from "./interfaces/ServerConfig";
 
 // Controllers
 import UsersController from "./controllers/UsersController";
@@ -27,13 +25,14 @@ import UserTokensController from "./controllers/UserTokensController";
 import {config} from "./config";
 import JobController from "./controllers/JobController";
 import JobsProcessor from "./processors/JobsProcessor";
-import getFramesFromRange from "./utils/getFramesFromRange";
 import VersionsController from "./controllers/VersionsController";
+import TaskReportsProcessor from "./processors/TaskReportsProcessor";
 
 
 async function startServer() {
     const server = await Server.createServer(config);
     await JobsProcessor();
+    await TaskReportsProcessor();
 
     server.useController(new UsersController());
     server.useController(new LoginController());
