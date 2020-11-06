@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.12.1",
-    "@types/amqplib": "^0.5.15",
+    "@types/amqplib": "^0.5.16",
     "@types/argon2": "^0.15.0",
     "@types/crypto-random-string": "^2.0.0",
     "@types/jest": "^26.0.15",
