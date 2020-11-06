@@ -33,6 +33,7 @@ export default class JobController extends Controller {
         this.get("/", this.getJobs);
         this.get("/:jobId", this.getJob);
         this.delete("/:jobId", this.deleteJob);
+        this.delete("/:jobId/fail", this.failJob);
 
         this.get("/:jobId/tasks", this.getTasks);
         this.get("/:jobId/tasks/:taskId", this.getTask);
@@ -63,8 +64,31 @@ export default class JobController extends Controller {
     }
 
     /**
+     * Route __[DELETE]__ ___/jobs/:jobId/fail___ - fails render job.
+     * @code 200, 403, 404
+     * @throws RequestError
+     * @method
+     * @author Danil Andreev
+     */
+    public async failJob(ctx: Context) {
+        const user = ctx.state.user;
+        const {jobId} = ctx.params;
+
+        const job = await RenderJob.findOne({where: {id: jobId}});
+        if (!job)
+            throw new RequestError(404, "Render job not found.");
+
+        if (!await JobController.checkUserHaveAccessToJob(user.id, jobId))
+            throw new RequestError(403, "You don't have permissions to this data.");
+
+        job.failed = true;
+        ctx.body = await job.save();
+        // TODO: add subscriber.
+    }
+
+    /**
      * Route __[DELETE]__ ___/jobs/:jobId___ - deletes render job.
-     * @code 200, 409, 503
+     * @code 200, 403, 404
      * @throws RequestError
      * @method
      * @author Danil Andreev
@@ -74,9 +98,12 @@ export default class JobController extends Controller {
         const {jobId} = ctx.params;
 
         if (!await JobController.checkUserHaveAccessToJob(user.id, jobId))
-            throw new RequestError(403, "You don't have permissions to this data.")
+            throw new RequestError(403, "You don't have permissions to this data.");
 
         const result = await RenderJob.delete({id: jobId});
+
+        if (!result.affected)
+            throw new RequestError(404, "Render job not found.");
 
         // TODO: send message to slave about job fail.
 

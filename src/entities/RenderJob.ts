@@ -46,6 +46,9 @@ export default class RenderJob extends BaseEntity {
     @Column({type: "text", nullable: false})
     frameRange: string;
 
+    @Column({default: false})
+    failed: boolean;
+
     @ManyToOne(type => Organization, organization => organization.jobs)
     organization: Organization;
 
