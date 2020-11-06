@@ -32,6 +32,8 @@ export default class JobController extends Controller {
         this.post("/", JobSubmitValidator, this.createJobHandler);
         this.get("/", this.getJobs);
         this.get("/:jobId", this.getJob);
+        this.delete("/:jobId", this.deleteJob);
+
         this.get("/:jobId/tasks", this.getTasks);
         this.get("/:jobId/tasks/:taskId", this.getTask);
     }
@@ -58,6 +60,27 @@ export default class JobController extends Controller {
             limit 1
         `, [userId, jobId]);
         return !!jobs.length;
+    }
+
+    /**
+     * Route __[DELETE]__ ___/jobs/:jobId___ - deletes render job.
+     * @code 200, 409, 503
+     * @throws RequestError
+     * @method
+     * @author Danil Andreev
+     */
+    public async deleteJob(ctx: Context) {
+        const user = ctx.state.user;
+        const {jobId} = ctx.params;
+
+        if (!await JobController.checkUserHaveAccessToJob(user.id, jobId))
+            throw new RequestError(403, "You don't have permissions to this data.")
+
+        const result = await RenderJob.delete({id: jobId});
+
+        // TODO: send message to slave about job fail.
+
+        ctx.body = result;
     }
 
     /**
@@ -117,6 +140,7 @@ export default class JobController extends Controller {
 
     /**
      * Route __[get]__ ___/jobs___ - returns all jobs available for user.
+     * @code 200
      * @throws RequestError
      * @method
      * @author Danil Andreev
@@ -136,8 +160,8 @@ export default class JobController extends Controller {
     }
 
     /**
-     * Route __[GET]__ ___/jobs/:id___ - returns job detailed information.
-     * @code 404, 403
+     * Route __[GET]__ ___/jobs/:jobId___ - returns job detailed information.
+     * @code 200, 404, 403
      * @throws RequestError
      * @method
      * @author Danil Andreev
@@ -155,6 +179,13 @@ export default class JobController extends Controller {
         ctx.body = job;
     }
 
+    /**
+     * Route __[GET]__ ___/jobs/:jobId/tasks___ - returns all tasks of render job.
+     * @code 200, 404, 403
+     * @throws RequestError
+     * @method
+     * @author Danil Andreev
+     */
     public async getTasks(ctx: Context) {
         const user = ctx.state.user;
         const {jobId} = ctx.params;
@@ -173,6 +204,13 @@ export default class JobController extends Controller {
         ctx.body = tasks;
     }
 
+    /**
+     * Route __[GET]__ ___/jobs/:jobId/tasks/:taskId___ - returns job detailed information.
+     * @code 200, 404, 403
+     * @throws RequestError
+     * @method
+     * @author Danil Andreev
+     */
     public async getTask(ctx: Context) {
         const user = ctx.state.user;
         const {jobId, taskId} = ctx.params;

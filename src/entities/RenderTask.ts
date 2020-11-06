@@ -39,10 +39,10 @@ export default class RenderTask extends BaseEntity {
     status: string;
 
     //@Column({nullable: false})
-    @ManyToOne(type => RenderJob, job => job.renderTasks)
+    @ManyToOne(type => RenderJob, job => job.renderTasks, {onDelete: "CASCADE"})
     job: RenderJob;
 
-    @OneToMany(type => RenderTaskAttempt, attempt => attempt.task)
+    @OneToMany(type => RenderTaskAttempt, attempt => attempt.task, {cascade: true})
     renderTaskAttempts: RenderTaskAttempt[];
 
     @CreateDateColumn()

@@ -36,7 +36,7 @@ export default class RenderJobLog extends BaseEntity {
     @Column({type: "varchar", default: 50})
     type: string;
 
-    @ManyToOne(type => RenderJob, job => job.logs)
+    @ManyToOne(type => RenderJob, job => job.logs, {onDelete: "CASCADE"})
     renderJob: RenderJob;
 
     @CreateDateColumn()

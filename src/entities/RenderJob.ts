@@ -49,10 +49,10 @@ export default class RenderJob extends BaseEntity {
     @ManyToOne(type => Organization, organization => organization.jobs)
     organization: Organization;
 
-    @OneToMany(type => RenderTask, task => task.job)
+    @OneToMany(type => RenderTask, task => task.job, {cascade: true})
     renderTasks: RenderTask[];
 
-    @OneToMany(type => RenderJobLog, log => log.renderJob)
+    @OneToMany(type => RenderJobLog, log => log.renderJob, {cascade: true})
     logs: RenderJobLog[];
 
     @ManyToOne(type => Plugin, plugin => plugin.renderJob)

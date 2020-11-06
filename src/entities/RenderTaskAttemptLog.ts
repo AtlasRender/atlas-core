@@ -37,7 +37,7 @@ export default class RenderTaskAttemptLog extends BaseEntity {
     @Column({type: "varchar", default: 50})
     type: string;
 
-    @ManyToOne(type => RenderTaskAttempt, attempt => attempt.logs)
+    @ManyToOne(type => RenderTaskAttempt, attempt => attempt.logs, {onDelete: "CASCADE"})
     renderTaskAttempt: RenderTaskAttempt;
 
     @CreateDateColumn()
