@@ -32,16 +32,16 @@ export default class RenderTaskAttempt extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    slave: number;
+    @Column({length: 100})
+    slaveUID: string;
 
     @Column({type: "varchar", default: 50})
     status: string;
 
-    @ManyToOne(type => RenderTask, renderTask => renderTask.renderTaskAttempts)
+    @ManyToOne(type => RenderTask, renderTask => renderTask.renderTaskAttempts, {onDelete: "CASCADE"})
     task: RenderTask;
 
-    @OneToMany(type => RenderTaskAttemptLog, log => log.renderTaskAttempt)
+    @OneToMany(type => RenderTaskAttemptLog, log => log.renderTaskAttempt, {cascade: true})
     logs: RenderTaskAttemptLog[];
 
     @CreateDateColumn()
