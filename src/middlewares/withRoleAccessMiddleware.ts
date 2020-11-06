@@ -36,7 +36,7 @@ const findLoggedUser = async (ctx: Context): Promise<User> => {
 
 /**
  * withRoleAccessOrOwner - utility function, used for checking role access.
- * @param rolePredicate - predicate used in _roles.some()_. Specifies the field on which checking will be based.
+ * @param rolePredicate - predicate used in __roles.some()__. Specifies the field on which checking will be based.
  */
 const withRoleAccessOrOwner = (
     rolePredicate: (value: Role, index: number, array: Role[]) => unknown

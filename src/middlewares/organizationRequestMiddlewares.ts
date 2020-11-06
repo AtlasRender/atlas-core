@@ -10,6 +10,7 @@
 import Organization from "../entities/Organization";
 import RequestError from "../errors/RequestError";
 import {Context, Middleware, Next} from "koa";
+import {FindOneOptions} from "typeorm/find-options/FindOneOptions";
 
 
 /**
@@ -18,12 +19,13 @@ import {Context, Middleware, Next} from "koa";
  * @param options - options to use in _typeorm's_ __findOne__ function.
  * @return Koa.Middleware
  */
-export const findOneOrganizationByRequestParams = (options): Middleware => async (ctx: Context, next: Next) => {
-    const org: Organization = await Organization.findOne(ctx.params.organization_id, options);
-    if (!org) {
-        throw new RequestError(404, "Not found.");
-    }
-    ctx.state.organization = org;
-    await next();
-};
+export const findOneOrganizationByRequestParams = (options?: FindOneOptions<Organization>): Middleware =>
+    async (ctx: Context, next: Next) => {
+        const org: Organization = await Organization.findOne(ctx.params.organization_id, options);
+        if (!org) {
+            throw new RequestError(404, "Not found.");
+        }
+        ctx.state.organization = org;
+        await next();
+    };
 

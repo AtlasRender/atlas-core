@@ -22,7 +22,7 @@ import RequestError from "../errors/RequestError";
 import {getConnection, getRepository} from "typeorm";
 import User from "../entities/User";
 import {findOneOrganizationByRequestParams} from "../middlewares/organizationRequestMiddlewares";
-import {canManageRoles} from "../middlewares/withRoleAccessMiddleware";
+import {canManageRoles, canManageUsers} from "../middlewares/withRoleAccessMiddleware";
 
 
 /**
@@ -60,8 +60,20 @@ export default class RolesController extends Controller {
 
         // users
         this.get("/:role_id/users", this.getRoleUsers);
-        this.post("/:role_id/users", IncludeUserIdInBodyValidator, this.addRoleUser);
-        this.delete("/:role_id/users", IncludeUserIdInBodyValidator, this.deleteRoleUser);
+        this.post(
+            "/:role_id/users",
+            IncludeUserIdInBodyValidator,
+            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+            canManageUsers,
+            this.addRoleUser
+        );
+        this.delete(
+            "/:role_id/users",
+            IncludeUserIdInBodyValidator,
+            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+            canManageUsers,
+            this.deleteRoleUser
+        );
     }
 
     /**
@@ -228,31 +240,6 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async addRoleUser(ctx: Context): Promise<void> {
-        const org: Organization = await Organization.findOne(ctx.params.organization_id);
-        if (!org) {
-            throw new RequestError(404, "Organization not found.");
-        }
-
-        const user = await getRepository(User)
-            .createQueryBuilder("user")
-            .where({id: ctx.state.user.id})
-            .leftJoinAndSelect("user.organizations", "userOrg", "userOrg.id = :orgId",
-                {orgId: org.id})
-            .leftJoinAndSelect("user.roles", "userRole", "userRole.id = userOrg.id")
-            .getOne();
-
-        // check if user is part of this organization
-        if (!user.organizations.length) {
-            throw new RequestError(403, "You are not a member of this organization.");
-        }
-
-        const canManageUsers = user.roles.some(role => role.canManageUsers);
-
-        // check if user has permission to add user roles
-        if (!canManageUsers && user.id !== org.ownerUser.id) {
-            throw new RequestError(403, "Forbidden.");
-        }
-
         const role: Role = await Role.findOne(ctx.params.role_id, {relations: ["users"]});
         if (!role) {
             throw new RequestError(404, "Role not found.");
@@ -267,8 +254,14 @@ export default class RolesController extends Controller {
             throw new RequestError(403, "User already owns this role.");
         }
 
-        role.users.push(addUser);
-        await role.save();
+        // role.users.push(addUser);
+        // await role.save();
+        await getConnection()
+            .createQueryBuilder()
+            .relation(Role, "users")
+            .of(role)
+            .add(addUser);
+
         ctx.body = {success: true};
     }
 
@@ -278,13 +271,6 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async deleteRoleUser(ctx: Context): Promise<void> {
-        const org: Organization = await Organization.findOne(ctx.params.organization_id);
-        if (!org) {
-            throw new RequestError(404, "Organization not found.");
-        }
-
-        // TODO: check if user has permission to add roles
-
         const role: Role = await Role.findOne(ctx.params.role_id, {relations: ["users"]});
         if (!role) {
             throw new RequestError(404, "Role not found.");
@@ -295,10 +281,10 @@ export default class RolesController extends Controller {
             throw new RequestError(404, "User not found");
         }
 
-
         if (!deleteUser.roles.find(userRole => userRole.id === role.id)) {
             throw new RequestError(403, "User does not own this role.");
         }
+
         await getConnection()
             .createQueryBuilder()
             .relation(Role, "users")
