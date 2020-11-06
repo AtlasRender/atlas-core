@@ -40,7 +40,6 @@ async function startServer() {
     server.useController(new UserTokensController());
     server.useController(new JobController());
     server.useController(new VersionsController());
-    getFramesFromRange("100 20-25");
     server.start();
 }
 
