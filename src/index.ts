@@ -25,17 +25,23 @@ import UserTokensController from "./controllers/UserTokensController";
 import {config} from "./config";
 import JobController from "./controllers/JobController";
 import JobsProcessor from "./processors/JobsProcessor";
+import VersionsController from "./controllers/VersionsController";
 import TaskReportsProcessor from "./processors/TaskReportsProcessor";
 
-Server.createServer(config).then(server => {
-    JobsProcessor().then();
-    TaskReportsProcessor().then();
+
+async function startServer() {
+    const server = await Server.createServer(config);
+    await JobsProcessor();
+    await TaskReportsProcessor();
 
     server.useController(new UsersController());
     server.useController(new LoginController());
     server.useController(new OrganizationsController());
     server.useController(new UserTokensController());
     server.useController(new JobController());
+    server.useController(new VersionsController());
+    getFramesFromRange("100 20-25");
     server.start();
-});
+}
 
+startServer().then();

@@ -46,7 +46,7 @@ export default class LoginController extends Controller {
                 deleted: user.deleted,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt,
-                bearer: Authenticator.createJwt({id: user.id, username: user.username})
+                bearer: await Authenticator.createJwt({id: user.id, username: user.username})
             };
             ctx.body = result;
         } else {
