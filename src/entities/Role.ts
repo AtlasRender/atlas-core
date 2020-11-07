@@ -49,6 +49,27 @@ export default class Role extends BaseEntity {
     })
     permissionLevel: number;
 
+    @Column({nullable: true, default: false})
+    canManageUsers: boolean;
+
+    @Column({nullable: true, default: false})
+    canCreateJobs: boolean;
+
+    @Column({nullable: true, default: false})
+    canEditJobs: boolean;
+
+    @Column({nullable: true, default: false})
+    canDeleteJobs: boolean;
+
+    @Column({nullable: true, default: false})
+    canManageRoles: boolean;
+
+    @Column({nullable: true, default: false})
+    canManagePlugins: boolean;
+
+    @Column({nullable: true, default: false})
+    canManageTeams: boolean;
+
     @ManyToOne(type => Organization, organization => organization.roles)
     organization: Organization;
 

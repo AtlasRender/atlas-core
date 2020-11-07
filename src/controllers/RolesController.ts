@@ -21,6 +21,8 @@ import Organization from "../entities/Organization";
 import RequestError from "../errors/RequestError";
 import {getConnection, getRepository} from "typeorm";
 import User from "../entities/User";
+import {findOneOrganizationByRequestParams} from "../middlewares/organizationRequestMiddlewares";
+import {canManageRoles, canManageUsers} from "../middlewares/withRoleAccessMiddleware";
 
 
 /**
@@ -33,16 +35,45 @@ export default class RolesController extends Controller {
         super("/:organization_id/roles");
 
         this.get("/", this.getRoles);
-        this.post("/", RoleAddValidator, this.addRole);
+        this.post(
+            "/",
+            RoleAddValidator,
+            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+            canManageRoles,
+            this.addRole
+        );
 
         this.get("/:role_id", this.getRole);
-        this.post("/:role_id", RoleEditValidator, this.editRole);
-        this.delete("/:role_id", this.deleteRole);
+        this.post(
+            "/:role_id",
+            RoleEditValidator,
+            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+            canManageRoles,
+            this.editRole
+        );
+        this.delete(
+            "/:role_id",
+            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+            canManageRoles,
+            this.deleteRole
+        );
 
         // users
         this.get("/:role_id/users", this.getRoleUsers);
-        this.post("/:role_id/users", IncludeUserIdInBodyValidator, this.addRoleUser);
-        this.delete("/:role_id/users", IncludeUserIdInBodyValidator, this.deleteRoleUser);
+        this.post(
+            "/:role_id/users",
+            IncludeUserIdInBodyValidator,
+            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+            canManageUsers,
+            this.addRoleUser
+        );
+        this.delete(
+            "/:role_id/users",
+            IncludeUserIdInBodyValidator,
+            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+            canManageUsers,
+            this.deleteRoleUser
+        );
     }
 
     /**
@@ -76,19 +107,12 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async addRole(ctx: Context): Promise<void> {
-        const org: Organization = await Organization.findOne(ctx.params.organization_id, {relations: ["ownerUser"]});
-        if (!org) {
-            throw new RequestError(404, "Not found.");
-        }
+        const org = ctx.state.organization;
+
         // check name uniqueness
         if (await Role.findOne({name: ctx.request.body.name, organization: org})) {
             throw new RequestError(409, "Role with this name already exist.",
                 {errors: {name: "exists"}});
-        }
-
-        // TODO: users who have permission to add roles
-        if (ctx.state.user.id !== org.ownerUser.id) {
-            throw new RequestError(404, "Not found.");
         }
 
         let role = new Role();
@@ -97,6 +121,13 @@ export default class RolesController extends Controller {
         role.color = ctx.request.body.color || "black"; // TODO random color
         role.permissionLevel = ctx.request.body.permissionLevel;
         role.organization = org;
+        role.canManageUsers = ctx.request.body.canManageUsers;
+        role.canManageRoles = ctx.request.body.canManageRoles;
+        role.canCreateJobs = ctx.request.body.canCreateJobs;
+        role.canDeleteJobs = ctx.request.body.canDeleteJobs;
+        role.canEditJobs = ctx.request.body.canEditJobs;
+        role.canManagePlugins = ctx.request.body.canManagePlugins;
+        role.canManageTeams = ctx.request.body.canManageTeams;
         await role.save();
         ctx.body = {success: true};
     }
@@ -130,10 +161,9 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async editRole(ctx: Context): Promise<void> {
-        const org: Organization = await Organization.findOne(ctx.params.organization_id, {relations: ["ownerUser"]});
-        if (!org) {
-            throw new RequestError(404, "Not found.");
-        }
+        const org: Organization = ctx.state.organization;
+
+        // find role that will be edited
         let role = await Role.findOne(ctx.params.role_id);
         if (!role) {
             throw new RequestError(404, "Role not found.");
@@ -152,6 +182,13 @@ export default class RolesController extends Controller {
         role.permissionLevel = ctx.request.body.permissionLevel || role.permissionLevel;
         role.color = ctx.request.body.color || role.color;
         role.description = ctx.request.body.description || role.description;
+        role.canManageUsers = ctx.request.body.canManageUsers || role.canManageUsers;
+        role.canManageRoles = ctx.request.body.canManageRoles || role.canManageRoles;
+        role.canCreateJobs = ctx.request.body.canCreateJobs || role.canCreateJobs;
+        role.canDeleteJobs = ctx.request.body.canDeleteJobs || role.canDeleteJobs;
+        role.canEditJobs = ctx.request.body.canEditJobs || role.canEditJobs;
+        role.canManagePlugins = ctx.request.body.canManagePlugins || role.canManagePlugins;
+        role.canManageTeams = ctx.request.body.canManageTeams || role.canManageTeams;
         await role.save();
 
         ctx.body = {success: true};
@@ -163,11 +200,6 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async deleteRole(ctx: Context): Promise<void> {
-        const org: Organization = await Organization.findOne(ctx.params.organization_id);
-        if (!org) {
-            throw new RequestError(404, "Organization not found.");
-        }
-
         const role: Role = await Role.findOne(ctx.params.role_id);
         if (!role) {
             throw new RequestError(404, "Role not found.");
@@ -208,11 +240,6 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async addRoleUser(ctx: Context): Promise<void> {
-        const org: Organization = await Organization.findOne(ctx.params.organization_id);
-        if (!org) {
-            throw new RequestError(404, "Organization not found.");
-        }
-
         const role: Role = await Role.findOne(ctx.params.role_id, {relations: ["users"]});
         if (!role) {
             throw new RequestError(404, "Role not found.");
@@ -227,10 +254,14 @@ export default class RolesController extends Controller {
             throw new RequestError(403, "User already owns this role.");
         }
 
-        // TODO: check if user has permission to add roles
+        // role.users.push(addUser);
+        // await role.save();
+        await getConnection()
+            .createQueryBuilder()
+            .relation(Role, "users")
+            .of(role)
+            .add(addUser);
 
-        role.users.push(addUser);
-        await role.save();
         ctx.body = {success: true};
     }
 
@@ -240,11 +271,6 @@ export default class RolesController extends Controller {
      * @author Denis Afendikov
      */
     public async deleteRoleUser(ctx: Context): Promise<void> {
-        const org: Organization = await Organization.findOne(ctx.params.organization_id);
-        if (!org) {
-            throw new RequestError(404, "Organization not found.");
-        }
-
         const role: Role = await Role.findOne(ctx.params.role_id, {relations: ["users"]});
         if (!role) {
             throw new RequestError(404, "Role not found.");
@@ -255,11 +281,10 @@ export default class RolesController extends Controller {
             throw new RequestError(404, "User not found");
         }
 
-        // TODO: check if user has permission to add roles
-
         if (!deleteUser.roles.find(userRole => userRole.id === role.id)) {
             throw new RequestError(403, "User does not own this role.");
         }
+
         await getConnection()
             .createQueryBuilder()
             .relation(Role, "users")
