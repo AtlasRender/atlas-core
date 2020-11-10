@@ -13,7 +13,7 @@ import {
     Entity,
     JoinColumn,
     JoinTable,
-    ManyToMany,
+    ManyToMany, ManyToOne,
     OneToMany,
     OneToOne,
     PrimaryGeneratedColumn, UpdateDateColumn
@@ -43,7 +43,7 @@ export default class Organization extends BaseEntity {
     @Column({type: "text", nullable: true})
     description: string;
 
-    @OneToOne(type => User)
+    @ManyToOne(type => User)
     @JoinColumn()
     ownerUser: User;
 

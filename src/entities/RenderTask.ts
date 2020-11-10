@@ -38,8 +38,8 @@ export default class RenderTask extends BaseEntity {
     @Column({type: "varchar", default: 50})
     status: string;
 
-    //@Column({nullable: false})
-    @ManyToOne(type => RenderJob, job => job.renderTasks, {onDelete: "CASCADE"})
+    @ManyToOne(type => RenderJob, job => job.renderTasks,
+        {onDelete: "CASCADE", nullable: false})
     job: RenderJob;
 
     @OneToMany(type => RenderTaskAttempt, attempt => attempt.task, {cascade: true})
