@@ -141,7 +141,7 @@ export default class OrganizationsController extends Controller {
         if (ctx.state.user.id !== org.ownerUser.id) {
             throw new RequestError(403, "You are not owning this organization.");
         }
-        if (ctx.request.body.name) {
+        if (ctx.request.body.name && ctx.request.body.name !== org.name) {
             if (await Organization.findOne({name: ctx.request.body.name})) {
                 throw new RequestError(409, "Organization with this name already exists.",
                     {errors: {name: "exists"}});
