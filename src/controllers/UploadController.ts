@@ -13,10 +13,10 @@ import * as _ from "lodash";
 import * as fs from "fs";
 import {ReadStream} from "fs";
 // @ts-ignore
-import * as StreamToBuffer from "stream-to-buffer";
 import Temp from "../entities/Temp";
 import RequestError from "../errors/RequestError";
 import streamToBuffer from "./../utils/streamToBuffer";
+import User from "../entities/User";
 
 
 /**
@@ -38,10 +38,18 @@ export default class UploadController extends Controller {
      * @author DanilAndreev
      */
     public async uploadFile(ctx: Context) {
+        const user = ctx.state.user;
         const files: File[] = _.values((ctx.request as any).files);
         const results = [];
+        const {pub} = ctx.request.query;
 
         //TODO; limit files amount per user.
+
+        const userStored: User = await User.findOne({where: {id: user.id}});
+        if (!user)
+            throw new RequestError(400, "User don't exist.");
+
+
 
         for (const file of files) {
             const path = (file as any).path;
@@ -53,9 +61,10 @@ export default class UploadController extends Controller {
             temp.meta = {
                 type: file.type,
             }
+            if (!pub) temp.owner = userStored;
             const result: Temp = await temp.save();
 
-            results.push({name: file.name, type: file.type, id: temp.id});
+            results.push({name: file.name, type: file.type, id: result.id});
         }
     }
 

@@ -21,21 +21,9 @@ import {Moment} from "moment";
  */
 @Entity()
 export default class Plugin extends BasicPlugin {
-    @PrimaryGeneratedColumn()
-    id: number;
-
     @ManyToOne(type => Organization, org => org.plugins)
     organization: Organization;
 
     @OneToMany(type => RenderJob, job => job.plugins)
     renderJob: RenderJob;
-
-    @Column({type: "bytea"})
-    plugin: Buffer;
-
-    @Column({type: "json"})
-    settings: any;
-
-    @CreateDateColumn()
-    createdAt: Moment;
 }

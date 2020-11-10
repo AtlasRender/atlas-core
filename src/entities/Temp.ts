@@ -7,7 +7,7 @@
  * All rights reserved.
  */
 
-import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import BasicPlugin from "./BasicPlugin";
 import {Moment} from "moment";
 import User from "./User";
@@ -19,7 +19,7 @@ import User from "./User";
  * @author Danil Andreev
  */
 @Entity()
-export default class Temp extends BasicPlugin {
+export default class Temp extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
