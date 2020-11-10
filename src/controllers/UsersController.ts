@@ -136,14 +136,20 @@ export default class UsersController extends Controller {
 
         let errors = {};
         if (ctx.request.body.email) {
-            if (await User.findOne({email: ctx.request.body.email})) {
+            if (
+                ctx.request.body.email !== ctx.state.user.email &&
+                await User.findOne({email: ctx.request.body.email})
+            ) {
                 errors["email"] = "exists";
             } else {
                 user.email = ctx.request.body.email;
             }
         }
         if (ctx.request.body.username) {
-            if (await User.findOne({username: ctx.request.body.username})) {
+            if (
+                ctx.request.body.username !== ctx.state.user.username &&
+                await User.findOne({username: ctx.request.body.username})
+            ) {
                 errors["username"] = "exists";
             } else {
                 user.username = ctx.request.body.username;

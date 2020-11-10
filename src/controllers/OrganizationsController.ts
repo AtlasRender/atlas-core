@@ -21,6 +21,8 @@ import User from "../entities/User";
 import RequestError from "../errors/RequestError";
 import {getRepository, In} from "typeorm";
 import {IncludeUsernameInQueryValidator} from "../validators/UserRequestValidators";
+import {findOneOrganizationByRequestParams} from "../middlewares/organizationRequestMiddlewares";
+import {canManageUsers} from "../middlewares/withRoleAccessMiddleware";
 
 
 /**
@@ -41,8 +43,20 @@ export default class OrganizationsController extends Controller {
 
         this.get("/:organization_id/users", this.getOrganizationUsers);
         // body == {userIds: [ids]}
-        this.post("/:organization_id/users", IncludeUserIdsInBodyValidator, this.addOrganizationUsers);
-        this.delete("/:organization_id/users", IncludeUserIdsInBodyValidator, this.deleteOrganizationUsers);
+        this.post(
+            "/:organization_id/users",
+            IncludeUserIdsInBodyValidator,
+            findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}),
+            canManageUsers,
+            this.addOrganizationUsers
+        );
+        this.delete(
+            "/:organization_id/users",
+            IncludeUserIdsInBodyValidator,
+            findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}),
+            canManageUsers,
+            this.deleteOrganizationUsers
+        );
 
         this.get("/:organization_id/availableUsers", IncludeUsernameInQueryValidator, this.getAvailableUsers);
 
@@ -79,7 +93,7 @@ export default class OrganizationsController extends Controller {
 
         const authUser: User = await User.findOne(ctx.state.user.id);
         if (!authUser) {
-            throw new RequestError(403, "Forbidden.");
+            throw new RequestError(401, "Unauthorized.");
         }
 
         let organization = new Organization();
@@ -186,16 +200,7 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async addOrganizationUsers(ctx: Context) {
-        const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users", "ownerUser"]});
-        if (!org) {
-            ctx.throw(404);
-        }
-
-        // TODO: checking if logged user has permissions to add new user
-        if (ctx.state.user.id !== org.ownerUser.id) {
-            throw new RequestError(403, "You are not an owner.");
-        }
-
+        const org = ctx.state.organization;
         let errors = [];
         const users = await User.find({
             where: {
@@ -234,15 +239,7 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async deleteOrganizationUsers(ctx: Context) {
-        const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users", "ownerUser"]});
-        if (!org) {
-            ctx.throw(404);
-        }
-        // checking if logged user has permissions to delete new user
-        if (ctx.state.user.id !== org.ownerUser.id) {
-            throw new RequestError(403, "You are not an owner.");
-        }
-
+        const org = ctx.state.organization;
         let errors = [];
         const users = await User.find({
             where: {
@@ -269,7 +266,7 @@ export default class OrganizationsController extends Controller {
         }
         // [1, 2, 3] 3 - not in org
         // delete [1, 2], throw error
-        // TODO: if all users removed - remove organization
+        // TODO: if all users removed - remove organization ???
         org.users = org.users.filter(usr => !usersToDelete.includes(usr.id));
 
         await org.save();
@@ -330,7 +327,7 @@ export default class OrganizationsController extends Controller {
                 "userRoles"
             ])
             .getOne();
-        if(!user) {
+        if (!user) {
             throw new RequestError(404, "User not found in this organization",
                 {errors: {user: 404}});
         }
