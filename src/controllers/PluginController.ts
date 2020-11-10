@@ -50,6 +50,7 @@ export default class PluginController extends Controller {
 
 
 
+
         Temp.delete({id: file.id}).then();
 
     }
