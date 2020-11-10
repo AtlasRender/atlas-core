@@ -70,7 +70,8 @@ export default class Role extends BaseEntity {
     @Column({nullable: true, default: false})
     canManageTeams: boolean;
 
-    @ManyToOne(type => Organization, organization => organization.roles)
+    @ManyToOne(type => Organization, organization => organization.roles,
+        {onDelete: "CASCADE", nullable: false})
     organization: Organization;
 
     @ManyToMany(type => User, user => user.roles)
