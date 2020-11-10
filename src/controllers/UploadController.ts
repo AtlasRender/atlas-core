@@ -50,7 +50,6 @@ export default class UploadController extends Controller {
             throw new RequestError(400, "User don't exist.");
 
 
-
         for (const file of files) {
             const path = (file as any).path;
             const reader: ReadStream = fs.createReadStream(path);
