@@ -12,9 +12,11 @@ import {Context} from "koa";
 import * as _ from "lodash";
 import * as fs from "fs";
 import {ReadStream} from "fs";
+// @ts-ignore
 import * as StreamToBuffer from "stream-to-buffer";
 import Temp from "../entities/Temp";
 import RequestError from "../errors/RequestError";
+import streamToBuffer from "./../utils/streamToBuffer";
 
 
 /**
@@ -44,7 +46,7 @@ export default class UploadController extends Controller {
         for (const file of files) {
             const path = (file as any).path;
             const reader: ReadStream = fs.createReadStream(path);
-            const buffer: Buffer = await StreamToBuffer.streamToBuffer(reader);
+            const buffer: Buffer = await streamToBuffer(reader);
 
             const temp = new Temp();
             temp.data = buffer;

@@ -23,7 +23,7 @@ export default class Temp extends BasicPlugin {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({type: "blob"})
+    @Column({type: "bytea"})
     data: Buffer;
 
     @Column({type: "json", nullable: true})

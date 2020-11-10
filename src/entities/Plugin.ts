@@ -30,7 +30,7 @@ export default class Plugin extends BasicPlugin {
     @OneToMany(type => RenderJob, job => job.plugins)
     renderJob: RenderJob;
 
-    @Column({type: "blob"})
+    @Column({type: "bytea"})
     plugin: Buffer;
 
     @Column({type: "json"})
