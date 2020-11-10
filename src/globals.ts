@@ -41,3 +41,10 @@ export const ajvInstance = new Ajv({
     messages: false,
 });
 
+export const PLUGIN_SETTING_TYPES = [
+    "number",
+    "string",
+    "integer",
+    "date",
+    "array"
+];

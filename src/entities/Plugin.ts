@@ -7,20 +7,22 @@
  * All rights reserved.
  */
 
-
-import {Entity, ManyToOne, OneToMany} from "typeorm";
+import {Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import Organization from "./Organization";
 import BasicPlugin from "./BasicPlugin";
 import RenderJob from "./RenderJob";
+import {Moment} from "moment";
 
 
 /**
  * Plugin - typeorm entity for plugin data.
  * @class
- * @author Denis Afendikov
+ * @author Danil Andreev
  */
 @Entity()
 export default class Plugin extends BasicPlugin {
+    @PrimaryGeneratedColumn()
+    id: number;
 
     @ManyToOne(type => Organization, org => org.plugins)
     organization: Organization;
@@ -28,4 +30,12 @@ export default class Plugin extends BasicPlugin {
     @OneToMany(type => RenderJob, job => job.plugins)
     renderJob: RenderJob;
 
+    @Column({type: "blob"})
+    plugin: Buffer;
+
+    @Column({type: "json"})
+    settings: any;
+
+    @CreateDateColumn()
+    createdAt: Moment;
 }

@@ -21,6 +21,7 @@ import Role from "./Role";
 import Organization from "./Organization";
 import {Moment} from "moment";
 import UserToken from "./UserToken";
+import Temp from "./Temp";
 
 
 /**
@@ -57,6 +58,9 @@ export default class User extends BaseEntity {
 
     @OneToMany(type => UserToken, tokens => tokens.user)
     tokens: UserToken[];
+
+    @OneToMany(type => Temp, temp => temp.owner, {cascade: true})
+    temp: Temp[];
 
     // @Column({
     //     name: "created_at",

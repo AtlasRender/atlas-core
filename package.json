@@ -53,6 +53,7 @@
     "redis": "^3.0.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.3",
+    "stream-to-buffer": "^0.1.0",
     "typeorm": "^0.2.29",
     "util": "^0.12.3"
   },
