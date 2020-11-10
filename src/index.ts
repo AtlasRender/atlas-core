@@ -27,6 +27,7 @@ import JobController from "./controllers/JobController";
 import JobsProcessor from "./processors/JobsProcessor";
 import VersionsController from "./controllers/VersionsController";
 import TaskReportsProcessor from "./processors/TaskReportsProcessor";
+import UploadController from "./controllers/UploadController";
 
 
 async function startServer() {
@@ -40,6 +41,7 @@ async function startServer() {
     server.useController(new UserTokensController());
     server.useController(new JobController());
     server.useController(new VersionsController());
+    server.useController(new UploadController());
     server.start();
 }
 

@@ -18,7 +18,7 @@ import RequestError from "../errors/RequestError";
 
 
 /**
- * UploadController - controller for /upload route.
+ * UploadController - controller for /file route.
  * @class
  * @author Danil Andreev
  */
@@ -58,7 +58,7 @@ export default class UploadController extends Controller {
     }
 
     /**
-     * Route __[POST]__ ___/file/:id___ - Get temp record.
+     * Route __[GET]__ ___/file/:id___ - Get temp record.
      * @code 200, 404, 423
      * @method
      * @author DanilAndreev
@@ -79,6 +79,27 @@ export default class UploadController extends Controller {
         ctx.body = file;
 
         if (remove)
-            await Temp.delete({id});
+            await Temp.delete({id: file.id});
+    }
+
+    /**
+     * Route __[DELETE]__ ___/file/:id___ - Removes file from temp.
+     * @code 200, 404, 423
+     * @method
+     * @author DanilAndreev
+     */
+    public async removeFile(ctx: Context) {
+        const user = ctx.state.user;
+        const {id} = ctx.params;
+
+        const file: Temp = await Temp.getRepository().createQueryBuilder().addSelect(["id", "owner"]).getOne();
+
+        if (!file)
+            throw new RequestError(404, "File not found.");
+
+        if(file.owner.id !== user.id)
+            throw new RequestError(423, "You don't have permissions to view this data.");
+
+        await Temp.delete({id: file.id});
     }
 }
