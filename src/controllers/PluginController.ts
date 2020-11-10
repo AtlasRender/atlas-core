@@ -11,6 +11,7 @@ import Controller from "../core/Controller";
 import {Context} from "koa";
 import {PLUGIN_SETTING_TYPES} from "../globals";
 import RequestError from "../errors/RequestError";
+import Temp from "../entities/Temp";
 
 
 /**
@@ -45,7 +46,11 @@ export default class PluginController extends Controller {
         if (!PluginController.validatePluginSettings(body.settings))
             throw new RequestError(400, "Invalid plugin settings");
 
+        const file = await Temp.findOne({where: {id: body.file}});
 
+
+
+        Temp.delete({id: file.id}).then();
 
     }
 }
