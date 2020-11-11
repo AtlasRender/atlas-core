@@ -11,6 +11,23 @@
 import {bodyValidator, queryValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 import {ajvInstance} from "../globals";
 
+/**
+ * IncludeUserIdsInBodyValidator - validator for body userIds field in request.
+ * @author Denis Afendikov
+ */
+export const IncludeUserIdsInBodyValidator = bodyValidator({
+        $id: "IncludeUserIdsInBodyValidator",
+        type: "object",
+        required: ["userIds"],
+        properties: {
+            userIds: {
+                type: "array",
+                items: {type: "integer"},
+                minItems: 1
+            }
+        }
+    },
+    ajvInstance);
 
 /**
  * OrganizationRegisterValidator - validator for organization creating request.
@@ -30,7 +47,15 @@ export const OrganizationRegisterValidator = bodyValidator({
             description: {
                 type: "string",
                 maxLength: 255
+            },
+            _: {
+                $ref: "IncludeUserIdsInBodyValidator"
+            },
+            roles: {
+                type: "array",
+                items: {$ref: "RoleAddValidator"},
             }
+
         }
     },
     ajvInstance);
@@ -57,23 +82,6 @@ export const OrganizationEditValidator = bodyValidator({
     },
     ajvInstance);
 
-/**
- * IncludeUserIdsInBodyValidator - validator for body userIds field in request.
- * @author Denis Afendikov
- */
-export const IncludeUserIdsInBodyValidator = bodyValidator({
-        $id: "IncludeUserIdsInBodyValidator",
-        type: "object",
-        required: ["userIds"],
-        properties: {
-            userIds: {
-                type: "array",
-                items: {type: "integer"},
-                minItems: 1
-            }
-        }
-    },
-    ajvInstance);
 
 /**
  * IncludeUserIdInBodyValidator - validator for body userIds field in request.
@@ -170,6 +178,27 @@ export const RoleEditValidator = bodyValidator({
         color: {
             type: "string",
             maxLength: 255
+        },
+        canManageUsers: {
+            type: "boolean"
+        },
+        canCreateJobs: {
+            type: "boolean"
+        },
+        canEditJobs: {
+            type: "boolean"
+        },
+        canDeleteJobs: {
+            type: "boolean"
+        },
+        canManageRoles: {
+            type: "boolean"
+        },
+        canManagePlugins: {
+            type: "boolean"
+        },
+        canManageTeams: {
+            type: "boolean"
         }
     }
 }, ajvInstance);

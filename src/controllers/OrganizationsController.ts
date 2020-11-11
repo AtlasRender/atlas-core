@@ -26,6 +26,44 @@ import {canManageUsers} from "../middlewares/withRoleAccessMiddleware";
 
 
 /**
+ * @function
+ * addUsersToOrg - for each userId provided in userIds, finds and adds user to organization.
+ * @param userIds - array of user ids.
+ * @param org - organization, where users will be added.
+ * @author Denis Afendikov
+ */
+const addUsersToOrg = async (userIds: number[], org: Organization): Promise<void> => {
+    let errors = [];
+    const users = await User.find({
+        where: {
+            id: In(userIds)
+        },
+        relations: ["roles"]
+    });
+    for (const userId of userIds) {
+        const addUser = users.find(user => user.id === userId);
+        if (!addUser) {
+            throw new RequestError(404, "User not exist.", {errors: {notExist: userId}});
+        }
+        // if user already in org
+        if (org.users.find(user => user.id === addUser.id)) {
+            errors.push({present: addUser.id});
+        } else {
+            addUser.roles.push(org.defaultRole);
+            org.users.push(addUser);
+
+            await addUser.save();
+        }
+    }
+
+    await org.save();
+
+    if (errors.length) {
+        throw new RequestError(409, "Some users are already in organization.", {errors});
+    }
+};
+
+/**
  * OrganizationController - controller for /organization routes.
  * @class
  * @author Denis Afendikov
@@ -46,7 +84,7 @@ export default class OrganizationsController extends Controller {
         this.post(
             "/:organization_id/users",
             IncludeUserIdsInBodyValidator,
-            findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}),
+            findOneOrganizationByRequestParams({relations: ["users", "ownerUser", "defaultRole"]}),
             canManageUsers,
             this.addOrganizationUsers
         );
@@ -101,7 +139,15 @@ export default class OrganizationsController extends Controller {
         organization.name = ctx.request.body.name;
         organization.description = ctx.request.body.description;
         organization.users = [authUser];
-        ctx.body = await organization.save();
+
+        const savedOrg = await organization.save();
+
+        await addUsersToOrg(ctx.request.body.userIds, savedOrg);
+
+        ctx.body = {
+            success: true,
+            organizationId: savedOrg.id
+        };
     }
 
     /**
@@ -160,7 +206,7 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async deleteOrganizationById(ctx: Context): Promise<void> {
-        const org = await Organization.findOne(ctx.params.organization_id);
+        const org = await Organization.findOne(ctx.params.organization_id, {relations: ["ownerUser"]});
         if (!org) {
             ctx.throw(404);
         }
@@ -201,35 +247,37 @@ export default class OrganizationsController extends Controller {
      */
     public async addOrganizationUsers(ctx: Context) {
         const org = ctx.state.organization;
-        let errors = [];
-        const users = await User.find({
-            where: {
-                id: In(ctx.request.body.userIds)
-            },
-            relations: ["roles"]
-        });
-        ctx.request.body.userIds.forEach(userId => {
-            if (!users.find(user => user.id === userId)) {
-                throw new RequestError(400, "User not exist.", {errors: {notExist: userId}});
-            }
-        });
+        // let errors = [];
+        // const users = await User.find({
+        //     where: {
+        //         id: In(ctx.request.body.userIds)
+        //     },
+        //     relations: ["roles"]
+        // });
+        // ctx.request.body.userIds.forEach(userId => {
+        //     if (!users.find(user => user.id === userId)) {
+        //         throw new RequestError(400, "User not exist.", {errors: {notExist: userId}});
+        //     }
+        // });
+        //
+        // for (const addUser of users) {
+        //     // if user already in org
+        //     if (org.users.find(user => user.id === addUser.id)) {
+        //         errors.push({present: addUser.id});
+        //     } else {
+        //         addUser.roles.push(org.defaultRole);
+        //         org.users.push(addUser);
+        //
+        //         await addUser.save();
+        //     }
+        // }
+        // await org.save();
+        //
+        // if (errors.length) {
+        //     throw new RequestError(409, "Some users are already in organization.", {errors});
+        // }
 
-        for (const addUser of users) {
-            // if user already in org
-            if (org.users.find(user => user.id === addUser.id)) {
-                errors.push({present: addUser.id});
-            } else {
-                addUser.roles.push(org.defaultRole);
-                org.users.push(addUser);
-
-                await addUser.save();
-            }
-        }
-        await org.save();
-
-        if (errors.length) {
-            throw new RequestError(409, "Some users are already in organization.", {errors});
-        }
+        await addUsersToOrg(ctx.request.body.userIds, org);
         ctx.body = {success: true};
     }
 
