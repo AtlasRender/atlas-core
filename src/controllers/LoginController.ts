@@ -15,6 +15,7 @@ import User from "../entities/User";
 import {UserLoginValidator} from "../validators/UserRequestValidators";
 import Authenticator from "../core/Authenticator";
 import OutUser from "../interfaces/OutUser";
+import RequestError from "../errors/RequestError";
 
 
 /**
@@ -36,22 +37,23 @@ export default class LoginController extends Controller {
     public async loginHandler(ctx: Context): Promise<void> {
         const user = await User.findOne({username: ctx.request.body.username});
         if (!user) {
-            ctx.throw(401, "user with this username not exist");
+            throw new RequestError(404, "User with this username not exist.",
+                {errors: {notExist: "username"}});
         }
-        if (await argon2.verify(user.password, ctx.request.body.password)) {
-            const result: OutUser = {
-                id: user.id,
-                username: user.username,
-                email: user.email,
-                deleted: user.deleted,
-                createdAt: user.createdAt,
-                updatedAt: user.updatedAt,
-                bearer: await Authenticator.createJwt({id: user.id, username: user.username})
-            };
-            ctx.body = result;
-        } else {
-            ctx.throw(401, "password incorrect");
+        if (!await argon2.verify(user.password, ctx.request.body.password)) {
+            throw new RequestError(401, "Password incorrect.");
         }
+
+        const result: OutUser = {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            deleted: user.deleted,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            bearer: await Authenticator.createJwt({id: user.id, username: user.username})
+        };
+        ctx.body = result;
 
     }
 }
