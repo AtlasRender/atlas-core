@@ -1,0 +1,46 @@
+/*
+ * Copyright (c) 2020. This code created and belongs to Pathfinder render manager project.
+ * Owner and project architect: Danil Andreev | danssg08@gmail.com |  https://github.com/DanilAndreev
+ * File creator: Danil Andreev
+ * Project: atlas-core
+ * File last modified: 11/11/20, 2:09 PM
+ * All rights reserved.
+ */
+
+import {bodyValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
+import {ajvInstance} from "../globals";
+
+
+/**
+ * PluginCreateBodyValidator - validator for plugin create request.
+ * @author Danil Andreev
+ */
+export const PluginCreateBodyValidator = bodyValidator({
+        $id: "PluginCreateBodyValidator",
+        type: "object",
+        required: ["name", "file", "version"],
+        properties: {
+            name: {
+                type: "string",
+                minLength: 3,
+                maxLength: 50
+            },
+            description: {
+                type: "string",
+                maxLength: 255
+            },
+            file: {
+                type: "integer"
+            },
+            note: {
+                type: "string",
+                maxLength: 255,
+            },
+            version: {
+                type: "string",
+                maxLength: 30,
+            },
+        }
+    },
+    ajvInstance
+);

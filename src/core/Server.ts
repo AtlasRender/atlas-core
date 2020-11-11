@@ -11,12 +11,11 @@ import * as Koa from "koa";
 import * as http from "http";
 import {Context, Next} from "koa";
 import * as Router from "koa-router";
-import * as bodyParser from "koa-bodyparser";
+import * as bodyParser from "koa-body";
 import * as moment from "moment";
 import {importClassesFromDirectories} from "typeorm/util/DirectoryExportedClassesLoader";
 import {Connection, ConnectionOptions, createConnection, Logger as TypeOrmLogger, QueryRunner} from "typeorm";
 // @ts-ignore
-import * as destroyable from "server-destroy";
 import Controller from "./Controller";
 import Authenticator from "./Authenticator";
 import * as cors from "koa-cors";
@@ -24,10 +23,11 @@ import * as Redis from "redis";
 // import * as Amqp from "amqp";
 import ServerConfig from "../interfaces/ServerConfig";
 import ServerOptions from "../interfaces/ServerOptions";
+// import * as koaMiddlewareConvert from "koa-convert";
 
 import * as Amqp from "amqplib";
 import {AMQP_CONNECTION_QUEUE, AMQP_TASKS_QUEUE} from "../globals";
-
+import * as TempDirectory from "temp-dir";
 
 
 /**
@@ -154,7 +154,10 @@ export default class Server extends Koa {
         }));
 
         // bodyParser middleware
-        Server.current.use(bodyParser());
+        Server.current.use(bodyParser({
+            formidable: {uploadDir: TempDirectory},
+            multipart: true,
+        }));
 
         // Creating typeorm connection
         await Server.current.setupDbConnection(config.db);

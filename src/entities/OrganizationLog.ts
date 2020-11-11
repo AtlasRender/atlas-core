@@ -26,7 +26,6 @@ import {Moment} from "moment";
  */
 @Entity()
 export default class OrganizationLog extends BaseEntity {
-
     @PrimaryGeneratedColumn()
     id: number;
 

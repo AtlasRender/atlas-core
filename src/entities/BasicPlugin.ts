@@ -17,29 +17,31 @@ import {Moment} from "moment";
  */
 @Entity()
 export default class BasicPlugin extends BaseEntity {
-
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
     name: string;
 
-    @Column({type: "text"})
+    @Column()
+    version: string;
+
+    @Column({type: "text", nullable: true})
     description: string;
 
     @Column({type: "jsonb"})
     rules: any;
 
-    @Column({type: "jsonb"})
-    extra_data: any;
+    @Column({type: "jsonb", nullable: true})
+    extraData: any;
 
     @Column({type: "text"})
     script: string;
 
-    @Column({type: "text"})
+    @Column({type: "text", nullable: true})
     note: string;
 
-    @Column()
+    @Column({default: false})
     deleted: boolean;
 
     @CreateDateColumn()
