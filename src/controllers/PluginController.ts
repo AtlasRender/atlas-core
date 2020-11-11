@@ -32,6 +32,26 @@ export default class PluginController extends Controller {
     }
 
     public static validatePluginSettings(settings: object): boolean {
+        // TODO: finish plugin validation.
+        const plugin = {
+            samples: {
+                niceName: "Samples",
+                type: "integer",
+                min: 0,
+                max: null,
+                default: 0,
+            },
+            divider: "divider",
+            path: {
+                niceName: "Path to dir",
+                type: "string",
+                min: null,
+                max: 200,
+                default: null,
+            }
+        };
+
+
         if (typeof settings !== "object") return false;
         for (const key in settings) {
             if (!PLUGIN_SETTING_TYPES.includes(settings[key])) return false;

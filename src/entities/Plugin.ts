@@ -17,7 +17,7 @@ import {Moment} from "moment";
 /**
  * Plugin - typeorm entity for plugin data.
  * @class
- * @author Danil Andreev
+ * @author Denis Afendikov
  */
 @Entity()
 export default class Plugin extends BasicPlugin {
