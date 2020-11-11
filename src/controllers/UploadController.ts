@@ -65,6 +65,8 @@ export default class UploadController extends Controller {
 
             results.push({name: file.name, type: file.type, id: result.id});
         }
+
+        ctx.body = results;
     }
 
     /**

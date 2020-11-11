@@ -17,6 +17,7 @@ import * as StreamBuffers from "stream-buffers";
 import streamToBuffer from "../utils/streamToBuffer";
 import Plugin from "../entities/Plugin";
 import Organization from "../entities/Organization";
+import {PluginCreateBodyValidator} from "../validators/PluginRequestValidators";
 
 
 /**
@@ -27,7 +28,7 @@ import Organization from "../entities/Organization";
 export default class PluginController extends Controller {
     constructor() {
         super("/plugins");
-        this.post("/", this.addPlugin);
+        this.post("/", PluginCreateBodyValidator, this.addPlugin);
     }
 
     public static validatePluginSettings(settings: object): boolean {
@@ -55,7 +56,22 @@ export default class PluginController extends Controller {
         if (!file)
             throw new RequestError(404, "Temp file not found.", {missedFile: [body.file]});
 
+        const pluginStored: Plugin = await Plugin
+            .getRepository()
+            .createQueryBuilder()
+            .select(["plugin.id", "plugin.name", "plugin.version"])
+            .from(Plugin, "plugin")
+            .where("plugin.name = :name", {name: body.name})
+            .andWhere("plugin.version = :version", {version: body.version})
+            .getOne();
+        if (pluginStored)
+            throw new RequestError(409, "Plugin with this version already exists.");
+
         const plugin = new Plugin();
+        plugin.name = body.name;
+        plugin.description = body.description;
+        plugin.note = body.note;
+        plugin.version = body.version;
 
 
         if (orgId) {
@@ -74,8 +90,8 @@ export default class PluginController extends Controller {
             await stream
                 .pipe(UnZipper.Parse())
                 .on("entry", async (entry) => {
-                    const {fileName, type, size} = entry;
-                    switch (fileName) {
+                    const {path, type, size} = entry;
+                    switch (path) {
                         case "spec.json": {
                             const buffer = await streamToBuffer(entry);
                             const settings: object = JSON.parse(buffer.toString());
@@ -85,13 +101,13 @@ export default class PluginController extends Controller {
                                 throw new TypeError("Invalid plugin settings.");
                             }
                         }
-                        break;
+                            break;
                         case "main.js": {
                             const buffer = await streamToBuffer(entry);
                             const text: string = buffer.toString();
                             plugin.script = text;
                         }
-                        break;
+                            break;
                         default:
                             entry.autodrain();
                     }
@@ -104,5 +120,6 @@ export default class PluginController extends Controller {
             Temp.delete({id: file.id}).then();
         }
         await plugin.save();
+        ctx.status = 200;
     }
 }
