@@ -7,11 +7,11 @@
  * All rights reserved.
  */
 
-
-import {Entity, ManyToOne, OneToMany} from "typeorm";
+import {Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import Organization from "./Organization";
 import BasicPlugin from "./BasicPlugin";
 import RenderJob from "./RenderJob";
+import {Moment} from "moment";
 
 
 /**
@@ -21,11 +21,9 @@ import RenderJob from "./RenderJob";
  */
 @Entity()
 export default class Plugin extends BasicPlugin {
-
     @ManyToOne(type => Organization, org => org.plugins)
     organization: Organization;
 
     @OneToMany(type => RenderJob, job => job.plugins)
     renderJob: RenderJob;
-
 }
