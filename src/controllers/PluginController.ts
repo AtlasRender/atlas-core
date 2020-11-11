@@ -35,6 +35,7 @@ export default class PluginController extends Controller {
         // TODO: finish plugin validation.
         const plugin = {
             samples: {
+                name: "samples",
                 niceName: "Samples",
                 type: "integer",
                 min: 0,
