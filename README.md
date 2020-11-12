@@ -14,7 +14,6 @@
     </div>
 </a>
 
-# Atlas Core system
 ### Management and control unit.
 Pathfinder Core is a part of Pathfinder Render Manager, which process:
 * Render jobs and their distribution by render nodes.
