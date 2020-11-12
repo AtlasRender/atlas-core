@@ -149,7 +149,7 @@ export default class Server extends Koa {
 
         // TODO: fix koa middleware deprecation!
         Server.current.use(cors({
-            origin: "monitor.atlasrender.com",
+            origin: "http://monitor.atlasrender.com",
             credentials: true,
             headers: [
                 "Content-Type",
