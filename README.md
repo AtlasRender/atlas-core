@@ -2,7 +2,9 @@
     <div align="center">
         <img alt="Material Docs logo" height="150" src="https://avatars0.githubusercontent.com/u/71503317?s=400&u=7786114863bb0b505d06a0f563dbd6acbcfddc78&v=4"/>
     </div>
-    <br>
+    <div align="center">
+        <h1>Atlas Core system</h1>
+    </div>
     <div align="center">
         <img alt="GitHub" src="https://img.shields.io/github/license/AtlasRender/atlas-core"/>
         <img alt="GitHub issues" src="https://img.shields.io/github/issues-raw/AtlasRender/atlas-core">
