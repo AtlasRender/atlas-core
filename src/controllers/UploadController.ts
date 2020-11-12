@@ -80,7 +80,7 @@ export default class UploadController extends Controller {
         const {remove} = ctx.request.query;
         const {id} = ctx.params;
 
-        const file: Temp = await Temp.findOne({where: {id}});
+        const file: Temp = await Temp.findOne({where: {id}, relations: ["owner"]});
 
         if (!file)
             throw new RequestError(404, "File not found.");
@@ -104,7 +104,14 @@ export default class UploadController extends Controller {
         const user = ctx.state.user;
         const {id} = ctx.params;
 
-        const file: Temp = await Temp.getRepository().createQueryBuilder().addSelect(["id", "owner"]).getOne();
+        const file: Temp = await Temp.getRepository()
+            .createQueryBuilder()
+            .from(Temp, "temp")
+            .select("temp.id")
+            .addSelect("temp.meta")
+            .leftJoinAndSelect("temp.owner", "user")
+            .where("temp.id = :id", {id})
+            .getOne();
 
         if (!file)
             throw new RequestError(404, "File not found.");
@@ -113,5 +120,6 @@ export default class UploadController extends Controller {
             throw new RequestError(423, "You don't have permissions to view this data.");
 
         await Temp.delete({id: file.id});
+        ctx.body = {id: file.id};
     }
 }
