@@ -160,7 +160,7 @@ export default class Server extends Koa {
                 "Connection",
                 "Host",
                 "User-Agent",
-                "Accept-Encoding:",
+                "Accept-Encoding",
                 "Accept-Language",
                 "Content-Length",
                 "Referer",
