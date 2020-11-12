@@ -28,6 +28,7 @@ export default class UploadController extends Controller {
         super("/file");
         this.post("/", this.uploadFile);
         this.get("/:id", this.downloadFile);
+        this.delete("/:id", this.removeFile);
     }
 
     /**
