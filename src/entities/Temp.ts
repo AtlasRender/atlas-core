@@ -28,6 +28,9 @@ export default class Temp extends BaseEntity {
     @Column({type: "json", nullable: true})
     meta: any;
 
+    @Column({default: false})
+    isPublic: boolean;
+
     @CreateDateColumn()
     createdAt: Moment;
 

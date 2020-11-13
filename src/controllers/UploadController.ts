@@ -11,7 +11,6 @@ import {Context} from "koa";
 import * as _ from "lodash";
 import * as fs from "fs";
 import {ReadStream} from "fs";
-// @ts-ignore
 import Temp from "../entities/Temp";
 import RequestError from "../errors/RequestError";
 import streamToBuffer from "./../utils/streamToBuffer";
@@ -43,12 +42,30 @@ export default class UploadController extends Controller {
         const results = [];
         const {pub} = ctx.request.query;
 
-        //TODO; limit files amount per user.
+        for (const file of files) {
+            //50mb
+            if (file.size > 52428800) throw new RequestError(413, "File is too large.");
+        }
 
-        const userStored: User = await User.findOne({where: {id: user.id}});
-        if (!user)
+        const userStored: User = await User
+            .createQueryBuilder()
+            .from(User, "user")
+            .select("user.id")
+            .leftJoin("user.temp", "temp")
+            .addSelect("temp.id")
+            .addSelect("temp.createdAt")
+            .orderBy("temp.createdAt", "DESC")
+            .where("user.id = :id", {id: user.id})
+            .getOne();
+        if (!userStored)
             throw new RequestError(400, "User don't exist.");
 
+        const extraRecords: number[] = userStored.temp.slice(9).map((file: Temp): number => file.id);
+        if (extraRecords.length) await Temp.delete([...extraRecords]);
+
+        const meta = ctx.request.body || {};
+        for (const key in meta)
+            if (typeof meta[key] === "object") delete meta[key];
 
         for (const file of files) {
             const path = (file as any).path;
@@ -58,15 +75,18 @@ export default class UploadController extends Controller {
             const temp = new Temp();
             temp.data = buffer;
             temp.meta = {
+                ...meta,
                 type: file.type,
-            }
-            if (!pub) temp.owner = userStored;
+            };
+            temp.owner = userStored;
+            temp.isPublic = !!pub;
             const result: Temp = await temp.save();
 
             results.push({name: file.name, type: file.type, id: result.id});
         }
 
         ctx.body = results;
+        ctx.status = 201;
     }
 
     /**
@@ -84,7 +104,7 @@ export default class UploadController extends Controller {
 
         if (!file)
             throw new RequestError(404, "File not found.");
-        if(file.owner.id !== user.id)
+        if (!file.isPublic && file.owner.id !== user.id)
             throw new RequestError(423, "You don't have permissions to view this data.");
 
         ctx.set("Content-Type", "multipart/form-data");
@@ -116,7 +136,7 @@ export default class UploadController extends Controller {
         if (!file)
             throw new RequestError(404, "File not found.");
 
-        if(file.owner.id !== user.id)
+        if (!file.isPublic && file.owner.id !== user.id)
             throw new RequestError(423, "You don't have permissions to view this data.");
 
         await Temp.delete({id: file.id});
