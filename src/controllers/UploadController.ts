@@ -42,6 +42,11 @@ export default class UploadController extends Controller {
         const results = [];
         const {pub} = ctx.request.query;
 
+        for (const file of files) {
+            //50mb
+            if (file.size > 52428800) throw new RequestError(413, "File is too large.");
+        }
+
         const userStored: User = await User
             .createQueryBuilder()
             .from(User, "user")
@@ -81,6 +86,7 @@ export default class UploadController extends Controller {
         }
 
         ctx.body = results;
+        ctx.status = 201;
     }
 
     /**
