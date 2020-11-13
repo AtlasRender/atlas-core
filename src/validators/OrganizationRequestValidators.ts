@@ -105,8 +105,7 @@ export const IncludeUserIdInBodyValidator = bodyValidator({
 export const RoleAddValidator = bodyValidator({
     $id: "RoleAddValidator",
     type: "object",
-    required: ["name", "canManageUsers", "canCreateJobs", "canEditJobs",
-        "canDeleteJobs", "canManageRoles", "canManagePlugins", "canManageTeams"],
+    required: ["name"],
     properties: {
         name: {
             // TODO: alphanumeric only
@@ -128,25 +127,32 @@ export const RoleAddValidator = bodyValidator({
             maxLength: 255
         },
         canManageUsers: {
-            type: "boolean"
+            type: "boolean",
+            default: false
         },
         canCreateJobs: {
-            type: "boolean"
+            type: "boolean",
+            default: false
         },
         canEditJobs: {
-            type: "boolean"
+            type: "boolean",
+            default: false
         },
         canDeleteJobs: {
-            type: "boolean"
+            type: "boolean",
+            default: false
         },
         canManageRoles: {
-            type: "boolean"
+            type: "boolean",
+            default: false
         },
         canManagePlugins: {
-            type: "boolean"
+            type: "boolean",
+            default: false
         },
         canManageTeams: {
-            type: "boolean"
+            type: "boolean",
+            default: false
         }
     }
 }, ajvInstance);

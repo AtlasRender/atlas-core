@@ -18,7 +18,7 @@ import {
 import RolesController from "./RolesController";
 import User from "../entities/User";
 import RequestError from "../errors/RequestError";
-import {getRepository, In} from "typeorm";
+import {getConnection, getRepository, In} from "typeorm";
 import {IncludeUsernameInQueryValidator} from "../validators/UserRequestValidators";
 import {findOneOrganizationByRequestParams} from "../middlewares/organizationRequestMiddlewares";
 import {canManageUsers} from "../middlewares/withRoleAccessMiddleware";
@@ -126,7 +126,7 @@ export default class OrganizationsController extends Controller {
      */
     public async addOrganization(ctx: Context): Promise<void> {
         if (await Organization.findOne({name: ctx.request.body.name})) {
-            ctx.throw(400, "org with this name already exists");
+            ctx.throw(409, "Organization with this name already exists.");
         }
 
         const authUser: User = await User.findOne(ctx.state.user.id);
@@ -142,25 +142,52 @@ export default class OrganizationsController extends Controller {
 
         const savedOrg = await organization.save();
 
+        let defaultRole = new Role();
+        defaultRole.name = "user";
+        defaultRole.description = "Default user role.";
+        defaultRole.color = "#090";
+        defaultRole.permissionLevel = 0;
+        defaultRole.organization = savedOrg;
+        defaultRole.canManageUsers = false;
+        defaultRole.canManageRoles = false;
+        defaultRole.canCreateJobs = true;
+        defaultRole.canDeleteJobs = false;
+        defaultRole.canEditJobs = false;
+        defaultRole.canManagePlugins = true;
+        defaultRole.canManageTeams = true;
+        await defaultRole.save();
+
+        await getConnection()
+            .createQueryBuilder()
+            .relation(Organization, "defaultRole")
+            .of(savedOrg)
+            .set(defaultRole);
+
+
         // add roles from body
-        for (const roleData of ctx.request.body.roles) {
-            let role = new Role();
-            role.name = roleData.name;
-            role.description = roleData.description;
-            role.color = roleData.color || "black"; // TODO random color
-            role.permissionLevel = roleData.permissionLevel;
-            role.organization = savedOrg;
-            role.canManageUsers = roleData.canManageUsers;
-            role.canManageRoles = roleData.canManageRoles;
-            role.canCreateJobs = roleData.canCreateJobs;
-            role.canDeleteJobs = roleData.canDeleteJobs;
-            role.canEditJobs = roleData.canEditJobs;
-            role.canManagePlugins = roleData.canManagePlugins;
-            role.canManageTeams = roleData.canManageTeams;
-            await role.save();
+        if (ctx.request.body.roles) {
+            for (const roleData of ctx.request.body.roles) {
+                let role = new Role();
+                role.name = roleData.name;
+                role.description = roleData.description;
+                role.color = roleData.color || "black"; // TODO random color
+                role.permissionLevel = roleData.permissionLevel;
+                role.organization = savedOrg;
+                role.canManageUsers = roleData.canManageUsers;
+                role.canManageRoles = roleData.canManageRoles;
+                role.canCreateJobs = roleData.canCreateJobs;
+                role.canDeleteJobs = roleData.canDeleteJobs;
+                role.canEditJobs = roleData.canEditJobs;
+                role.canManagePlugins = roleData.canManagePlugins;
+                role.canManageTeams = roleData.canManageTeams;
+                await role.save();
+            }
         }
 
-        await addUsersToOrg(ctx.request.body.userIds, savedOrg);
+        // add users from body
+        if(ctx.request.body.userIds) {
+            await addUsersToOrg(ctx.request.body.userIds, savedOrg);
+        }
 
         ctx.body = {
             success: true,
@@ -179,10 +206,13 @@ export default class OrganizationsController extends Controller {
             .where("org.id = :id", {id: ctx.params.organization_id})
             .leftJoin("org.ownerUser", "ownerUser")
             .leftJoin("org.users", "user")
+            .leftJoin("org.roles", "role")
+            .leftJoin("org.defaultRole", "defaultRole")
             .select([
                 "org",
                 "ownerUser.id", "ownerUser.username",
-                "user.id", "user.username"
+                "user.id", "user.username",
+                "role.id", "role.name", "role.color", "defaultRole.id", "defaultRole.name",
             ])
             .getOne();
 
@@ -265,36 +295,6 @@ export default class OrganizationsController extends Controller {
      */
     public async addOrganizationUsers(ctx: Context) {
         const org = ctx.state.organization;
-        // let errors = [];
-        // const users = await User.find({
-        //     where: {
-        //         id: In(ctx.request.body.userIds)
-        //     },
-        //     relations: ["roles"]
-        // });
-        // ctx.request.body.userIds.forEach(userId => {
-        //     if (!users.find(user => user.id === userId)) {
-        //         throw new RequestError(400, "User not exist.", {errors: {notExist: userId}});
-        //     }
-        // });
-        //
-        // for (const addUser of users) {
-        //     // if user already in org
-        //     if (org.users.find(user => user.id === addUser.id)) {
-        //         errors.push({present: addUser.id});
-        //     } else {
-        //         addUser.roles.push(org.defaultRole);
-        //         org.users.push(addUser);
-        //
-        //         await addUser.save();
-        //     }
-        // }
-        // await org.save();
-        //
-        // if (errors.length) {
-        //     throw new RequestError(409, "Some users are already in organization.", {errors});
-        // }
-
         await addUsersToOrg(ctx.request.body.userIds, org);
         ctx.body = {success: true};
     }
