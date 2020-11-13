@@ -828,10 +828,10 @@
     "@types/mime" "*"
     "@types/node" "*"
 
-"@types/server-destroy@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@types/server-destroy/-/server-destroy-1.0.0.tgz#d206a16e8761054ee38be6bfb83c267ddd291072"
-  integrity sha512-/rF2pouf4RWySNTrQa7BMqViBg52B4Ld+5QCNgwxmw8EhuHqmv3MkyR2WiYfSdq1sHX2EAsY4zeVZfZvvZomoA==
+"@types/server-destroy@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/server-destroy/-/server-destroy-1.0.1.tgz#6010a89e2df4f2c15a265fe73c70fd3641486530"
+  integrity sha512-77QGr7waZbE0Y0uF+G+uH3H3SmhyA78Jf2r5r7QSrpg0U3kSXduWpGjzP9PvPLR/KCy+kHjjpnugRHsYTnHopg==
   dependencies:
     "@types/node" "*"
 
