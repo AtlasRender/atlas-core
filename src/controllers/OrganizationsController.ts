@@ -22,6 +22,7 @@ import {getRepository, In} from "typeorm";
 import {IncludeUsernameInQueryValidator} from "../validators/UserRequestValidators";
 import {findOneOrganizationByRequestParams} from "../middlewares/organizationRequestMiddlewares";
 import {canManageUsers} from "../middlewares/withRoleAccessMiddleware";
+import Role from "../entities/Role";
 
 
 /**
@@ -140,6 +141,24 @@ export default class OrganizationsController extends Controller {
         organization.users = [authUser];
 
         const savedOrg = await organization.save();
+
+        // add roles from body
+        for (const roleData of ctx.request.body.roles) {
+            let role = new Role();
+            role.name = roleData.name;
+            role.description = roleData.description;
+            role.color = roleData.color || "black"; // TODO random color
+            role.permissionLevel = roleData.permissionLevel;
+            role.organization = savedOrg;
+            role.canManageUsers = roleData.canManageUsers;
+            role.canManageRoles = roleData.canManageRoles;
+            role.canCreateJobs = roleData.canCreateJobs;
+            role.canDeleteJobs = roleData.canDeleteJobs;
+            role.canEditJobs = roleData.canEditJobs;
+            role.canManagePlugins = roleData.canManagePlugins;
+            role.canManageTeams = roleData.canManageTeams;
+            await role.save();
+        }
 
         await addUsersToOrg(ctx.request.body.userIds, savedOrg);
 
@@ -302,6 +321,7 @@ export default class OrganizationsController extends Controller {
 
         let usersToDelete = [];
         for (const deleteUser of users) {
+            // TODO: if ownerUser deleted - set new user by role permissionLevel.
             // if user not in org
             if (!org.users.find(usr => usr.id === deleteUser.id)) {
                 errors.push({missing: deleteUser});
