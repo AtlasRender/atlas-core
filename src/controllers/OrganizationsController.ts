@@ -18,11 +18,50 @@ import {
 import RolesController from "./RolesController";
 import User from "../entities/User";
 import RequestError from "../errors/RequestError";
-import {getRepository, In} from "typeorm";
+import {getConnection, getRepository, In} from "typeorm";
 import {IncludeUsernameInQueryValidator} from "../validators/UserRequestValidators";
 import {findOneOrganizationByRequestParams} from "../middlewares/organizationRequestMiddlewares";
 import {canManageUsers} from "../middlewares/withRoleAccessMiddleware";
+import Role from "../entities/Role";
 
+
+/**
+ * @function
+ * addUsersToOrg - for each userId provided in userIds, finds and adds user to organization.
+ * @param userIds - array of user ids.
+ * @param org - organization, where users will be added.
+ * @author Denis Afendikov
+ */
+const addUsersToOrg = async (userIds: number[], org: Organization): Promise<void> => {
+    let errors = [];
+    const users = await User.find({
+        where: {
+            id: In(userIds)
+        },
+        relations: ["roles"]
+    });
+    for (const userId of userIds) {
+        const addUser = users.find(user => user.id === userId);
+        if (!addUser) {
+            throw new RequestError(404, "User not exist.", {errors: {notExist: userId}});
+        }
+        // if user already in org
+        if (org.users.find(user => user.id === addUser.id)) {
+            errors.push({present: addUser.id});
+        } else {
+            addUser.roles.push(org.defaultRole);
+            org.users.push(addUser);
+
+            await addUser.save();
+        }
+    }
+
+    await org.save();
+
+    if (errors.length) {
+        throw new RequestError(409, "Some users are already in organization.", {errors});
+    }
+};
 
 /**
  * OrganizationController - controller for /organization routes.
@@ -45,7 +84,7 @@ export default class OrganizationsController extends Controller {
         this.post(
             "/:organization_id/users",
             IncludeUserIdsInBodyValidator,
-            findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}),
+            findOneOrganizationByRequestParams({relations: ["users", "ownerUser", "defaultRole"]}),
             canManageUsers,
             this.addOrganizationUsers
         );
@@ -87,7 +126,7 @@ export default class OrganizationsController extends Controller {
      */
     public async addOrganization(ctx: Context): Promise<void> {
         if (await Organization.findOne({name: ctx.request.body.name})) {
-            ctx.throw(400, "org with this name already exists");
+            ctx.throw(409, "Organization with this name already exists.");
         }
 
         const authUser: User = await User.findOne(ctx.state.user.id);
@@ -100,7 +139,60 @@ export default class OrganizationsController extends Controller {
         organization.name = ctx.request.body.name;
         organization.description = ctx.request.body.description;
         organization.users = [authUser];
-        ctx.body = await organization.save();
+
+        const savedOrg = await organization.save();
+
+        let defaultRole = new Role();
+        defaultRole.name = "user";
+        defaultRole.description = "Default user role.";
+        defaultRole.color = "#090";
+        defaultRole.permissionLevel = 0;
+        defaultRole.organization = savedOrg;
+        defaultRole.canManageUsers = false;
+        defaultRole.canManageRoles = false;
+        defaultRole.canCreateJobs = true;
+        defaultRole.canDeleteJobs = false;
+        defaultRole.canEditJobs = false;
+        defaultRole.canManagePlugins = true;
+        defaultRole.canManageTeams = true;
+        await defaultRole.save();
+
+        await getConnection()
+            .createQueryBuilder()
+            .relation(Organization, "defaultRole")
+            .of(savedOrg)
+            .set(defaultRole);
+
+
+        // add roles from body
+        if (ctx.request.body.roles) {
+            for (const roleData of ctx.request.body.roles) {
+                let role = new Role();
+                role.name = roleData.name;
+                role.description = roleData.description;
+                role.color = roleData.color || "black"; // TODO random color
+                role.permissionLevel = roleData.permissionLevel;
+                role.organization = savedOrg;
+                role.canManageUsers = roleData.canManageUsers;
+                role.canManageRoles = roleData.canManageRoles;
+                role.canCreateJobs = roleData.canCreateJobs;
+                role.canDeleteJobs = roleData.canDeleteJobs;
+                role.canEditJobs = roleData.canEditJobs;
+                role.canManagePlugins = roleData.canManagePlugins;
+                role.canManageTeams = roleData.canManageTeams;
+                await role.save();
+            }
+        }
+
+        // add users from body
+        if(ctx.request.body.userIds) {
+            await addUsersToOrg(ctx.request.body.userIds, savedOrg);
+        }
+
+        ctx.body = {
+            success: true,
+            organizationId: savedOrg.id
+        };
     }
 
     /**
@@ -114,10 +206,13 @@ export default class OrganizationsController extends Controller {
             .where("org.id = :id", {id: ctx.params.organization_id})
             .leftJoin("org.ownerUser", "ownerUser")
             .leftJoin("org.users", "user")
+            .leftJoin("org.roles", "role")
+            .leftJoin("org.defaultRole", "defaultRole")
             .select([
                 "org",
                 "ownerUser.id", "ownerUser.username",
-                "user.id", "user.username"
+                "user.id", "user.username",
+                "role.id", "role.name", "role.color", "defaultRole.id", "defaultRole.name",
             ])
             .getOne();
 
@@ -140,7 +235,7 @@ export default class OrganizationsController extends Controller {
         if (ctx.state.user.id !== org.ownerUser.id) {
             throw new RequestError(403, "You are not owning this organization.");
         }
-        if (ctx.request.body.name) {
+        if (ctx.request.body.name && ctx.request.body.name !== org.name) {
             if (await Organization.findOne({name: ctx.request.body.name})) {
                 throw new RequestError(409, "Organization with this name already exists.",
                     {errors: {name: "exists"}});
@@ -159,7 +254,7 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async deleteOrganizationById(ctx: Context): Promise<void> {
-        const org = await Organization.findOne(ctx.params.organization_id);
+        const org = await Organization.findOne(ctx.params.organization_id, {relations: ["ownerUser"]});
         if (!org) {
             ctx.throw(404);
         }
@@ -200,35 +295,7 @@ export default class OrganizationsController extends Controller {
      */
     public async addOrganizationUsers(ctx: Context) {
         const org = ctx.state.organization;
-        let errors = [];
-        const users = await User.find({
-            where: {
-                id: In(ctx.request.body.userIds)
-            },
-            relations: ["roles"]
-        });
-        ctx.request.body.userIds.forEach(userId => {
-            if (!users.find(user => user.id === userId)) {
-                throw new RequestError(400, "User not exist.", {errors: {notExist: userId}});
-            }
-        });
-
-        for (const addUser of users) {
-            // if user already in org
-            if (org.users.find(user => user.id === addUser.id)) {
-                errors.push({present: addUser.id});
-            } else {
-                addUser.roles.push(org.defaultRole);
-                org.users.push(addUser);
-
-                await addUser.save();
-            }
-        }
-        await org.save();
-
-        if (errors.length) {
-            throw new RequestError(409, "Some users are already in organization.", {errors});
-        }
+        await addUsersToOrg(ctx.request.body.userIds, org);
         ctx.body = {success: true};
     }
 
@@ -254,6 +321,7 @@ export default class OrganizationsController extends Controller {
 
         let usersToDelete = [];
         for (const deleteUser of users) {
+            // TODO: if ownerUser deleted - set new user by role permissionLevel.
             // if user not in org
             if (!org.users.find(usr => usr.id === deleteUser.id)) {
                 errors.push({missing: deleteUser});

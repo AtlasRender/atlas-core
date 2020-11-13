@@ -10,6 +10,23 @@
 import {bodyValidator, queryValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 import {ajvInstance} from "../globals";
 
+/**
+ * IncludeUserIdsInBodyValidator - validator for body userIds field in request.
+ * @author Denis Afendikov
+ */
+export const IncludeUserIdsInBodyValidator = bodyValidator({
+        $id: "IncludeUserIdsInBodyValidator",
+        type: "object",
+        required: ["userIds"],
+        properties: {
+            userIds: {
+                type: "array",
+                items: {type: "integer"},
+                minItems: 1
+            }
+        }
+    },
+    ajvInstance);
 
 /**
  * OrganizationRegisterValidator - validator for organization creating request.
@@ -29,7 +46,15 @@ export const OrganizationRegisterValidator = bodyValidator({
             description: {
                 type: "string",
                 maxLength: 255
+            },
+            _: {
+                $ref: "IncludeUserIdsInBodyValidator"
+            },
+            roles: {
+                type: "array",
+                items: {$ref: "RoleAddValidator"},
             }
+
         }
     },
     ajvInstance);
@@ -56,23 +81,6 @@ export const OrganizationEditValidator = bodyValidator({
     },
     ajvInstance);
 
-/**
- * IncludeUserIdsInBodyValidator - validator for body userIds field in request.
- * @author Denis Afendikov
- */
-export const IncludeUserIdsInBodyValidator = bodyValidator({
-        $id: "IncludeUserIdsInBodyValidator",
-        type: "object",
-        required: ["userIds"],
-        properties: {
-            userIds: {
-                type: "array",
-                items: {type: "integer"},
-                minItems: 1
-            }
-        }
-    },
-    ajvInstance);
 
 /**
  * IncludeUserIdInBodyValidator - validator for body userIds field in request.
@@ -97,8 +105,65 @@ export const IncludeUserIdInBodyValidator = bodyValidator({
 export const RoleAddValidator = bodyValidator({
     $id: "RoleAddValidator",
     type: "object",
-    required: ["name", "canManageUsers", "canCreateJobs", "canEditJobs",
-        "canDeleteJobs", "canManageRoles", "canManagePlugins", "canManageTeams"],
+    required: ["name"],
+    properties: {
+        name: {
+            // TODO: alphanumeric only
+            type: "string",
+            minLength: 3,
+            maxLength: 50
+        },
+        description: {
+            type: "string",
+            maxLength: 255
+        },
+        permissionLevel: {
+            type: "number",
+            minimum: 0,
+            maximum: 1000
+        },
+        color: {
+            type: "string",
+            maxLength: 255
+        },
+        canManageUsers: {
+            type: "boolean",
+            default: false
+        },
+        canCreateJobs: {
+            type: "boolean",
+            default: false
+        },
+        canEditJobs: {
+            type: "boolean",
+            default: false
+        },
+        canDeleteJobs: {
+            type: "boolean",
+            default: false
+        },
+        canManageRoles: {
+            type: "boolean",
+            default: false
+        },
+        canManagePlugins: {
+            type: "boolean",
+            default: false
+        },
+        canManageTeams: {
+            type: "boolean",
+            default: false
+        }
+    }
+}, ajvInstance);
+
+/**
+ * RoleEditValidator - validator for role editing request.
+ * @author Denis Afendikov
+ */
+export const RoleEditValidator = bodyValidator({
+    $id: "RoleEditValidator",
+    type: "object",
     properties: {
         name: {
             // TODO: alphanumeric only
@@ -139,36 +204,6 @@ export const RoleAddValidator = bodyValidator({
         },
         canManageTeams: {
             type: "boolean"
-        }
-    }
-}, ajvInstance);
-
-/**
- * RoleEditValidator - validator for role editing request.
- * @author Denis Afendikov
- */
-export const RoleEditValidator = bodyValidator({
-    $id: "RoleEditValidator",
-    type: "object",
-    properties: {
-        name: {
-            // TODO: alphanumeric only
-            type: "string",
-            minLength: 3,
-            maxLength: 50
-        },
-        description: {
-            type: "string",
-            maxLength: 255
-        },
-        permissionLevel: {
-            type: "number",
-            minimum: 0,
-            maximum: 1000
-        },
-        color: {
-            type: "string",
-            maxLength: 255
         }
     }
 }, ajvInstance);
