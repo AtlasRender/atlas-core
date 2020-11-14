@@ -153,6 +153,10 @@ export const RoleAddValidator = bodyValidator({
         canManageTeams: {
             type: "boolean",
             default: false
+        },
+        canEditAudit: {
+            type: "boolean",
+            default: false
         }
     }
 }, ajvInstance);
@@ -203,6 +207,9 @@ export const RoleEditValidator = bodyValidator({
             type: "boolean"
         },
         canManageTeams: {
+            type: "boolean"
+        },
+        canEditAudit: {
             type: "boolean"
         }
     }
