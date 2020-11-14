@@ -180,6 +180,7 @@ export default class OrganizationsController extends Controller {
                 role.canEditJobs = roleData.canEditJobs;
                 role.canManagePlugins = roleData.canManagePlugins;
                 role.canManageTeams = roleData.canManageTeams;
+                role.canEditAudit = roleData.canEditAudit;
                 await role.save();
             }
         }

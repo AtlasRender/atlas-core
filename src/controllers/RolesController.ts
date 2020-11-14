@@ -127,6 +127,7 @@ export default class RolesController extends Controller {
         role.canEditJobs = ctx.request.body.canEditJobs;
         role.canManagePlugins = ctx.request.body.canManagePlugins;
         role.canManageTeams = ctx.request.body.canManageTeams;
+        role.canEditAudit = ctx.request.body.canEditAudit;
         await role.save();
         ctx.body = {success: true};
     }
@@ -188,6 +189,7 @@ export default class RolesController extends Controller {
         role.canEditJobs = ctx.request.body.canEditJobs || role.canEditJobs;
         role.canManagePlugins = ctx.request.body.canManagePlugins || role.canManagePlugins;
         role.canManageTeams = ctx.request.body.canManageTeams || role.canManageTeams;
+        role.canEditAudit = ctx.request.body.canEditAudit;
         await role.save();
 
         ctx.body = {success: true};

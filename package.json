@@ -73,7 +73,6 @@
     "@types/lodash": "^4.14.165",
     "@types/node": "^14.14.7",
     "@types/redis": "^2.8.28",
-    "@types/server-destroy": "^1.0.0",
     "@types/stream-buffers": "^3.0.3",
     "@types/supertest": "^2.0.10",
     "@types/temp-dir": "^2.0.2",

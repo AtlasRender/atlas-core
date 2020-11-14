@@ -69,6 +69,9 @@ export default class Role extends BaseEntity {
     @Column({nullable: true, default: false})
     canManageTeams: boolean;
 
+    @Column({nullable: true, default: false})
+    canEditAudit: boolean;
+
     @ManyToOne(type => Organization, organization => organization.roles,
         {onDelete: "CASCADE", nullable: false})
     organization: Organization;
