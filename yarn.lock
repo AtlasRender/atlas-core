@@ -828,13 +828,6 @@
     "@types/mime" "*"
     "@types/node" "*"
 
-"@types/server-destroy@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@types/server-destroy/-/server-destroy-1.0.0.tgz#d206a16e8761054ee38be6bfb83c267ddd291072"
-  integrity sha512-/rF2pouf4RWySNTrQa7BMqViBg52B4Ld+5QCNgwxmw8EhuHqmv3MkyR2WiYfSdq1sHX2EAsY4zeVZfZvvZomoA==
-  dependencies:
-    "@types/node" "*"
-
 "@types/stack-utils@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.0.tgz#7036640b4e21cc2f259ae826ce843d277dad8cff"

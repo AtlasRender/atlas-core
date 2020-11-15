@@ -126,7 +126,7 @@ export default class OrganizationsController extends Controller {
      */
     public async addOrganization(ctx: Context): Promise<void> {
         if (await Organization.findOne({name: ctx.request.body.name})) {
-            ctx.throw(409, "Organization with this name already exists.");
+            throw new RequestError(409, "Organization with this name already exists.");
         }
 
         const authUser: User = await User.findOne(ctx.state.user.id);
@@ -257,10 +257,10 @@ export default class OrganizationsController extends Controller {
     public async deleteOrganizationById(ctx: Context): Promise<void> {
         const org = await Organization.findOne(ctx.params.organization_id, {relations: ["ownerUser"]});
         if (!org) {
-            ctx.throw(404);
+            throw new RequestError(404, "Organization not found.");
         }
         if (ctx.state.user.id !== org.ownerUser.id) {
-            ctx.throw(403);
+            throw new RequestError(403, "Forbidden.");
         }
         ctx.body = await Organization.delete(org.id);
     }
@@ -284,7 +284,7 @@ export default class OrganizationsController extends Controller {
             ])
             .getOne();
         if (!org) {
-            ctx.throw(404);
+            throw new RequestError(404, "Organization not found.");
         }
         ctx.body = org.users;
     }
