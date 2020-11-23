@@ -8,7 +8,6 @@
 
 import Controller from "../core/Controller";
 import {Context} from "koa";
-import {PLUGIN_SETTING_TYPES} from "../globals";
 import RequestError from "../errors/RequestError";
 import Temp from "../entities/Temp";
 import * as UnZipper from "unzipper";
