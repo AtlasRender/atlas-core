@@ -28,7 +28,7 @@ Andreev Danil | danssg08@gmail.com | https://github.com/DanilAndreev
 ### Team
 * Afendikov Denys | https://github.com/JeyM1
 ### Repository
-You can find GitHub repository of this project [here](https://github.com/Pathfinder-Systems/pathfinder-core)
+You can find GitHub repository of this project [here](https://github.com/AtlasRender/atlas-core)
 
 <a>
     <hr/>
