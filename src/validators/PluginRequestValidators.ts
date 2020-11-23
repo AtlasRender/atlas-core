@@ -39,6 +39,10 @@ export const PluginCreateBodyValidator = bodyValidator({
                 type: "string",
                 maxLength: 30,
             },
+            readme: {
+                type: "string",
+                maxLength: 10000,
+            },
         }
     },
     ajvInstance
