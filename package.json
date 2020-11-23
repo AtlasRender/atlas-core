@@ -61,7 +61,7 @@
     "util": "^0.12.3"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.12.1",
+    "@babel/preset-typescript": "^7.12.7",
     "@types/amqplib": "^0.5.16",
     "@types/argon2": "^0.15.0",
     "@types/crypto-random-string": "^2.0.0",
