@@ -48,6 +48,9 @@ export default class RenderJob extends BaseEntity {
     @Column({default: false})
     failed: boolean;
 
+    @Column({type: "jsonb", nullable: false})
+    pluginSettings: object;
+
     @ManyToOne(type => Organization, organization => organization.jobs)
     organization: Organization;
 
@@ -57,8 +60,8 @@ export default class RenderJob extends BaseEntity {
     @OneToMany(type => RenderJobLog, log => log.renderJob, {cascade: true})
     logs: RenderJobLog[];
 
-    @ManyToOne(type => Plugin, plugin => plugin.renderJob)
-    plugins: Plugin[];
+    @ManyToOne(type => Plugin, plugin => plugin.renderJobs)
+    plugin: Plugin;
 
     @CreateDateColumn()
     createdAt: Moment;

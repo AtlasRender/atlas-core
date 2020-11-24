@@ -18,6 +18,8 @@ import RenderJob from "../entities/RenderJob";
 import getFramesFromRange from "../utils/getFramesFromRange";
 import {JobSubmitValidator} from "../validators/JobRequestValidators";
 import RenderTask from "../entities/RenderTask";
+import Plugin from "../entities/Plugin";
+import {PluginSettingsSpec, SettingsPayload, ValidationError} from "@atlasrender/render-plugin";
 
 
 /**
@@ -28,7 +30,7 @@ import RenderTask from "../entities/RenderTask";
 export default class JobController extends Controller {
     constructor() {
         super("/jobs");
-        this.post("/", JobSubmitValidator, this.createJobHandler);
+        this.post("/", JobSubmitValidator, this.createJob);
         this.get("/", this.getJobs);
         this.get("/:jobId", this.getJob);
         this.delete("/:jobId", this.deleteJob);
@@ -116,7 +118,7 @@ export default class JobController extends Controller {
      * @method
      * @author Danil Andreev
      */
-    public async createJobHandler(ctx: Context) {
+    public async createJob(ctx: Context) {
         let renderJob: RenderJob = null;
         const user = ctx.state.user;
         try {
@@ -139,8 +141,37 @@ export default class JobController extends Controller {
             renderJob.organization = organization;
             renderJob.attempts_per_task_limit = inputJob.attempts_per_task_limit;
             renderJob.frameRange = inputJob.frameRange;
+
+            const plugin: Plugin = await Plugin
+                .getRepository()
+                .createQueryBuilder()
+                .from(Plugin, "plugin")
+                .select(["plugin.id", "plugin.name", "plugin.rules", "plugin.version"])
+                .where("plugin.id = :id", {id: inputJob.plugin})
+                .getOne();
+            if (!plugin)
+                throw new RequestError(404, "Plugin with selected not found", {missing: ["plugin"]});
+            renderJob.plugin = plugin;
+
+            let pluginSpec: PluginSettingsSpec = null;
+            try {
+                pluginSpec = new PluginSettingsSpec(plugin.rules);
+            } catch (error) {
+                if (error instanceof ValidationError)
+                    throw new RequestError(400, `Validation error on plugin "${plugin.name}@${plugin.version}" spec.`, error.getJSON());
+            }
+            try {
+                const pluginPayload = new SettingsPayload(pluginSpec, inputJob.pluginSettings);
+                renderJob.pluginSettings = pluginPayload;
+            } catch (error) {
+                if (error instanceof ValidationError)
+                    throw new RequestError(400, "Validation error on plugin settings.", error.getJSON());
+            }
+
             renderJob = await renderJob.save();
         } catch (error) {
+            if (error instanceof RequestError)
+                throw error;
             throw new RequestError(503, "Internal server error. Please, visit this resource later.");
         }
         try {
