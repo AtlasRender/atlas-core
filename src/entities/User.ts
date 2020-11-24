@@ -21,6 +21,7 @@ import Organization from "./Organization";
 import {Moment} from "moment";
 import UserToken from "./UserToken";
 import Temp from "./Temp";
+import RenderJob from "./RenderJob";
 
 
 /**
@@ -57,6 +58,9 @@ export default class User extends BaseEntity {
 
     @OneToMany(type => UserToken, tokens => tokens.user)
     tokens: UserToken[];
+
+    @OneToMany(type => RenderJob, job => job.submitter)
+    jobs: RenderJob[];
 
     @OneToMany(type => Temp, temp => temp.owner, {cascade: true})
     temp: Temp[];

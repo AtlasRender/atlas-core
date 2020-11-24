@@ -21,6 +21,7 @@ import RenderTask from "./RenderTask";
 import RenderJobLog from "./RenderJobLog";
 import Plugin from "./Plugin";
 import {Moment} from "moment";
+import User from "./User";
 
 /**
  * RenderJob - typeorm entity for job data.
@@ -29,14 +30,13 @@ import {Moment} from "moment";
  */
 @Entity()
 export default class RenderJob extends BaseEntity {
-
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
     attempts_per_task_limit: number;
 
-    @Column()
+    @Column({nullable: false})
     name: string;
 
     @Column({type: "text"})
@@ -47,6 +47,9 @@ export default class RenderJob extends BaseEntity {
 
     @Column({default: false})
     failed: boolean;
+
+    @Column({type: "int", default: 0})
+    progress: number;
 
     @Column({type: "jsonb", nullable: false})
     pluginSettings: object;
@@ -62,6 +65,9 @@ export default class RenderJob extends BaseEntity {
 
     @ManyToOne(type => Plugin, plugin => plugin.renderJobs)
     plugin: Plugin;
+
+    @ManyToOne(type => User, user => user.jobs)
+    submitter: User;
 
     @CreateDateColumn()
     createdAt: Moment;
