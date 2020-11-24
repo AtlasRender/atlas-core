@@ -55,7 +55,7 @@ jobs:
     needs: [build]
     steps:
       - name: Setup GCloud environment
-        uses: google-github-actions/setup-gcloud@0.1.2
+        uses: google-github-actions/setup-gcloud@0.2.0
         with:
           version: '290.0.1'
           service_account_key: ${{ secrets.GCE_SA_KEY }}
@@ -73,28 +73,3 @@ jobs:
           kubectl set image "deployment/$DEPLOYMENT_NAME" "$IMAGE"="us.gcr.io/$PROJECT_ID/atlas-core/atlas-core-dev:latest"
       - name: Rollout
         run: kubectl rollout restart deployment/$DEPLOYMENT_NAME
-          
-          
-#       - name: Deploy
-#         run: |-
-#           ./kustomize edit set image $IMAGE="us.gcr.io/$PROJECT_ID/atlas-core/atlas-core-dev:latest"
-#           ./kustomize build . | kubectl apply -f -
-#           kubectl rollout status deployment/$DEPLOYMENT_NAME
-#           kubectl get services -o wide
-
-
-
-#       - name: Set up GCloud zone
-#         run: gcloud config set compute/zone ${{ secrets.GKE_CORE_CLUSTER_ZONE }}
-#       - name: Set up GCloud env
-#         run: gcloud config set container/use_client_certificate True
-#       - name: Setup kubectl credentials
-#         run: gcloud container clusters get-credentials ${{ secrets.GKE_CORE_CLUSTER }}
-#       - name: Install kubectl
-#         uses: gane5hvarma/kubectl-actions@v0.0.1
-#       - name: Setup kubectl credentials
-#         run: gcloud container clusters get-credentials ${{ secrets.GKE_CORE_CLUSTER }}
-#       - name: Set new image for GKE
-#         run: kubectl set image deployment/${{ secrets.GKE_CORE_APP }} atlas-core-dev-sha256-1=us.gcr.io/${{ secrets.GCLOUD_PROJECT_ID }}/atlas-core/atlas-core-dev:latest
-        
-        
