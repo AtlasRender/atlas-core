@@ -6,11 +6,13 @@
     ],
     "experimentalDecorators": true,
     "module": "commonjs",
-    "target": "es2015",
-    "sourceMap": true,
+    "target": "es2018",
+    "sourceMap": false,
     "emitDecoratorMetadata": true,
     "outDir": "dest",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "removeComments": true,
+    "declaration": false,
   },
   "include": ["src/**/*"],
   "exclude": [

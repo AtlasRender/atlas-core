@@ -23,6 +23,6 @@ export default class Plugin extends BasicPlugin {
     @ManyToOne(type => Organization, org => org.plugins)
     organization: Organization;
 
-    @OneToMany(type => RenderJob, job => job.plugins)
-    renderJob: RenderJob;
+    @ManyToOne(type => RenderJob, job => job.plugin)
+    renderJobs: RenderJob[];
 }

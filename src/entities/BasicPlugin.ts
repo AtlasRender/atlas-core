@@ -40,6 +40,9 @@ export default class BasicPlugin extends BaseEntity {
     @Column({type: "text", nullable: true})
     note: string;
 
+    @Column({type: "text", nullable: true})
+    readme: string;
+
     @Column({default: false})
     deleted: boolean;
 

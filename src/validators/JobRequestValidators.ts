@@ -18,7 +18,7 @@ import {ajvInstance} from "../globals";
 export const JobSubmitValidator = bodyValidator({
         $id: "JobSubmitValidator",
         type: "object",
-        required: ["organization", "name", "attempts_per_task_limit", "frameRange"],
+        required: ["organization", "name", "attempts_per_task_limit", "frameRange", "plugin", "pluginSettings"],
         properties: {
             name: {
                 type: "string",
@@ -33,10 +33,16 @@ export const JobSubmitValidator = bodyValidator({
                 type: "integer",
             },
             attempts_per_task_limit: {
-                type: "integer"
+                type: "integer",
             },
             frameRange: {
                 type: "string",
+            },
+            plugin: {
+                type: "integer",
+            },
+            pluginSettings: {
+                type: "object",
             }
         }
     },
