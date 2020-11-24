@@ -17,7 +17,7 @@ import {ajvInstance} from "../globals";
 export const PluginCreateBodyValidator = bodyValidator({
         $id: "PluginCreateBodyValidator",
         type: "object",
-        required: ["name", "file", "version"],
+        required: ["file"],
         properties: {
             name: {
                 type: "string",

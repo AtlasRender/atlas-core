@@ -39,6 +39,7 @@ export default class PluginController extends Controller {
      */
     public async addPlugin(ctx: Context): Promise<void> {
         // TODO: Add file meta checks
+        // TODO: Add name and version checks.
         const {organization: orgId, packed} = ctx.request.query;
         const body = ctx.request.body;
 
@@ -93,7 +94,7 @@ export default class PluginController extends Controller {
                     .pipe(UnZipper.Parse())
                     .on("entry", async (entry) => {
                         const {path, type, size} = entry;
-                        switch (path) {
+                        switch (path.toLowerCase()) {
                             case "spec.json": {
                                 const buffer: Buffer = await streamToBuffer(entry);
                                 try {

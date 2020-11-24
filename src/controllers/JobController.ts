@@ -162,7 +162,7 @@ export default class JobController extends Controller {
             }
             try {
                 const pluginPayload = new SettingsPayload(pluginSpec, inputJob.pluginSettings);
-                renderJob.pluginSettings = pluginPayload;
+                renderJob.pluginSettings = pluginPayload.payload;
             } catch (error) {
                 if (error instanceof ValidationError)
                     throw new RequestError(400, "Validation error on plugin settings.", error.getJSON());
