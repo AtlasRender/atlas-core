@@ -20,7 +20,7 @@ import User from "./User";
 
 
 /**
- * User - typeorm entity for user data.
+ * UserToken - typeorm entity for user tokens.
  * @class
  * @author Denis Afendikov
  */

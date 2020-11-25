@@ -34,7 +34,7 @@ export default class LoginController extends Controller {
      * @author Denis Afendikov
      */
     public async loginHandler(ctx: Context): Promise<void> {
-        const user = await User.findOne({username: ctx.request.body.username});
+        const user = await User.findOne({username: ctx.request.body.username}, {relations: ["privateData"]});
         if (!user) {
             throw new RequestError(404, "User with this username not exist.",
                 {errors: {notExist: "username"}});

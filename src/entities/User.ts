@@ -10,10 +10,10 @@ import {
     BaseEntity,
     Column,
     CreateDateColumn,
-    Entity,
+    Entity, JoinColumn,
     JoinTable,
     ManyToMany,
-    OneToMany,
+    OneToMany, OneToOne,
     PrimaryGeneratedColumn, UpdateDateColumn
 } from "typeorm";
 import Role from "./Role";
@@ -22,6 +22,7 @@ import {Moment} from "moment";
 import UserToken from "./UserToken";
 import Temp from "./Temp";
 import RenderJob from "./RenderJob";
+import UserPrivateData from "./UserPrivateData";
 
 
 /**
@@ -48,17 +49,15 @@ export default class User extends BaseEntity {
     email: string;
 
     /**
-     * password - encrypted user password.
-     */
-    @Column()
-    password: string;
-
-    /**
      * deleted - if true, user will be displayed as deleted.
      * Nobody can log into deleted account.
      */
     @Column({default: false})
     deleted: boolean;
+
+    @OneToOne(type => UserPrivateData, data => data.user, {nullable: false})
+    @JoinColumn()
+    privateData: UserPrivateData;
 
     /**
      * organizations - organizations this user is member in.
@@ -93,21 +92,6 @@ export default class User extends BaseEntity {
      */
     @OneToMany(type => Temp, temp => temp.owner, {cascade: true})
     temp: Temp[];
-
-    // @Column({
-    //     name: "created_at",
-    //     type: "timestamp",
-    //     default: () => "CURRENT_TIMESTAMP"
-    // })
-    // createdAt: Moment;
-    //
-    // @Column({
-    //     name: "updated_at",
-    //     type: "timestamp",
-    //     default: () => "CURRENT_TIMESTAMP",
-    //     onUpdate: "CURRENT_TIMESTAMP"
-    // })
-    // updatedAt: Moment;
 
     @CreateDateColumn()
     createdAt: Moment;
