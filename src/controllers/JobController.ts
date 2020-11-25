@@ -239,6 +239,8 @@ export default class JobController extends Controller {
         if (!job)
             throw new RequestError(404, "Render job not found");
 
+        // TODO: add mor info, for example: plugin spec, ...
+
         ctx.body = job;
     }
 
