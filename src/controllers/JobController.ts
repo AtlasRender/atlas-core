@@ -22,6 +22,7 @@ import Plugin from "../entities/Plugin";
 import {PluginSettingsSpec, SettingsPayload, ValidationError} from "@atlasrender/render-plugin";
 import {SelectQueryBuilder} from "typeorm";
 import User from "../entities/User";
+import UserJwt from "../interfaces/UserJwt";
 
 
 /**
@@ -122,9 +123,11 @@ export default class JobController extends Controller {
      */
     public async createJob(ctx: Context) {
         let renderJob: RenderJob = null;
-        const user = ctx.state.user;
+        const jwtUser: UserJwt = ctx.state.user;
         try {
             const inputJob = ctx.request.body;
+
+            const user: User = await User.findOne({where: {id: jwtUser.id}});
 
             const organization: Organization = await Organization.findOne({where: {id: inputJob.organization}});
             if (!organization) throw new ReferenceError(`Organization does not exist`);
@@ -145,6 +148,7 @@ export default class JobController extends Controller {
             renderJob.organization = organization;
             renderJob.attempts_per_task_limit = inputJob.attempts_per_task_limit;
             renderJob.frameRange = inputJob.frameRange;
+            renderJob.submitter = user;
 
             const plugin: Plugin = await Plugin
                 .getRepository()
@@ -207,30 +211,15 @@ export default class JobController extends Controller {
      * @author Danil Andreev
      */
     public async getJobs(ctx: Context) {
-        const user = ctx.state.user;
-        // const jobs1 = await RenderJob
-        //     .getRepository()
-        //     .createQueryBuilder("job")
-        //     .select("job.*")
-        //     .leftJoinAndSelect((subQuery: SelectQueryBuilder<RenderJob>) =>
-        //         subQuery
-        //             .from(User, "user")
-        //             .select("user.organizations"),
-        //         "organization",
-        //         "organization."
-        //     );
+        const jwtUser: UserJwt = ctx.state.user;
+        const user: User = await User.findOne({where: {id: jwtUser.id}});
+        const jobs = await RenderJob.find({where: {submitter: user}});
 
-
-        const jobs = await RenderJob.getRepository().manager.query(`
-            select *
-            from render_job
-            where "organizationId" in (
-                select "organizationId"
-                from user_organizations
-                where "userId" = $1
-            )
-        `, [user.id]);
-        ctx.body = jobs;
+        ctx.body = jobs.map((job: RenderJob) => {
+            delete user.password;
+            job.submitter = user;
+            return job;
+        });
     }
 
     /**
