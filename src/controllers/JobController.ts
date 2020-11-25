@@ -20,6 +20,9 @@ import {JobSubmitValidator} from "../validators/JobRequestValidators";
 import RenderTask from "../entities/RenderTask";
 import Plugin from "../entities/Plugin";
 import {PluginSettingsSpec, SettingsPayload, ValidationError} from "@atlasrender/render-plugin";
+import {SelectQueryBuilder} from "typeorm";
+import User from "../entities/User";
+import UserJwt from "../interfaces/UserJwt";
 
 
 /**
@@ -120,27 +123,32 @@ export default class JobController extends Controller {
      */
     public async createJob(ctx: Context) {
         let renderJob: RenderJob = null;
-        const user = ctx.state.user;
+        const jwtUser: UserJwt = ctx.state.user;
         try {
             const inputJob = ctx.request.body;
+
+            const user: User = await User.findOne({where: {id: jwtUser.id}});
 
             const organization: Organization = await Organization.findOne({where: {id: inputJob.organization}});
             if (!organization) throw new ReferenceError(`Organization does not exist`);
             //TODO: check user can create job.
 
+
+            // Create new render job
+            renderJob = new RenderJob();
+
             try {
-                getFramesFromRange(inputJob.frameRange);
+                renderJob.pendingTasks = getFramesFromRange(inputJob.frameRange).length;
             } catch (error) {
                 throw new RequestError(400, error.message);
             }
 
-            // Create new render job
-            renderJob = new RenderJob();
             renderJob.name = inputJob.name;
             renderJob.description = inputJob.description;
             renderJob.organization = organization;
             renderJob.attempts_per_task_limit = inputJob.attempts_per_task_limit;
             renderJob.frameRange = inputJob.frameRange;
+            renderJob.submitter = user;
 
             const plugin: Plugin = await Plugin
                 .getRepository()
@@ -203,17 +211,15 @@ export default class JobController extends Controller {
      * @author Danil Andreev
      */
     public async getJobs(ctx: Context) {
-        const user = ctx.state.user;
-        const jobs = await RenderJob.getRepository().manager.query(`
-            select *
-            from render_job
-            where "organizationId" in (
-                select "organizationId"
-                from user_organizations
-                where "userId" = $1
-            )
-        `, [user.id]);
-        ctx.body = jobs;
+        const jwtUser: UserJwt = ctx.state.user;
+        const user: User = await User.findOne({where: {id: jwtUser.id}});
+        const jobs = await RenderJob.find({where: {submitter: user}});
+
+        ctx.body = jobs.map((job: RenderJob) => {
+            delete user.password;
+            job.submitter = user;
+            return job;
+        });
     }
 
     /**
@@ -232,6 +238,8 @@ export default class JobController extends Controller {
         const job = await RenderJob.findOne({where: {id: +jobId}});
         if (!job)
             throw new RequestError(404, "Render job not found");
+
+        // TODO: add mor info, for example: plugin spec, ...
 
         ctx.body = job;
     }
