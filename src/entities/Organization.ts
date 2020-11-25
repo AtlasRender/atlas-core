@@ -25,6 +25,7 @@ import Plugin from "./Plugin";
 import Slave from "./Slave";
 import {Moment} from "moment";
 
+
 /**
  * Organization - typeorm entity for organization data.
  * @class

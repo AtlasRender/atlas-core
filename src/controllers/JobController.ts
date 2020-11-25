@@ -20,7 +20,6 @@ import {JobSubmitValidator} from "../validators/JobRequestValidators";
 import RenderTask from "../entities/RenderTask";
 import Plugin from "../entities/Plugin";
 import {PluginSettingsSpec, SettingsPayload, ValidationError} from "@atlasrender/render-plugin";
-import {SelectQueryBuilder} from "typeorm";
 import User from "../entities/User";
 import UserJwt from "../interfaces/UserJwt";
 
