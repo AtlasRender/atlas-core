@@ -11,7 +11,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    ManyToOne, OneToOne,
+    ManyToOne, OneToOne, PrimaryColumn,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
@@ -26,7 +26,11 @@ import User from "./User";
  */
 @Entity()
 export default class UserPrivateData extends BaseEntity {
+    /**
+     * user - relation to user, which private data is stored
+     */
     @OneToOne(type => User, user => user.privateData, {nullable: false})
+    @PrimaryColumn()
     user: User;
 
     /**

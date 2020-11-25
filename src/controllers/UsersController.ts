@@ -22,6 +22,7 @@ import Authenticator from "../core/Authenticator";
 import OutUser from "../interfaces/OutUser";
 import {getRepository} from "typeorm";
 import RequestError from "../errors/RequestError";
+import UserPrivateData from "../entities/UserPrivateData";
 
 
 /**
@@ -78,8 +79,17 @@ export default class UsersController extends Controller {
         let user = new User();
         user.username = ctx.request.body.username;
         user.email = ctx.request.body.email;
-        user.password = await argon2.hash(ctx.request.body.password);
+        // user.password = await argon2.hash(ctx.request.body.password);
+        let userPrivateData = new UserPrivateData();
+        userPrivateData.password = await argon2.hash(ctx.request.body.password);
+
+        user.privateData = userPrivateData;
+
         const savedUser = await user.save();
+
+        userPrivateData.user = savedUser;
+        await userPrivateData.save();
+
         const result: OutUser = {
             id: savedUser.id,
             username: savedUser.username,
@@ -124,14 +134,14 @@ export default class UsersController extends Controller {
      * @author Denis Afendikov
      */
     public async editUser(ctx: Context): Promise<void> {
-        let user = await User.findOne(ctx.params.user_id);
+        let user = await User.findOne(ctx.params.user_id, {relations: ["privateData"]});
         if (!user) {
             throw new RequestError(404, "User not found.");
         }
         if (ctx.state.user.id !== user.id) {
             throw new RequestError(403, "Forbidden.");
         }
-        if (!await argon2.verify(user.password, ctx.request.body.password)) {
+        if (!await argon2.verify(user.privateData.password, ctx.request.body.password)) {
             throw new RequestError(403, "Forbidden.", {errors: {password: "incorrect"}});
         }
 
@@ -157,7 +167,8 @@ export default class UsersController extends Controller {
         }
 
         if (ctx.request.body.newPassword) {
-            user.password = await argon2.hash(ctx.request.body.newPassword);
+            user.privateData.password = await argon2.hash(ctx.request.body.newPassword);
+            await user.privateData.save();
         }
 
         await user.save();
@@ -170,14 +181,14 @@ export default class UsersController extends Controller {
      * @author Denis Afendikov
      */
     public async deleteUser(ctx: Context): Promise<void> {
-        let user = await User.findOne(ctx.params.user_id);
+        let user = await User.findOne(ctx.params.user_id, {relations: ["privateData"]});
         if (!user) {
             throw new RequestError(404, "User not found.");
         }
         if (ctx.state.user.id !== user.id) {
             throw new RequestError(403, "Forbidden.");
         }
-        if (!await argon2.verify(user.password, ctx.request.body.password)) {
+        if (!await argon2.verify(user.privateData.password, ctx.request.body.password)) {
             throw new RequestError(403, "Forbidden.", {errors: {password: "incorrect"}});
         }
 
