@@ -80,15 +80,15 @@ export default class UsersController extends Controller {
         user.username = ctx.request.body.username;
         user.email = ctx.request.body.email;
         // user.password = await argon2.hash(ctx.request.body.password);
-        let userPrivateData = new UserPrivateData();
-        userPrivateData.password = await argon2.hash(ctx.request.body.password);
-
-        user.privateData = userPrivateData;
-
         const savedUser = await user.save();
 
+        let userPrivateData = new UserPrivateData();
+        userPrivateData.password = await argon2.hash(ctx.request.body.password);
         userPrivateData.user = savedUser;
         await userPrivateData.save();
+
+        savedUser.privateData = userPrivateData;
+        await savedUser.save();
 
         const result: OutUser = {
             id: savedUser.id,

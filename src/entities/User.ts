@@ -55,7 +55,7 @@ export default class User extends BaseEntity {
     @Column({default: false})
     deleted: boolean;
 
-    @OneToOne(type => UserPrivateData, data => data.user, {nullable: false})
+    @OneToOne(type => UserPrivateData, data => data.user, {nullable: true})
     @JoinColumn()
     privateData: UserPrivateData;
 

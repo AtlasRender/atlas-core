@@ -10,7 +10,7 @@ import {
     BaseEntity,
     Column,
     CreateDateColumn,
-    Entity,
+    Entity, JoinColumn,
     ManyToOne, OneToOne, PrimaryColumn,
     PrimaryGeneratedColumn,
     UpdateDateColumn
@@ -26,11 +26,19 @@ import User from "./User";
  */
 @Entity()
 export default class UserPrivateData extends BaseEntity {
+    @PrimaryColumn({
+        name: "userId",
+        nullable: false,
+    })
+    userId: number;
+
     /**
      * user - relation to user, which private data is stored
      */
     @OneToOne(type => User, user => user.privateData, {nullable: false})
-    @PrimaryColumn()
+    @JoinColumn({
+        name: "userId"
+    })
     user: User;
 
     /**
