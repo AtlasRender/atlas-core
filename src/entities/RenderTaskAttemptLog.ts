@@ -26,16 +26,24 @@ import {Moment} from "moment";
  */
 @Entity()
 export default class RenderTaskAttemptLog extends BaseEntity {
-
     @PrimaryGeneratedColumn()
     id: number;
 
+    /**
+     * data - log data.
+     */
     @Column({type: "jsonb"})
     data: any;
 
+    /**
+     * type - a type of the record. Needs to correctly interpret data.
+     */
     @Column({type: "varchar", default: 50})
     type: string;
 
+    /**
+     * renderTaskAttempt - render task attempt this log record belongs to.
+     */
     @ManyToOne(type => RenderTaskAttempt, attempt => attempt.logs, {onDelete: "CASCADE"})
     renderTaskAttempt: RenderTaskAttempt;
 

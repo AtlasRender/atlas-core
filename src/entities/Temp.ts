@@ -22,18 +22,30 @@ export default class Temp extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    /**
+     * data - binary data of the file.
+     */
     @Column({type: "bytea"})
     data: Buffer;
 
+    /**
+     * meta - file metadata. Can contain additional information. Used to restrict file size.
+     */
     @Column({type: "json", nullable: true})
     meta: any;
 
+    /**
+     * isPublic - of true, file can be used by everybody.
+     */
     @Column({default: false})
     isPublic: boolean;
 
-    @CreateDateColumn()
-    createdAt: Moment;
-
+    /**
+     * owner - file creator.
+     */
     @ManyToOne(type => User, user => user.temp, {onDelete: "CASCADE"})
     owner: User;
+
+    @CreateDateColumn()
+    createdAt: Moment;
 }

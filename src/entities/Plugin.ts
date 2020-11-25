@@ -20,9 +20,15 @@ import {Moment} from "moment";
  */
 @Entity()
 export default class Plugin extends BasicPlugin {
+    /**
+     * organization - organization that plugin belongs to.
+     */
     @ManyToOne(type => Organization, org => org.plugins)
     organization: Organization;
 
+    /**
+     * renderJobs - render jobs that plugin used by.
+     */
     @ManyToOne(type => RenderJob, job => job.plugin)
     renderJobs: RenderJob[];
 }

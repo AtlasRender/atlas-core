@@ -25,19 +25,31 @@ import {Moment} from "moment";
  */
 @Entity()
 export default class Slave extends BaseEntity {
-
     @PrimaryGeneratedColumn()
     id: number;
 
+    /**
+     * name - a name of the slave.
+     */
     @Column()
     name: string;
 
+    /**
+     * description - a description of the slave.
+     */
     @Column("text")
     description: string;
 
+    /**
+     * Slave UID for connection.
+     */
     @Column("uuid")
     uuid: string;
 
+    /**
+     * organization - organization, this slave belongs to.
+     */
+    // TODO: change to many to one relation!
     @ManyToMany(type => Organization, org => org.slaves)
     organizations: Organization[];
 

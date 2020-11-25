@@ -29,12 +29,21 @@ export default class RenderJobLog extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    /**
+     * data - log data.
+     */
     @Column({type: "jsonb"})
     data: any;
 
+    /**
+     * type - type of log record. Used to correctly interpret data.
+     */
     @Column({type: "varchar", default: 50})
     type: string;
 
+    /**
+     * renderJob - render job this log belongs to.
+     */
     @ManyToOne(type => RenderJob, job => job.logs, {onDelete: "CASCADE"})
     renderJob: RenderJob;
 

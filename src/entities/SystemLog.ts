@@ -29,11 +29,17 @@ export default class SystemLog extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    /**
+     * level - log level.
+     */
     @Column({length: 30})
     level: string;
 
+    /**
+     * payload - log payload.
+     */
     @Column({type: "json"})
-    payload: object;
+    payload: any;
 
     @CreateDateColumn()
     createdAt: Moment;

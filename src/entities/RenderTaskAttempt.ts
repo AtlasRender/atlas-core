@@ -27,19 +27,31 @@ import {Moment} from "moment";
  */
 @Entity()
 export default class RenderTaskAttempt extends BaseEntity {
-
     @PrimaryGeneratedColumn()
     id: number;
 
+    /**
+     * slaveUID - UID of the slave, that processing this attempt.
+     */
     @Column({length: 100})
     slaveUID: string;
 
+    /**
+     * status - render task attempt status.
+     * @type "done" | "failed" | "processing"
+     */
     @Column({type: "varchar", default: 50})
     status: string;
 
+    /**
+     * task - render task this attempt belongs to.
+     */
     @ManyToOne(type => RenderTask, renderTask => renderTask.renderTaskAttempts, {onDelete: "CASCADE"})
     task: RenderTask;
 
+    /**
+     * logs - render task attempt log. Here will be stored all log records from the slave.
+     */
     @OneToMany(type => RenderTaskAttemptLog, log => log.renderTaskAttempt, {cascade: true})
     logs: RenderTaskAttemptLog[];
 

@@ -35,33 +35,62 @@ export default class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    /**
+     * username - username of the user. Must be unique.
+     */
     @Column({unique: true})
     username: string;
 
+    /**
+     * email - e-mail of the user. Must be unique. Can be used to log in.
+     */
     @Column({unique: true})
     email: string;
 
+    /**
+     * password - encrypted user password.
+     */
     @Column()
     password: string;
 
+    /**
+     * deleted - if true, user will be displayed as deleted.
+     * Nobody can log into deleted account.
+     */
     @Column({default: false})
     deleted: boolean;
 
+    /**
+     * organizations - organizations this user is member in.
+     */
     @ManyToMany(type => Organization, org => org.users)
     organizations: Organization[];
 
+    /**
+     * roles - roles of the user in different organizations.
+     * Roles can grant access to different abilities into organization.
+     */
     @ManyToMany(type => Role, role => role.users)
     @JoinTable({
         name: "user_roles"
     })
     roles: Role[];
 
+    /**
+     * tokens - user access tokens. Can be used for CI or something else.
+     */
     @OneToMany(type => UserToken, tokens => tokens.user)
     tokens: UserToken[];
 
+    /**
+     * jobs - render jobs, submitted by this user.
+     */
     @OneToMany(type => RenderJob, job => job.submitter)
     jobs: RenderJob[];
 
+    /**
+     * temp - temporary files of the user.
+     */
     @OneToMany(type => Temp, temp => temp.owner, {cascade: true})
     temp: Temp[];
 

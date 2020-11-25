@@ -28,15 +28,23 @@ export default class OrganizationLog extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    /**
+     * data - log data.
+     */
     @Column({type: "jsonb"})
     data: any;
 
+    /**
+     * type - record type. Need to correctly interpret data.
+     */
     @Column({type: "varchar", default: 50})
     type: string;
 
+    /**
+     * organization - organization that this log record belongs to.
+     */
     @ManyToOne(type => Organization, org => org.logs)
     organization: Organization;
-
 
     @CreateDateColumn()
     createdAt: Moment;

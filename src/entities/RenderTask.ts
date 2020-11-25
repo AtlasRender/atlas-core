@@ -20,6 +20,7 @@ import RenderJob from "./RenderJob";
 import RenderTaskAttempt from "./RenderTaskAttempt";
 import {Moment} from "moment";
 
+
 /**
  * RenderTask - typeorm entity for render task data.
  * @class
@@ -31,16 +32,32 @@ export default class RenderTask extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    /**
+     * frame - frame number of the task.
+     */
     @Column()
     frame: number;
 
+    /**
+     * status - render task status.
+     * @type "pending" | "done" | "failed" | "processing"
+     */
     @Column({type: "varchar", default: 50})
     status: string;
 
-    @ManyToOne(type => RenderJob, job => job.renderTasks,
-        {onDelete: "CASCADE", nullable: false})
+    /**
+     * job - a job this render task belongs to.
+     */
+    @ManyToOne(
+        type => RenderJob, job => job.renderTasks,
+        {onDelete: "CASCADE", nullable: false}
+    )
     job: RenderJob;
 
+    /**
+     * renderTaskAttempts - render task attempts.
+     * Each try to process the task generates new render task attempt.
+     */
     @OneToMany(type => RenderTaskAttempt, attempt => attempt.task, {cascade: true})
     renderTaskAttempts: RenderTaskAttempt[];
 
