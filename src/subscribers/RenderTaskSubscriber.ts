@@ -17,20 +17,44 @@ export class RenderTaskSubscriber implements EntitySubscriberInterface<RenderTas
         return RenderTask;
     }
 
-    afterUpdate(event: UpdateEvent<RenderTask>): Promise<any> | void {
+    async afterUpdate(event: UpdateEvent<RenderTask>): Promise<any> {
         if (event.updatedColumns.some(column => column.propertyName === "status")) {
-            const done: RenderTask[] = await RenderTask
-                .createQueryBuilder()
+            const task: RenderTask = await RenderTask.findOne({
+                where: {id: event.databaseEntity.id},
+                relations: ["job"]
+            });
+            const job: RenderJob = task.job;
 
-            RenderJob
+            const done: any[] = await RenderTask
                 .getRepository()
-                .createQueryBuilder()
-                .from(RenderJob, "job")
-                .update()
-                .set({
-                    done: 0,
-                })
-                .where("job.id = :id", {id: event.databaseEntity.job.id});
+                .createQueryBuilder("task")
+                .select("COUNT(task.status)", "quantity")
+                .addSelect(["task.status"])
+                .where("task.job = :job", {job: job.id})
+                .groupBy("task.status")
+                .printSql()
+                .getRawMany();
+
+            for (const report of done) {
+                switch (report.task_status) {
+                    case "pending":
+                        job.pendingTasks = +report.quantity;
+                        break;
+                    case "processing":
+                        job.processingTasks = +report.quantity;
+                        break;
+                    case "done":
+                        job.doneTasks = +report.quantity;
+                        break;
+                    case "failed":
+                        job.failedTasks = +report.quantity;
+                        break;
+                    default:
+                        //TODO: add log to db
+                }
+            }
+
+            await job.save();
         }
     }
 }

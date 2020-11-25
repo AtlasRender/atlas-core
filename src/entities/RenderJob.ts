@@ -48,8 +48,17 @@ export default class RenderJob extends BaseEntity {
     @Column({default: false})
     failed: boolean;
 
-    @Column({type: "int", default: 0})
-    progress: number;
+    @Column({default: 0})
+    pendingTasks: number;
+
+    @Column({default: 0})
+    processingTasks: number;
+
+    @Column({default: 0})
+    doneTasks: number;
+
+    @Column({default: 0})
+    failedTasks: number;
 
     @Column({type: "jsonb", nullable: false})
     pluginSettings: object;

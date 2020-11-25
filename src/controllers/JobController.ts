@@ -20,6 +20,8 @@ import {JobSubmitValidator} from "../validators/JobRequestValidators";
 import RenderTask from "../entities/RenderTask";
 import Plugin from "../entities/Plugin";
 import {PluginSettingsSpec, SettingsPayload, ValidationError} from "@atlasrender/render-plugin";
+import {SelectQueryBuilder} from "typeorm";
+import User from "../entities/User";
 
 
 /**
@@ -128,14 +130,16 @@ export default class JobController extends Controller {
             if (!organization) throw new ReferenceError(`Organization does not exist`);
             //TODO: check user can create job.
 
+
+            // Create new render job
+            renderJob = new RenderJob();
+
             try {
-                getFramesFromRange(inputJob.frameRange);
+                renderJob.pendingTasks = getFramesFromRange(inputJob.frameRange).length;
             } catch (error) {
                 throw new RequestError(400, error.message);
             }
 
-            // Create new render job
-            renderJob = new RenderJob();
             renderJob.name = inputJob.name;
             renderJob.description = inputJob.description;
             renderJob.organization = organization;
@@ -204,6 +208,19 @@ export default class JobController extends Controller {
      */
     public async getJobs(ctx: Context) {
         const user = ctx.state.user;
+        // const jobs1 = await RenderJob
+        //     .getRepository()
+        //     .createQueryBuilder("job")
+        //     .select("job.*")
+        //     .leftJoinAndSelect((subQuery: SelectQueryBuilder<RenderJob>) =>
+        //         subQuery
+        //             .from(User, "user")
+        //             .select("user.organizations"),
+        //         "organization",
+        //         "organization."
+        //     );
+
+
         const jobs = await RenderJob.getRepository().manager.query(`
             select *
             from render_job
