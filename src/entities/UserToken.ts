@@ -26,19 +26,31 @@ import User from "./User";
  */
 @Entity()
 export default class UserToken extends BaseEntity {
-
     @PrimaryGeneratedColumn()
     id: number;
 
+    /**
+     * name - a name of the token.
+     */
     @Column()
     name: string;
 
+    /**
+     * description - description of the token.
+     */
     @Column()
     description: string;
 
+    /**
+     * token - token value.
+     */
+    // TODO: store encrypted!!!
     @Column()
     token: string;
 
+    /**
+     * user - user, this token belongs to.
+     */
     @ManyToOne(type => User, user => user.tokens)
     user: User;
 
