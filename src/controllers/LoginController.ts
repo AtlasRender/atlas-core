@@ -39,7 +39,7 @@ export default class LoginController extends Controller {
             throw new RequestError(404, "User with this username not exist.",
                 {errors: {notExist: "username"}});
         }
-        if (!await argon2.verify(user.password, ctx.request.body.password)) {
+        if (!await argon2.verify(user.privateData.password, ctx.request.body.password)) {
             throw new RequestError(401, "Password incorrect.");
         }
 
