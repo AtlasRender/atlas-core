@@ -9,12 +9,33 @@
 import * as WS from "ws";
 import * as CryptoRandomString from "crypto-random-string";
 import {IncomingMessage} from "http";
+import WebSocketSession from "../interfaces/WebSocketSession";
 
 
+/**
+ * WebSocketSessions - type for WebSocket sessions storage object.
+ */
+export type WebSocketSessions = {[key: string]: WebSocketSession};
+
+/**
+ * WebSocket - class, designed to handle web socket connections.
+ * @class
+ * @author Danil Andreev
+ */
 export default class WebSocket extends WS.Server {
-    public static clients = {};
+    /**
+     * KEY_GENERATING_ATTEMPTS - tries count before closing connection
+     * with error when can not generate unique id for session.
+     */
     public static KEY_GENERATING_ATTEMPTS: number = 10;
+    //TODO: add normal type/interface
+    public static sessions: WebSocketSessions = {};
 
+    /**
+     * Creates an instance of WebSocket.
+     * @constructor
+     * @author Danil Andreev
+     */
     constructor() {
         //TODO: get port from config.
         super({
@@ -24,16 +45,33 @@ export default class WebSocket extends WS.Server {
         this.on("connection", (ws: WS, greeting: IncomingMessage) => {
             try {
                 const uid = WebSocket.generateUID();
-                this.clients[uid] = ws;
+                const authorizationHeader = greeting.headers.authorization;
+                WebSocket.sessions[uid] = {
+                    ws,
+                    uid,
+                    userId: 1,
+                };
                 
 
                 this.on("close", () => {
-                    delete this.clients[uid];
+                    delete WebSocket.sessions[uid];
                 });
             } catch (error) {
                 ws.close(423, "Server has too many connections.")
             }
         });
+    }
+
+    /**
+     * sendToUser - method, designed to send messages to all of user sessions by user id in database.
+     * @method
+     * @param userId - Target user id.
+     * @param message - Message payload.
+     * @throws ReferenceError
+     * @author Danil Andreev
+     */
+    public static sendToUser(userId, message): void {
+        const targets = WebSocket.sessions;
     }
 
     /**
@@ -50,7 +88,7 @@ export default class WebSocket extends WS.Server {
                 throw new Error("Failed to generate unique id.");
             uid = CryptoRandomString({length: 10, type: "base64"});
             attempts++;
-        } while (this.clients[uid]);
+        } while (WebSocket.sessions[uid]);
         return uid;
     }
 
