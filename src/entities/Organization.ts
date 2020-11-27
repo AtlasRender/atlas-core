@@ -52,7 +52,6 @@ export default class Organization extends BaseEntity {
      * ownerUser - the owner of the organization.
      */
     @ManyToOne(type => User)
-    @JoinColumn()
     ownerUser: User;
 
     /**

@@ -40,6 +40,7 @@ export default class PluginController extends Controller {
     public async addPlugin(ctx: Context): Promise<void> {
         // TODO: Add file meta checks
         // TODO: Add name and version checks.
+        // TODO: add organization to plugin
         const {organization: orgId, packed} = ctx.request.query;
         const body = ctx.request.body;
 

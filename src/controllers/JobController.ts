@@ -215,7 +215,6 @@ export default class JobController extends Controller {
         const jobs = await RenderJob.find({where: {submitter: user}});
 
         ctx.body = jobs.map((job: RenderJob) => {
-            delete user.password;
             job.submitter = user;
             return job;
         });
