@@ -17,6 +17,8 @@ import WebSocketSession from "../interfaces/WebSocketSession";
  */
 export type WebSocketSessions = { [key: string]: WebSocketSession };
 
+export type WebSocketHandler = (ws: WS, message: string) => Promise<boolean> | boolean;
+
 /**
  * WebSocket - class, designed to handle web socket connections.
  * @class
@@ -24,25 +26,37 @@ export type WebSocketSessions = { [key: string]: WebSocketSession };
  */
 export default class WebSocket extends WS.Server {
     /**
+     * instance - current instance of the class.
+     */
+    protected static instance: WebSocket = null;
+
+    /**
      * KEY_GENERATING_ATTEMPTS - tries count before closing connection
      * with error when can not generate unique id for session.
      */
     public static KEY_GENERATING_ATTEMPTS: number = 10;
+
     /**
      * sessions - key value pair structure of all web socket opened sessions.
      */
     public static sessions: WebSocketSessions = {};
 
+    protected handlers: WebSocketHandler[] = [];
+
     /**
      * Creates an instance of WebSocket.
      * @constructor
+     * @throws ReferenceError
      * @author Danil Andreev
      */
-    constructor() {
+    constructor(config?: any) {
         //TODO: get port from config.
         super({
             port: 3003
         });
+
+        if (WebSocket.instance)
+            throw new ReferenceError("Instance of the server has been already created.");
 
         this.on("connection", (ws: WS, greeting: IncomingMessage) => {
             try {
@@ -54,6 +68,15 @@ export default class WebSocket extends WS.Server {
                     userId: 1,
                 };
 
+                this.on("message", async (message: string) => {
+                    for (const handler of this.handlers) {
+                        let result = handler(ws, message);
+                        if (result instanceof Promise)
+                            result = await result;
+                        if (result)
+                            break;
+                    }
+                })
 
                 this.on("close", () => {
                     delete WebSocket.sessions[uid];
@@ -62,6 +85,28 @@ export default class WebSocket extends WS.Server {
                 ws.close(423, "Server has too many connections.");
             }
         });
+    }
+
+    /**
+     * addHandler - method, designed to add client messages handlers.
+     * @method
+     * @param handler - Handler callback.
+     * @author Danil Andreev
+     */
+    public addHandler(handler: WebSocketHandler) {
+        this.handlers.push(handler);
+    }
+
+    /**
+     * getCurrent - returns current instance of the server.
+     * @method
+     * @throws ReferenceError
+     * @author Danil Andreev
+     */
+    public static getCurrent(): WebSocket {
+        if (!WebSocket.instance)
+            throw new ReferenceError("There is no instance of the WebSocket created.");
+        return WebSocket.instance;
     }
 
     /**
@@ -152,5 +197,7 @@ export default class WebSocket extends WS.Server {
         } while (WebSocket.sessions[uid]);
         return uid;
     }
+
+    public static
 
 }
