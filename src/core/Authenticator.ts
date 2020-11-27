@@ -93,7 +93,8 @@ export default class Authenticator {
      * @param token - Raw jwt token
      */
     protected static async checkTokenRevoked(ctx: Context, decodedToken: UserJwt, token: string): Promise<boolean> {
-        // TODO
+        if (new Date(decodedToken.expires) < new Date())
+            return true;
         return false;
     }
 
@@ -124,5 +125,28 @@ export default class Authenticator {
             createdAt: createdAt.format()
         }, await Authenticator.getKey());
         return token;
+    }
+
+    /**
+     * validateToken - method, designed to validate input jwt token.
+     * @method
+     * @param token - Input token payload.
+     * @author Danil Andreev
+     */
+    public static async validateToken(token: string): Promise<UserJwt> {
+        try {
+            const decoded: any = jsonwebtoken.decode(token);
+            if (typeof decoded !== "object")
+                throw new TypeError(`Incorrect token.`);
+            if (typeof decoded.id !== "number")
+                throw new TypeError(`Incorrect token.`);
+            if (typeof decoded.expires !== "string")
+                throw new TypeError(`Incorrect token.`);
+            if (new Date(decoded.expires) < new Date())
+                throw new TypeError(`Incorrect token.`);
+            return decoded;
+        } catch (error) {
+            throw new TypeError(`Incorrect token.`);
+        }
     }
 }

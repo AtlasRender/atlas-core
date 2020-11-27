@@ -68,6 +68,7 @@
     "@types/argon2": "^0.15.0",
     "@types/crypto-random-string": "^2.0.0",
     "@types/jest": "^26.0.15",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/koa": "^2.11.6",
     "@types/koa-convert": "^1.2.3",
     "@types/koa-cors": "^0.0.0",

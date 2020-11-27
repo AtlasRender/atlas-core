@@ -10,6 +10,9 @@ import * as WS from "ws";
 import * as CryptoRandomString from "crypto-random-string";
 import {IncomingMessage} from "http";
 import WebSocketSession from "../interfaces/WebSocketSession";
+import Authenticator from "./Authenticator";
+import RequestError from "../errors/RequestError";
+import UserJwt from "../interfaces/UserJwt";
 
 
 /**
@@ -66,15 +69,22 @@ export default class WebSocket extends WS.Server {
         if (WebSocket.instance)
             throw new ReferenceError("Instance of the server has been already created.");
 
-        this.on("connection", (ws: WS, greeting: IncomingMessage) => {
+        this.on("connection", async (ws: WS, greeting: IncomingMessage) => {
             try {
                 const uid = WebSocket.generateUID();
-                const authorizationHeader = greeting.headers.authorization;
-                WebSocket.sessions[uid] = {
-                    ws,
-                    uid,
-                    userId: 1,
-                };
+                const authorizationHeader: string = greeting.headers.authorization;
+                const bearer: string = authorizationHeader.slice(7);
+
+                try {
+                    const userJwt: UserJwt = await Authenticator.validateToken(bearer);
+                    WebSocket.sessions[uid] = {
+                        ws,
+                        uid,
+                        userId: userJwt.id,
+                    };
+                } catch (error) {
+                    throw new RequestError(401, "Unauthorized");
+                }
 
                 this.on("message", async (message: string) => {
                     for (const handler of this.handlers) {
@@ -84,13 +94,16 @@ export default class WebSocket extends WS.Server {
                         if (result)
                             break;
                     }
-                })
+                });
 
                 this.on("close", () => {
                     delete WebSocket.sessions[uid];
                 });
             } catch (error) {
-                ws.close(423, "Server has too many connections.");
+                if (error instanceof RequestError)
+                    ws.close(error.status, error.message);
+                else
+                    ws.close(423, "Server has too many connections.");
             }
         });
     }
