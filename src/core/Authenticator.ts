@@ -7,16 +7,15 @@
  */
 
 import * as Koa from "koa";
-import {Context, Next} from "koa";
-import * as cryptoRandomString from "crypto-random-string";
+import {Context} from "koa";
+import * as CryptoRandomString from "crypto-random-string";
 import * as Jwt from "koa-jwt";
 import * as jsonwebtoken from "jsonwebtoken";
-import {Moment} from "moment";
 import * as moment from "moment";
+import {Moment} from "moment";
 import UserJwt from "./../interfaces/UserJwt";
 import Server from "./Server";
 import {REDIS_USER_JWT_PRIVATE_KEY} from "../globals";
-import {promisify} from "util";
 
 
 export interface JwtOptions {
@@ -80,7 +79,7 @@ export default class Authenticator {
             });
         } catch (error) {
             console.log("Authenticator: JWT Key is missing on Redis. Generating new one.");
-            const key: string = cryptoRandomString({length: 30, type: "base64"});
+            const key: string = CryptoRandomString({length: 30, type: "base64"});
             Server.getCurrent().getRedis().set(REDIS_USER_JWT_PRIVATE_KEY, key);
         }
         return key;
