@@ -15,7 +15,7 @@ import WebSocketSession from "../interfaces/WebSocketSession";
 /**
  * WebSocketSessions - type for WebSocket sessions storage object.
  */
-export type WebSocketSessions = {[key: string]: WebSocketSession};
+export type WebSocketSessions = { [key: string]: WebSocketSession };
 
 /**
  * WebSocket - class, designed to handle web socket connections.
@@ -28,7 +28,9 @@ export default class WebSocket extends WS.Server {
      * with error when can not generate unique id for session.
      */
     public static KEY_GENERATING_ATTEMPTS: number = 10;
-    //TODO: add normal type/interface
+    /**
+     * sessions - key value pair structure of all web socket opened sessions.
+     */
     public static sessions: WebSocketSessions = {};
 
     /**
@@ -51,13 +53,13 @@ export default class WebSocket extends WS.Server {
                     uid,
                     userId: 1,
                 };
-                
+
 
                 this.on("close", () => {
                     delete WebSocket.sessions[uid];
                 });
             } catch (error) {
-                ws.close(423, "Server has too many connections.")
+                ws.close(423, "Server has too many connections.");
             }
         });
     }
@@ -70,8 +72,67 @@ export default class WebSocket extends WS.Server {
      * @throws ReferenceError
      * @author Danil Andreev
      */
-    public static sendToUser(userId, message): void {
-        const targets = WebSocket.sessions;
+    public static sendToUser(userId: number, message: string | object): number {
+        let payload: string = "";
+        switch (typeof message) {
+            case "object":
+                payload = JSON.stringify(message);
+                break;
+            default:
+                payload = String(message);
+        }
+
+        let affected = 0;
+        for (const key in WebSocket.sessions) {
+            const candidate: WebSocketSession = WebSocket.sessions[key];
+            if (candidate.userId === userId) {
+                try {
+                    candidate.ws.send(payload);
+                    affected++;
+                } catch (error) {
+                    //TODO: add error handling;
+                    console.log(error);
+                }
+            }
+        }
+        return affected;
+    }
+
+    /**
+     * terminateUserSession - method, designed to force terminate web socket session by user id.
+     * @method
+     * @param userId - Target user id.
+     * @param code - Status code. Default - 499 | Client Closed Request
+     * @param message - Close message.
+     * @author Danil Andreev
+     */
+    public static terminateUserSession(userId: number, code: number = 499, message?: string): number {
+        let payload: string = "";
+        switch (typeof message) {
+            case "object":
+                payload = JSON.stringify(message);
+                break;
+            default:
+                payload = String(message);
+        }
+
+        let affected = 0;
+        for (const key in WebSocket.sessions) {
+            const candidate: WebSocketSession = WebSocket.sessions[key];
+            if (candidate.userId === userId) {
+                try {
+                    candidate.ws.send(payload);
+                    candidate.ws.close(code, payload);
+                } catch (error) {
+                    //TODO: add error handling;
+                    console.log(error);
+                } finally {
+                    affected++;
+                    delete WebSocket.sessions[key];
+                }
+            }
+        }
+        return affected;
     }
 
     /**
