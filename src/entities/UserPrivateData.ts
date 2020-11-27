@@ -6,17 +6,7 @@
  * All rights reserved.
  */
 
-import {
-    BaseEntity,
-    Column,
-    CreateDateColumn,
-    Entity, JoinColumn,
-    ManyToOne, OneToOne, PrimaryColumn,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn
-} from "typeorm";
-import {Moment} from "moment";
-import User from "./User";
+import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
 
 /**
@@ -26,20 +16,8 @@ import User from "./User";
  */
 @Entity()
 export default class UserPrivateData extends BaseEntity {
-    @PrimaryColumn({
-        name: "userId",
-        nullable: false,
-    })
-    userId: number;
-
-    /**
-     * user - relation to user, which private data is stored
-     */
-    @OneToOne(type => User, user => user.privateData, {nullable: false})
-    @JoinColumn({
-        name: "userId"
-    })
-    user: User;
+    @PrimaryGeneratedColumn()
+    id: number;
 
     /**
      * password - encrypted user password.
