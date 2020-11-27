@@ -24,7 +24,7 @@ import Logger from "../core/Logger";
  * @throws ReferenceError
  * @author Danil Andreev
  */
-export default async function JobsProcessor() {
+export default async function JobsProcessor(): Promise<void> {
     /**
      * handler - AMQP messages handler.
      * @param message - AMQP message.
@@ -32,7 +32,7 @@ export default async function JobsProcessor() {
      * @throws ReferenceError
      * @author Danil Andreev
      */
-    async function handler(message: Message, channel: Channel) {
+    async function handler(message: Message, channel: Channel): Promise<void> {
         try {
             const event: JobEvent = new JobEvent(JSON.parse(message.content.toString()));
             const inputJob: RenderJob = event.data;

@@ -28,12 +28,14 @@ import VersionsController from "./controllers/VersionsController";
 import TaskReportsProcessor from "./processors/TaskReportsProcessor";
 import UploadController from "./controllers/UploadController";
 import PluginController from "./controllers/PluginController";
+import UserNotificationProcessor from "./processors/UserNotificationProcessor";
 
 
 async function startServer() {
     const server = await Server.createServer(config);
     await JobsProcessor();
     await TaskReportsProcessor();
+    await UserNotificationProcessor();
 
     server.useController(new UsersController());
     server.useController(new LoginController());

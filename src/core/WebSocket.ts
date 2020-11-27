@@ -17,7 +17,12 @@ import WebSocketSession from "../interfaces/WebSocketSession";
  */
 export type WebSocketSessions = { [key: string]: WebSocketSession };
 
-export type WebSocketHandler = (ws: WS, message: string) => Promise<boolean> | boolean;
+/**
+ * WebSocketHandler - type for WebSocket handler function.
+ * If handler returns truthy value - chained call will be stopped.
+ * If not - next handler in chain will be called.
+ */
+export type WebSocketHandler = (ws: WS, message: string) => Promise<boolean | void> | boolean | void;
 
 /**
  * WebSocket - class, designed to handle web socket connections.
@@ -41,6 +46,9 @@ export default class WebSocket extends WS.Server {
      */
     public static sessions: WebSocketSessions = {};
 
+    /**
+     * handlers - an array of client message handlers.
+     */
     protected handlers: WebSocketHandler[] = [];
 
     /**
@@ -197,7 +205,4 @@ export default class WebSocket extends WS.Server {
         } while (WebSocket.sessions[uid]);
         return uid;
     }
-
-    public static
-
 }

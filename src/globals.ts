@@ -22,9 +22,14 @@ export const AMQP_TASKS_QUEUE = "render_tasks"
  */
 export const AMQP_TASK_REPORTS_QUEUE = "slave_reports"
 /**
- * AMQP_JOBS_QUEUE - queue name for hobs management.
+ * AMQP_JOBS_QUEUE - queue name for jobs management.
  */
 export const AMQP_JOBS_QUEUE = "jobs";
+
+/**
+ * AMQP_USER_NOTIFICATION_QUEUE - queue name for user notifications.
+ */
+export const AMQP_USER_NOTIFICATION_QUEUE = "user_notifications";
 
 /**
  * REDIS_USER_JWT_PRIVATE_KEY - user JWT private key.
