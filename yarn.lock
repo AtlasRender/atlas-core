@@ -742,6 +742,13 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
+"@types/jsonwebtoken@^8.5.0":
+  version "8.5.0"
+  resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-8.5.0.tgz#2531d5e300803aa63279b232c014acf780c981c5"
+  integrity sha512-9bVao7LvyorRGZCw0VmH/dr7Og+NdjYSsKAxB43OQoComFbBgsEpoR9JW6+qSq/ogwVBg8GI2MfAlk4SYI4OLg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/keygrip@*":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/keygrip/-/keygrip-1.0.2.tgz#513abfd256d7ad0bf1ee1873606317b33b1b2a72"
@@ -877,6 +884,13 @@
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/@types/unzipper/-/unzipper-0.10.3.tgz#9eea872fb1fa460da76f253878b6275af588f464"
   integrity sha512-01mQdTLp3/KuBVDhP82FNBf+enzVOjJ9dGsCWa5z8fcYAFVgA9bqIQ2NmsgNFzN/DhD0PUQj4n5p7k6I9mq80g==
+  dependencies:
+    "@types/node" "*"
+
+"@types/ws@^7.4.0":
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-7.4.0.tgz#499690ea08736e05a8186113dac37769ab251a0e"
+  integrity sha512-Y29uQ3Uy+58bZrFLhX36hcI3Np37nqWE7ky5tjiDoy1GDZnIwVxS0CgF+s+1bXMzjKBFy+fqaRfb708iNzdinw==
   dependencies:
     "@types/node" "*"
 
@@ -5991,6 +6005,11 @@ ws@^7.2.3:
   version "7.3.1"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.3.1.tgz#d0547bf67f7ce4f12a72dfe31262c68d7dc551c8"
   integrity sha512-D3RuNkynyHmEJIpD2qrgVkc9DQ23OrN/moAwZX4L8DfvszsJxpjQuUq3LMx6HoYji9fbIOBY18XWBsAux1ZZUA==
+
+ws@^7.4.0:
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.0.tgz#a5dd76a24197940d4a8bb9e0e152bb4503764da7"
+  integrity sha512-kyFwXuV/5ymf+IXhS6f0+eAFvydbaBW3zjpT6hUdAh/hbVjTIB5EHBGi0bPoCLSK2wcuz3BrEkB9LrYv1Nm4NQ==
 
 xdg-basedir@^4.0.0:
   version "4.0.0"

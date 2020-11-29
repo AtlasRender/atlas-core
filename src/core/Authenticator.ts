@@ -7,16 +7,15 @@
  */
 
 import * as Koa from "koa";
-import {Context, Next} from "koa";
-import * as cryptoRandomString from "crypto-random-string";
+import {Context} from "koa";
+import * as CryptoRandomString from "crypto-random-string";
 import * as Jwt from "koa-jwt";
 import * as jsonwebtoken from "jsonwebtoken";
-import {Moment} from "moment";
 import * as moment from "moment";
+import {Moment} from "moment";
 import UserJwt from "./../interfaces/UserJwt";
 import Server from "./Server";
 import {REDIS_USER_JWT_PRIVATE_KEY} from "../globals";
-import {promisify} from "util";
 
 
 export interface JwtOptions {
@@ -80,7 +79,7 @@ export default class Authenticator {
             });
         } catch (error) {
             console.log("Authenticator: JWT Key is missing on Redis. Generating new one.");
-            const key: string = cryptoRandomString({length: 30, type: "base64"});
+            const key: string = CryptoRandomString({length: 30, type: "base64"});
             Server.getCurrent().getRedis().set(REDIS_USER_JWT_PRIVATE_KEY, key);
         }
         return key;
@@ -94,7 +93,8 @@ export default class Authenticator {
      * @param token - Raw jwt token
      */
     protected static async checkTokenRevoked(ctx: Context, decodedToken: UserJwt, token: string): Promise<boolean> {
-        // TODO
+        if (new Date(decodedToken.expires) < new Date())
+            return true;
         return false;
     }
 
@@ -125,5 +125,28 @@ export default class Authenticator {
             createdAt: createdAt.format()
         }, await Authenticator.getKey());
         return token;
+    }
+
+    /**
+     * validateToken - method, designed to validate input jwt token.
+     * @method
+     * @param token - Input token payload.
+     * @author Danil Andreev
+     */
+    public static async validateToken(token: string): Promise<UserJwt> {
+        try {
+            const decoded: any = jsonwebtoken.decode(token);
+            if (typeof decoded !== "object")
+                throw new TypeError(`Incorrect token.`);
+            if (typeof decoded.id !== "number")
+                throw new TypeError(`Incorrect token.`);
+            if (typeof decoded.expires !== "string")
+                throw new TypeError(`Incorrect token.`);
+            if (new Date(decoded.expires) < new Date())
+                throw new TypeError(`Incorrect token.`);
+            return decoded;
+        } catch (error) {
+            throw new TypeError(`Incorrect token.`);
+        }
     }
 }

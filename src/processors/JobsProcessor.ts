@@ -13,7 +13,6 @@ import JobEvent from "../core/JobEvent";
 import RenderTask from "../entities/RenderTask";
 import getFramesFromRange from "../utils/getFramesFromRange";
 import RenderJob from "../entities/RenderJob";
-import SystemLog from "../entities/SystemLog";
 import Logger from "../core/Logger";
 
 
@@ -24,7 +23,7 @@ import Logger from "../core/Logger";
  * @throws ReferenceError
  * @author Danil Andreev
  */
-export default async function JobsProcessor() {
+export default async function JobsProcessor(): Promise<void> {
     /**
      * handler - AMQP messages handler.
      * @param message - AMQP message.
@@ -32,15 +31,14 @@ export default async function JobsProcessor() {
      * @throws ReferenceError
      * @author Danil Andreev
      */
-    async function handler(message: Message, channel: Channel) {
+    async function handler(message: Message, channel: Channel): Promise<void> {
         try {
             const event: JobEvent = new JobEvent(JSON.parse(message.content.toString()));
             const inputJob: RenderJob = event.data;
             const frames: number[] = getFramesFromRange(inputJob.frameRange);
 
-
             // Find render job in database.
-            const renderJob = await RenderJob.findOne({where: {id: inputJob.id}});
+            const renderJob = await RenderJob.findOne({where: {id: inputJob.id}, relations: ["plugin"]});
             if (!renderJob)
                 throw new ReferenceError(`Can not find specified render job. Render job "id" = '${inputJob.id}' `);
 

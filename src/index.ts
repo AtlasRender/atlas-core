@@ -28,12 +28,17 @@ import VersionsController from "./controllers/VersionsController";
 import TaskReportsProcessor from "./processors/TaskReportsProcessor";
 import UploadController from "./controllers/UploadController";
 import PluginController from "./controllers/PluginController";
+import UserNotificationProcessor from "./processors/UserNotificationProcessor";
+import WebSocket from "./core/WebSocket";
 
 
 async function startServer() {
     const server = await Server.createServer(config);
     await JobsProcessor();
     await TaskReportsProcessor();
+    await UserNotificationProcessor();
+
+    const webSocketClient = new WebSocket();
 
     server.useController(new UsersController());
     server.useController(new LoginController());

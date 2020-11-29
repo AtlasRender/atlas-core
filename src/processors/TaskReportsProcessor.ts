@@ -22,14 +22,14 @@ import RenderTaskAttemptLog from "../entities/RenderTaskAttemptLog";
  * @throws ReferenceError
  * @author Danil Andreev
  */
-export default async function TaskReportsProcessor() {
+export default async function TaskReportsProcessor(): Promise<void> {
     /**
      * handler - AMQP messages handler.
      * @param message - AMQP message.
      * @param channel
      * @author Danil Andreev
      */
-    async function handler(message: Message, channel: Channel) {
+    async function handler(message: Message, channel: Channel): Promise<void> {
         const handleStart = async (body) => {
             console.log("handleStart -------------", body);
             const {task, reportType, slave} = body;
