@@ -28,12 +28,15 @@ export default class PluginController extends Controller {
     constructor() {
         super("/plugins");
         this.post("/", PluginCreateBodyValidator, this.addPlugin);
+        //TODO: add validation
+        this.get("/", this.getPlugins);
+        this.get("/:id/preview", this.getPluginPreview);
     }
 
 
     /**
      * Route __[POST]__ ___/plugins___ - Adds new plugin.
-     * @code 200
+     * @code 200, 404, 409, 400
      * @method
      * @author DanilAndreev
      */
@@ -159,5 +162,44 @@ export default class PluginController extends Controller {
 
         await plugin.save();
         ctx.status = 200;
+    }
+
+    /**
+     * Route __[GET]__ ___/plugins___ - Get all organization plugins.
+     * @code 200,404
+     * @method
+     * @author DanilAndreev
+     */
+    public async getPlugins(ctx: Context) {
+        const {organization: organizationId} = ctx.request.query;
+
+        const organization: Organization = await Organization.findOne({where: {id: organizationId}});
+        if (!organization)
+            throw new RequestError(404, "No organization found.");
+
+        const plugins: Plugin[] = await Plugin
+            .getRepository()
+            .createQueryBuilder("plugin")
+            .select(["plugin.id", "plugin.name", "plugin.description", "plugin.note"])
+            .where("plugin.organization = :id", {id: organization.id})
+            .getMany();
+
+        ctx.body = plugins;
+    }
+
+    public async getPluginPreview(ctx: Context) {
+        const {id} = ctx.params;
+
+        const plugin: Plugin = await Plugin
+            .getRepository()
+            .createQueryBuilder("plugin")
+            .select(["plugin.id", "plugin.name", "plugin.description", "plugin.note", "plugin.readme"])
+            .where("plugin.id = :id", {id})
+            .getOne();
+
+        if (!plugin)
+            throw new RequestError(404, "Plugin not found.");
+
+        ctx.body = plugin;
     }
 }
