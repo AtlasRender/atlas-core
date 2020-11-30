@@ -16,15 +16,15 @@ export const AMQP_CONNECTION_QUEUE = "slave_connection"
 /**
  * AMQP_TASKS_QUEUE - queue name for render tasks.
  */
-export const AMQP_TASKS_QUEUE = "render_tasks"
+export const AMQP_TASKS_QUEUE = "render_tasks1"
 /**
  * AMQP_REPORTS_QUEUE - queue name for slaves runtime reports.
  */
-export const AMQP_TASK_REPORTS_QUEUE = "slave_reports"
+export const AMQP_TASK_REPORTS_QUEUE = "slave_reports1"
 /**
  * AMQP_JOBS_QUEUE - queue name for jobs management.
  */
-export const AMQP_JOBS_QUEUE = "jobs";
+export const AMQP_JOBS_QUEUE = "jobs1";
 
 /**
  * AMQP_USER_NOTIFICATION_QUEUE - queue name for user notifications.
@@ -44,3 +44,7 @@ export const ajvInstance = new Ajv({
     schemaId: "auto",
     messages: false,
 });
+
+
+// CLIENT_WEB_SOCKET_EVENT_TYPES
+export const CWS_RENDER_JOB_UPDATE = "RENDER_JOB_UPDATE";
