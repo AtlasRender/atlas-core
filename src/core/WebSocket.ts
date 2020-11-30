@@ -82,7 +82,7 @@ export default class WebSocket extends WS.Server {
 
                 const bearer: string = String(qs.parse(clearQuery).bearer);
                 if (!bearer)
-                    throw new RequestError(401, "You must send Bearer to access this resource.");
+                    throw new RequestError(4401, "You must send Bearer to access this resource.");
 
                 try {
                     const userJwt: UserJwt = await Authenticator.validateToken(bearer);
@@ -92,7 +92,7 @@ export default class WebSocket extends WS.Server {
                         userId: userJwt.id,
                     };
                 } catch (error) {
-                    throw new RequestError(401, "Unauthorized");
+                    throw new RequestError(4401, "Unauthorized");
                 }
 
                 this.on("message", async (message: string) => {
@@ -108,11 +108,13 @@ export default class WebSocket extends WS.Server {
                 this.on("close", () => {
                     delete WebSocket.sessions[uid];
                 });
+
+                ws.send(JSON.stringify({type: "ping", payload: "hello"}));
             } catch (error) {
                 if (error instanceof RequestError)
                     ws.close(error.status, error.message);
                 else
-                    ws.close(423, "Server has too many connections.");
+                    ws.close(1009, "Server has too many connections.");
             }
         });
         console.log("WebSocket server is listening on port 3003");
