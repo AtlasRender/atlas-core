@@ -194,7 +194,14 @@ export default class PluginController extends Controller {
         const plugin: Plugin = await Plugin
             .getRepository()
             .createQueryBuilder("plugin")
-            .select(["plugin.id", "plugin.name", "plugin.description", "plugin.note", "plugin.readme"])
+            .select([
+                "plugin.id",
+                "plugin.name",
+                "plugin.description",
+                "plugin.note",
+                "plugin.readme",
+                "plugin.version"
+            ])
             .where("plugin.id = :id", {id})
             .getOne();
 
@@ -210,7 +217,15 @@ export default class PluginController extends Controller {
         const plugin: Plugin = await Plugin
             .getRepository()
             .createQueryBuilder("plugin")
-            .select(["plugin.id", "plugin.name", "plugin.description", "plugin.note", "plugin.readme", "plugin.rules"])
+            .select([
+                "plugin.id",
+                "plugin.name",
+                "plugin.description",
+                "plugin.note",
+                "plugin.readme",
+                "plugin.rules",
+                "plugin.version"
+            ])
             .where("plugin.id = :id", {id})
             .getOne();
 
