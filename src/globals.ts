@@ -44,3 +44,7 @@ export const ajvInstance = new Ajv({
     schemaId: "auto",
     messages: false,
 });
+
+
+// CLIENT_WEB_SOCKET_EVENT_TYPES
+export const CWS_RENDER_JOB_UPDATE = "RENDER_JOB_UPDATE";
