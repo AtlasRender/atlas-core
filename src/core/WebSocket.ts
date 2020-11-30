@@ -13,6 +13,7 @@ import WebSocketSession from "../interfaces/WebSocketSession";
 import Authenticator from "./Authenticator";
 import RequestError from "../errors/RequestError";
 import UserJwt from "../interfaces/UserJwt";
+import qs = require("qs");
 
 
 /**
@@ -70,10 +71,18 @@ export default class WebSocket extends WS.Server {
             throw new ReferenceError("Instance of the server has been already created.");
 
         this.on("connection", async (ws: WS, greeting: IncomingMessage) => {
+            console.log("connection to web socket");
             try {
                 const uid = WebSocket.generateUID();
-                const authorizationHeader: string = greeting.headers.authorization;
-                const bearer: string = authorizationHeader.slice(7);
+                let clearQuery = greeting.url;
+                if (clearQuery[0] === "/")
+                    clearQuery = clearQuery.slice(2);
+                else
+                    clearQuery = clearQuery.slice(1);
+
+                const bearer: string = String(qs.parse(clearQuery).bearer);
+                if (!bearer)
+                    throw new RequestError(401, "You must send Bearer to access this resource.");
 
                 try {
                     const userJwt: UserJwt = await Authenticator.validateToken(bearer);
@@ -106,6 +115,7 @@ export default class WebSocket extends WS.Server {
                     ws.close(423, "Server has too many connections.");
             }
         });
+        console.log("WebSocket server is listening on port 3003");
     }
 
     /**
