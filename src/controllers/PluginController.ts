@@ -31,6 +31,7 @@ export default class PluginController extends Controller {
         //TODO: add validation
         this.get("/", this.getPlugins);
         this.get("/:id/preview", this.getPluginPreview);
+        this.get("/:id", this.getPlugin);
     }
 
 
@@ -193,7 +194,38 @@ export default class PluginController extends Controller {
         const plugin: Plugin = await Plugin
             .getRepository()
             .createQueryBuilder("plugin")
-            .select(["plugin.id", "plugin.name", "plugin.description", "plugin.note", "plugin.readme"])
+            .select([
+                "plugin.id",
+                "plugin.name",
+                "plugin.description",
+                "plugin.note",
+                "plugin.readme",
+                "plugin.version"
+            ])
+            .where("plugin.id = :id", {id})
+            .getOne();
+
+        if (!plugin)
+            throw new RequestError(404, "Plugin not found.");
+
+        ctx.body = plugin;
+    }
+
+    public async getPlugin(ctx: Context) {
+        const {id} = ctx.params;
+
+        const plugin: Plugin = await Plugin
+            .getRepository()
+            .createQueryBuilder("plugin")
+            .select([
+                "plugin.id",
+                "plugin.name",
+                "plugin.description",
+                "plugin.note",
+                "plugin.readme",
+                "plugin.rules",
+                "plugin.version"
+            ])
             .where("plugin.id = :id", {id})
             .getOne();
 
