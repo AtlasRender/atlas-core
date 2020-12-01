@@ -176,6 +176,7 @@ export default class JobController extends Controller {
             }
 
             renderJob = await renderJob.save();
+            ctx.body = renderJob;
         } catch (error) {
             if (error instanceof RequestError)
                 throw error;
@@ -210,14 +211,18 @@ export default class JobController extends Controller {
      * @author Danil Andreev
      */
     public async getJobs(ctx: Context) {
+        //TODO: add query validator
+        //TODO: send not every field.
+        const {id} = ctx.request.query;
         const jwtUser: UserJwt = ctx.state.user;
         const user: User = await User.findOne({where: {id: jwtUser.id}});
-        const jobs = await RenderJob.find({where: {submitter: user}});
-
-        ctx.body = jobs.map((job: RenderJob) => {
-            job.submitter = user;
-            return job;
-        });
+        let jobs: RenderJob[] | RenderJob = null;
+        if (!id) {
+            jobs = await RenderJob.find({where: {submitter: user}, relations: ["submitter"], order: {createdAt: "DESC"}});
+        } else {
+            jobs = await RenderJob.findOne({where: {id}, relations: ["submitter"]});
+        }
+        ctx.body = jobs;
     }
 
     /**

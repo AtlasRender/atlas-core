@@ -108,10 +108,6 @@ export default async function TaskReportsProcessor(): Promise<void> {
 
         try {
             const body = JSON.parse(message.content.toString());
-            // console.log("REPORT PAYLOAD -----------------------------------------------------");
-            // console.log(body);
-            // console.log("REPORT PAYLOAD END -------------------------------------------------");
-
             const {action} = body;
             switch (action) {
                 case "start":
@@ -128,11 +124,12 @@ export default async function TaskReportsProcessor(): Promise<void> {
             }
             channel.ack(message);
         } catch (error) {
+            //TODO: provide another logic
             console.error(error);
-            if (error instanceof ReferenceError)
+            // if (error instanceof ReferenceError)
                 channel.ack(message);
-            else
-                channel.nack(message);
+            // else
+            //     channel.nack(message);
 
             await Logger.error({
                 message: error.message
