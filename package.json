@@ -1,7 +1,7 @@
 {
-  "name": "pathfinder-core",
-  "version": "0.1.0",
-  "description": "Pathfinder Slave - part of Pathfinder system, designed to manipulate render software directly on render nodes",
+  "name": "atlas-core",
+  "version": "0.1.1",
+  "description": "Atlas - modern render manager, designed to solve complex render jobs queue and generate render reports.",
   "keywords": [
     "monitoring",
     "manager",
