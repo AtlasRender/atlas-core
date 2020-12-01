@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Simple Inventory API</title>
+  <title>atlas-core API</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="UTF-8" />
@@ -689,6 +689,35 @@
   <script>
     // Script section to load models into a JS Var
     var defs = {}
+            defs["AJV_InvalidPayload"] = {
+  "type" : "object",
+  "properties" : {
+    "name" : {
+      "title" : "AJV_INVALID_PAYLOAD",
+      "type" : "string"
+    },
+    "errors" : {
+      "type" : "array",
+      "items" : {
+        "type" : "object",
+        "description" : "Messages about not passed request parameters"
+      }
+    }
+  }
+};
+            defs["inline_response_200"] = {
+  "allOf" : [ {
+    "$ref" : "#/components/schemas/OutUser"
+  }, {
+    "type" : "object",
+    "properties" : {
+      "bearer" : {
+        "type" : "string",
+        "description" : "JWT token for user login"
+      }
+    }
+  } ]
+};
             defs["InventoryItem"] = {
   "required" : [ "id", "manufacturer", "name", "releaseDate" ],
   "type" : "object",
@@ -731,6 +760,36 @@
     }
   }
 };
+            defs["OutUser"] = {
+  "type" : "object",
+  "properties" : {
+    "id" : {
+      "type" : "integer",
+      "format" : "int64"
+    },
+    "username" : {
+      "type" : "string",
+      "example" : "JeyM1"
+    },
+    "email" : {
+      "type" : "string",
+      "format" : "email",
+      "example" : "1@gmail.com"
+    },
+    "deleted" : {
+      "type" : "boolean"
+    },
+    "createdAt" : {
+      "type" : "string",
+      "format" : "date-time"
+    },
+    "updatedAt" : {
+      "type" : "string",
+      "format" : "date-time"
+    }
+  },
+  "description" : "User info, returned by the system."
+};
   </script>
 
   <div class="container-fluid">
@@ -747,13 +806,12 @@
             -->
             <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
-                  <li class="nav-header" data-group="Admins"><a href="#api-Admins">API Methods - Admins</a></li>
-                    <li data-group="Admins" data-name="addInventory" class="">
-                      <a href="#api-Admins-addInventory">addInventory</a>
+                  <li class="nav-header" data-group="Users"><a href="#api-Users">API Methods - Users</a></li>
+                    <li data-group="Users" data-name="getAllUsers" class="">
+                      <a href="#api-Users-getAllUsers">getAllUsers</a>
                     </li>
-                  <li class="nav-header" data-group="Developers"><a href="#api-Developers">API Methods - Developers</a></li>
-                    <li data-group="Developers" data-name="searchInventory" class="">
-                      <a href="#api-Developers-searchInventory">searchInventory</a>
+                    <li data-group="Users" data-name="registerUser" class="">
+                      <a href="#api-Users-registerUser">registerUser</a>
                     </li>
           </ul>
         </nav>
@@ -761,7 +819,7 @@
       <div id="content">
         <div id="project">
           <div class="pull-left">
-            <h1>Simple Inventory API</h1>
+            <h1>atlas-core API</h1>
           </div>
           <div class="clearfix"></div>
         </div>
@@ -770,102 +828,109 @@
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
               <div class="app-desc">Version: 1.0.0</div>
             <hr>
-            <div>This is a simple API</div>
+            <div>This is an API for Atlas Core (Atlas Render Manager)</div>
           </div>
         </div>
         <div id="sections">
-                <section id="api-Admins">
-                  <h1>Admins</h1>
-                    <div id="api-Admins-addInventory">
-                      <article id="api-Admins-addInventory-0" data-group="User" data-name="addInventory" data-version="0">
+                <section id="api-Users">
+                  <h1>Users</h1>
+                    <div id="api-Users-getAllUsers">
+                      <article id="api-Users-getAllUsers-0" data-group="User" data-name="getAllUsers" data-version="0">
                         <div class="pull-left">
-                          <h1>addInventory</h1>
-                          <p>adds an inventory item</p>
+                          <h1>getAllUsers</h1>
+                          <p>get all users in the system</p>
                         </div>
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Adds an item to the system</p>
+                        <p class="marked">By passing additional querry, you can search for users which 
+username starts with given string.
+</p>
                         <p></p>
                         <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/inventory</span></code></pre>
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/users</span></code></pre>
                         <p>
                           <h3>Usage and SDK Samples</h3>
                         </p>
                         <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Admins-addInventory-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Admins-addInventory-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Admins-addInventory-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Admins-addInventory-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Admins-addInventory-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Admins-addInventory-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Admins-addInventory-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Admins-addInventory-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Admins-addInventory-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Admins-addInventory-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Admins-addInventory-0-python">Python</a></li>
+                          <li class="active"><a href="#examples-Users-getAllUsers-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Users-getAllUsers-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Users-getAllUsers-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Users-getAllUsers-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Users-getAllUsers-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Users-getAllUsers-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Users-getAllUsers-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Users-getAllUsers-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Users-getAllUsers-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Users-getAllUsers-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Users-getAllUsers-0-python">Python</a></li>
                         </ul>
 
                         <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Admins-addInventory-0-curl">
-                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
--H "Content-Type: application/json"\
-"https://virtserver.swaggerhub.com/AtlasRender/atlas-core/1.0.0/inventory"</code></pre>
+                          <div class="tab-pane active" id="examples-Users-getAllUsers-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"https://virtserver.swaggerhub.com/AtlasRender/atlas-core/1.0.0/users?username="</code></pre>
                           </div>
-                          <div class="tab-pane" id="examples-Admins-addInventory-0-java">
+                          <div class="tab-pane" id="examples-Users-getAllUsers-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
 import io.swagger.client.auth.*;
 import io.swagger.client.model.*;
-import io.swagger.client.api.AdminsApi;
+import io.swagger.client.api.UsersApi;
 
 import java.io.File;
 import java.util.*;
 
-public class AdminsApiExample {
+public class UsersApiExample {
 
     public static void main(String[] args) {
         
-        AdminsApi apiInstance = new AdminsApi();
-        InventoryItem body = ; // InventoryItem | Inventory item to add
+        UsersApi apiInstance = new UsersApi();
+        String username = username_example; // String | pass an optional search string for looking up users
         try {
-            apiInstance.addInventory(body);
+            array[OutUser] result = apiInstance.getAllUsers(username);
+            System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling AdminsApi#addInventory");
+            System.err.println("Exception when calling UsersApi#getAllUsers");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-Admins-addInventory-0-android">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.AdminsApi;
+                          <div class="tab-pane" id="examples-Users-getAllUsers-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UsersApi;
 
-public class AdminsApiExample {
+public class UsersApiExample {
 
     public static void main(String[] args) {
-        AdminsApi apiInstance = new AdminsApi();
-        InventoryItem body = ; // InventoryItem | Inventory item to add
+        UsersApi apiInstance = new UsersApi();
+        String username = username_example; // String | pass an optional search string for looking up users
         try {
-            apiInstance.addInventory(body);
+            array[OutUser] result = apiInstance.getAllUsers(username);
+            System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling AdminsApi#addInventory");
+            System.err.println("Exception when calling UsersApi#getAllUsers");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
   <!--
-  <div class="tab-pane" id="examples-Admins-addInventory-0-groovy">
+  <div class="tab-pane" id="examples-Users-getAllUsers-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                            <div class="tab-pane" id="examples-Admins-addInventory-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">InventoryItem *body = ; // Inventory item to add (optional)
+                            <div class="tab-pane" id="examples-Users-getAllUsers-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">String *username = username_example; // pass an optional search string for looking up users (optional)
 
-AdminsApi *apiInstance = [[AdminsApi alloc] init];
+UsersApi *apiInstance = [[UsersApi alloc] init];
 
-// adds an inventory item
-[apiInstance addInventoryWith:body
-              completionHandler: ^(NSError* error) {
+// get all users in the system
+[apiInstance getAllUsersWith:username
+              completionHandler: ^(array[OutUser] output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
                             if (error) {
                                 NSLog(@"Error: %@", error);
                             }
@@ -873,28 +938,28 @@ AdminsApi *apiInstance = [[AdminsApi alloc] init];
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Admins-addInventory-0-javascript">
-                              <pre class="prettyprint"><code class="language-js">var SimpleInventoryApi = require('simple_inventory_api');
+                            <div class="tab-pane" id="examples-Users-getAllUsers-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var AtlasCoreApi = require('atlas_core_api');
 
-var api = new SimpleInventoryApi.AdminsApi()
+var api = new AtlasCoreApi.UsersApi()
 var opts = { 
-  'body':  // {{InventoryItem}} Inventory item to add
+  'username': username_example // {{String}} pass an optional search string for looking up users
 };
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully.');
+    console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.addInventory(opts, callback);
+api.getAllUsers(opts, callback);
 </code></pre>
                             </div>
 
-                            <!--<div class="tab-pane" id="examples-Admins-addInventory-0-angular">
+                            <!--<div class="tab-pane" id="examples-Users-getAllUsers-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                            <div class="tab-pane" id="examples-Admins-addInventory-0-csharp">
+                            <div class="tab-pane" id="examples-Users-getAllUsers-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using IO.Swagger.Api;
@@ -903,22 +968,23 @@ using IO.Swagger.Model;
 
 namespace Example
 {
-    public class addInventoryExample
+    public class getAllUsersExample
     {
         public void main()
         {
 
-            var apiInstance = new AdminsApi();
-            var body = new InventoryItem(); // InventoryItem | Inventory item to add (optional) 
+            var apiInstance = new UsersApi();
+            var username = username_example;  // String | pass an optional search string for looking up users (optional) 
 
             try
             {
-                // adds an inventory item
-                apiInstance.addInventory(body);
+                // get all users in the system
+                array[OutUser] result = apiInstance.getAllUsers(username);
+                Debug.WriteLine(result);
             }
             catch (Exception e)
             {
-                Debug.Print("Exception when calling AdminsApi.addInventory: " + e.Message );
+                Debug.Print("Exception when calling UsersApi.getAllUsers: " + e.Message );
             }
         }
     }
@@ -926,38 +992,40 @@ namespace Example
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Admins-addInventory-0-php">
+                            <div class="tab-pane" id="examples-Users-getAllUsers-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
-$api_instance = new Swagger\Client\ApiAdminsApi();
-$body = ; // InventoryItem | Inventory item to add
+$api_instance = new Swagger\Client\ApiUsersApi();
+$username = username_example; // String | pass an optional search string for looking up users
 
 try {
-    $api_instance->addInventory($body);
+    $result = $api_instance->getAllUsers($username);
+    print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling AdminsApi->addInventory: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling UsersApi->getAllUsers: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Admins-addInventory-0-perl">
+                            <div class="tab-pane" id="examples-Users-getAllUsers-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::SwaggerClient::Configuration;
-use WWW::SwaggerClient::AdminsApi;
+use WWW::SwaggerClient::UsersApi;
 
-my $api_instance = WWW::SwaggerClient::AdminsApi->new();
-my $body = WWW::SwaggerClient::Object::InventoryItem->new(); # InventoryItem | Inventory item to add
+my $api_instance = WWW::SwaggerClient::UsersApi->new();
+my $username = username_example; # String | pass an optional search string for looking up users
 
 eval { 
-    $api_instance->addInventory(body => $body);
+    my $result = $api_instance->getAllUsers(username => $username);
+    print Dumper($result);
 };
 if ($@) {
-    warn "Exception when calling AdminsApi->addInventory: $@\n";
+    warn "Exception when calling UsersApi->getAllUsers: $@\n";
 }</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Admins-addInventory-0-python">
+                            <div class="tab-pane" id="examples-Users-getAllUsers-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import swagger_client
@@ -965,14 +1033,362 @@ from swagger_client.rest import ApiException
 from pprint import pprint
 
 # create an instance of the API class
-api_instance = swagger_client.AdminsApi()
+api_instance = swagger_client.UsersApi()
+username = username_example # String | pass an optional search string for looking up users (optional)
+
+try: 
+    # get all users in the system
+    api_response = api_instance.get_all_users(username=username)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling UsersApi->getAllUsers: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">username</td>
+                                <td>
+                                
+                                
+                                    <div id="d2e199_getAllUsers_username">
+                                        <div class="json-schema-view">
+                                            <div class="primitive">
+                                                <span class="type">
+                                                    String
+                                                </span>
+                                
+                                                    <div class="inner description">
+                                                        pass an optional search string for looking up users
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                </tr>
+                            </table>
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - all users in the system (that meets search string if given) </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-getAllUsers-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-getAllUsers-200-schema">
+                                  <div id='responses-getAllUsers-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "all users in the system (that meets search string if given)",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/OutUser"
+        },
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-getAllUsers-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-getAllUsers-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-getAllUsers-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 400 - AJV invalid payload </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-getAllUsers-400-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-getAllUsers-400-schema">
+                                  <div id='responses-getAllUsers-400-schema-400' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "AJV invalid payload",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/AJV_InvalidPayload"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-getAllUsers-400-schema-data').val(stringify(schema));
+                                        var result = $('#responses-getAllUsers-400-schema-400');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-getAllUsers-400-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Users-registerUser">
+                      <article id="api-Users-registerUser-0" data-group="User" data-name="registerUser" data-version="0">
+                        <div class="pull-left">
+                          <h1>registerUser</h1>
+                          <p>adds user to the system</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Adds user to the system</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/users</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Users-registerUser-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Users-registerUser-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Users-registerUser-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Users-registerUser-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Users-registerUser-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Users-registerUser-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Users-registerUser-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Users-registerUser-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Users-registerUser-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Users-registerUser-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Users-registerUser-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Users-registerUser-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"https://virtserver.swaggerhub.com/AtlasRender/atlas-core/1.0.0/users"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Users-registerUser-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.UsersApi;
+
+import java.io.File;
+import java.util.*;
+
+public class UsersApiExample {
+
+    public static void main(String[] args) {
+        
+        UsersApi apiInstance = new UsersApi();
+        InventoryItem body = ; // InventoryItem | Inventory item to add
+        try {
+            inline_response_200 result = apiInstance.registerUser(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UsersApi#registerUser");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Users-registerUser-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UsersApi;
+
+public class UsersApiExample {
+
+    public static void main(String[] args) {
+        UsersApi apiInstance = new UsersApi();
+        InventoryItem body = ; // InventoryItem | Inventory item to add
+        try {
+            inline_response_200 result = apiInstance.registerUser(body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UsersApi#registerUser");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Users-registerUser-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Users-registerUser-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">InventoryItem *body = ; // Inventory item to add (optional)
+
+UsersApi *apiInstance = [[UsersApi alloc] init];
+
+// adds user to the system
+[apiInstance registerUserWith:body
+              completionHandler: ^(inline_response_200 output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-registerUser-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var AtlasCoreApi = require('atlas_core_api');
+
+var api = new AtlasCoreApi.UsersApi()
+var opts = { 
+  'body':  // {{InventoryItem}} Inventory item to add
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.registerUser(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Users-registerUser-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Users-registerUser-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class registerUserExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new UsersApi();
+            var body = new InventoryItem(); // InventoryItem | Inventory item to add (optional) 
+
+            try
+            {
+                // adds user to the system
+                inline_response_200 result = apiInstance.registerUser(body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling UsersApi.registerUser: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-registerUser-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiUsersApi();
+$body = ; // InventoryItem | Inventory item to add
+
+try {
+    $result = $api_instance->registerUser($body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling UsersApi->registerUser: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-registerUser-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::UsersApi;
+
+my $api_instance = WWW::SwaggerClient::UsersApi->new();
+my $body = WWW::SwaggerClient::Object::InventoryItem->new(); # InventoryItem | Inventory item to add
+
+eval { 
+    my $result = $api_instance->registerUser(body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling UsersApi->registerUser: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-registerUser-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.UsersApi()
 body =  # InventoryItem | Inventory item to add (optional)
 
 try: 
-    # adds an inventory item
-    api_instance.add_inventory(body=body)
+    # adds user to the system
+    api_response = api_instance.register_user(body=body)
+    pprint(api_response)
 except ApiException as e:
-    print("Exception when calling AdminsApi->addInventory: %s\n" % e)</code></pre>
+    print("Exception when calling UsersApi->registerUser: %s\n" % e)</code></pre>
                             </div>
                           </div>
 
@@ -1014,12 +1430,12 @@ except ApiException as e:
                                   }
                                 
                                   var view = new JSONSchemaView(schema,2,{isBodyParam: true});
-                                  var result = $('#d2e199_addInventory_body');
+                                  var result = $('#d2e199_registerUser_body');
                                   result.empty();
                                   result.append(view.render());
                                 });
                                 </script>
-                                <div id="d2e199_addInventory_body"></div>
+                                <div id="d2e199_registerUser_body"></div>
                                 </td>
                                 </tr>
                             </table>
@@ -1027,367 +1443,26 @@ except ApiException as e:
 
 
                           <h2>Responses</h2>
-                            <h3> Status: 201 - item created </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 400 - invalid input, object invalid </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 409 - an existing item already exists </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples" >
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                        </article>
-                      </div>
-                      <hr>
-                  </section>
-                <section id="api-Developers">
-                  <h1>Developers</h1>
-                    <div id="api-Developers-searchInventory">
-                      <article id="api-Developers-searchInventory-0" data-group="User" data-name="searchInventory" data-version="0">
-                        <div class="pull-left">
-                          <h1>searchInventory</h1>
-                          <p>searches inventory</p>
-                        </div>
-                        <div class="pull-right"></div>
-                        <div class="clearfix"></div>
-                        <p></p>
-                        <p class="marked">By passing in the appropriate options, you can search for
-available inventory in the system
-</p>
-                        <p></p>
-                        <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/inventory</span></code></pre>
-                        <p>
-                          <h3>Usage and SDK Samples</h3>
-                        </p>
-                        <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Developers-searchInventory-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Developers-searchInventory-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Developers-searchInventory-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Developers-searchInventory-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Developers-searchInventory-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Developers-searchInventory-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Developers-searchInventory-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Developers-searchInventory-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Developers-searchInventory-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Developers-searchInventory-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Developers-searchInventory-0-python">Python</a></li>
-                        </ul>
-
-                        <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Developers-searchInventory-0-curl">
-                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
--H "Accept: application/json"\
-"https://virtserver.swaggerhub.com/AtlasRender/atlas-core/1.0.0/inventory?searchString=&skip=&limit="</code></pre>
-                          </div>
-                          <div class="tab-pane" id="examples-Developers-searchInventory-0-java">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
-import io.swagger.client.auth.*;
-import io.swagger.client.model.*;
-import io.swagger.client.api.DevelopersApi;
-
-import java.io.File;
-import java.util.*;
-
-public class DevelopersApiExample {
-
-    public static void main(String[] args) {
-        
-        DevelopersApi apiInstance = new DevelopersApi();
-        String searchString = searchString_example; // String | pass an optional search string for looking up inventory
-        Integer skip = 56; // Integer | number of records to skip for pagination
-        Integer limit = 56; // Integer | maximum number of records to return
-        try {
-            array[InventoryItem] result = apiInstance.searchInventory(searchString, skip, limit);
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling DevelopersApi#searchInventory");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-
-                          <div class="tab-pane" id="examples-Developers-searchInventory-0-android">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.DevelopersApi;
-
-public class DevelopersApiExample {
-
-    public static void main(String[] args) {
-        DevelopersApi apiInstance = new DevelopersApi();
-        String searchString = searchString_example; // String | pass an optional search string for looking up inventory
-        Integer skip = 56; // Integer | number of records to skip for pagination
-        Integer limit = 56; // Integer | maximum number of records to return
-        try {
-            array[InventoryItem] result = apiInstance.searchInventory(searchString, skip, limit);
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling DevelopersApi#searchInventory");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-  <!--
-  <div class="tab-pane" id="examples-Developers-searchInventory-0-groovy">
-  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-  </div> -->
-                            <div class="tab-pane" id="examples-Developers-searchInventory-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *searchString = searchString_example; // pass an optional search string for looking up inventory (optional)
-Integer *skip = 56; // number of records to skip for pagination (optional)
-Integer *limit = 56; // maximum number of records to return (optional)
-
-DevelopersApi *apiInstance = [[DevelopersApi alloc] init];
-
-// searches inventory
-[apiInstance searchInventoryWith:searchString
-    skip:skip
-    limit:limit
-              completionHandler: ^(array[InventoryItem] output, NSError* error) {
-                            if (output) {
-                                NSLog(@"%@", output);
-                            }
-                            if (error) {
-                                NSLog(@"Error: %@", error);
-                            }
-                        }];
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Developers-searchInventory-0-javascript">
-                              <pre class="prettyprint"><code class="language-js">var SimpleInventoryApi = require('simple_inventory_api');
-
-var api = new SimpleInventoryApi.DevelopersApi()
-var opts = { 
-  'searchString': searchString_example, // {{String}} pass an optional search string for looking up inventory
-  'skip': 56, // {{Integer}} number of records to skip for pagination
-  'limit': 56 // {{Integer}} maximum number of records to return
-};
-var callback = function(error, data, response) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API called successfully. Returned data: ' + data);
-  }
-};
-api.searchInventory(opts, callback);
-</code></pre>
-                            </div>
-
-                            <!--<div class="tab-pane" id="examples-Developers-searchInventory-0-angular">
-              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-            </div>-->
-                            <div class="tab-pane" id="examples-Developers-searchInventory-0-csharp">
-                              <pre class="prettyprint"><code class="language-cs">using System;
-using System.Diagnostics;
-using IO.Swagger.Api;
-using IO.Swagger.Client;
-using IO.Swagger.Model;
-
-namespace Example
-{
-    public class searchInventoryExample
-    {
-        public void main()
-        {
-
-            var apiInstance = new DevelopersApi();
-            var searchString = searchString_example;  // String | pass an optional search string for looking up inventory (optional) 
-            var skip = 56;  // Integer | number of records to skip for pagination (optional) 
-            var limit = 56;  // Integer | maximum number of records to return (optional) 
-
-            try
-            {
-                // searches inventory
-                array[InventoryItem] result = apiInstance.searchInventory(searchString, skip, limit);
-                Debug.WriteLine(result);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling DevelopersApi.searchInventory: " + e.Message );
-            }
-        }
-    }
-}
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Developers-searchInventory-0-php">
-                              <pre class="prettyprint"><code class="language-php"><&#63;php
-require_once(__DIR__ . '/vendor/autoload.php');
-
-$api_instance = new Swagger\Client\ApiDevelopersApi();
-$searchString = searchString_example; // String | pass an optional search string for looking up inventory
-$skip = 56; // Integer | number of records to skip for pagination
-$limit = 56; // Integer | maximum number of records to return
-
-try {
-    $result = $api_instance->searchInventory($searchString, $skip, $limit);
-    print_r($result);
-} catch (Exception $e) {
-    echo 'Exception when calling DevelopersApi->searchInventory: ', $e->getMessage(), PHP_EOL;
-}
-?></code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Developers-searchInventory-0-perl">
-                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
-use WWW::SwaggerClient::Configuration;
-use WWW::SwaggerClient::DevelopersApi;
-
-my $api_instance = WWW::SwaggerClient::DevelopersApi->new();
-my $searchString = searchString_example; # String | pass an optional search string for looking up inventory
-my $skip = 56; # Integer | number of records to skip for pagination
-my $limit = 56; # Integer | maximum number of records to return
-
-eval { 
-    my $result = $api_instance->searchInventory(searchString => $searchString, skip => $skip, limit => $limit);
-    print Dumper($result);
-};
-if ($@) {
-    warn "Exception when calling DevelopersApi->searchInventory: $@\n";
-}</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Developers-searchInventory-0-python">
-                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-
-# create an instance of the API class
-api_instance = swagger_client.DevelopersApi()
-searchString = searchString_example # String | pass an optional search string for looking up inventory (optional)
-skip = 56 # Integer | number of records to skip for pagination (optional)
-limit = 56 # Integer | maximum number of records to return (optional)
-
-try: 
-    # searches inventory
-    api_response = api_instance.search_inventory(searchString=searchString, skip=skip, limit=limit)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling DevelopersApi->searchInventory: %s\n" % e)</code></pre>
-                            </div>
-                          </div>
-
-                          <h2>Parameters</h2>
-
-
-
-
-
-                            <div class="methodsubtabletitle">Query parameters</div>
-                            <table id="methodsubtable">
-                              <tr>
-                                <th width="150px">Name</th>
-                                <th>Description</th>
-                              </tr>
-                                <tr><td style="width:150px;">searchString</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_searchInventory_searchString">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                                    <div class="inner description">
-                                                        pass an optional search string for looking up inventory
-                                                    </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                                <tr><td style="width:150px;">skip</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_searchInventory_skip">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    Integer
-                                                </span>
-                                                    <span class="format">
-                                                        (int32)
-                                                    </span>
-                                
-                                                    <div class="inner description">
-                                                        number of records to skip for pagination
-                                                    </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                                <tr><td style="width:150px;">limit</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_searchInventory_limit">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    Integer
-                                                </span>
-                                                    <span class="format">
-                                                        (int32)
-                                                    </span>
-                                
-                                                    <div class="inner description">
-                                                        maximum number of records to return
-                                                    </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                            </table>
-
-                          <h2>Responses</h2>
-                            <h3> Status: 200 - search results matching criteria </h3>
+                            <h3> Status: 200 - user added successfully </h3>
 
                             <ul class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
-                                  <a data-toggle="tab" href="#responses-searchInventory-200-schema">Schema</a>
+                                  <a data-toggle="tab" href="#responses-registerUser-200-schema">Schema</a>
                                 </li>
 
                             </ul>
 
                             <div class="tab-content" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-searchInventory-200-schema">
-                                  <div id='responses-searchInventory-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                <div class="tab-pane active" id="responses-registerUser-200-schema">
+                                  <div id='responses-registerUser-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = {
-  "description" : "search results matching criteria",
+  "description" : "user added successfully",
   "content" : {
     "application/json" : {
       "schema" : {
-        "type" : "array",
-        "items" : {
-          "$ref" : "#/components/schemas/InventoryItem"
-        },
-        "x-content-type" : "application/json"
+        "$ref" : "#/components/schemas/inline_response_200"
       }
     }
   }
@@ -1405,18 +1480,66 @@ except ApiException as e:
 
                                         //console.log(JSON.stringify(schema));
                                         var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-searchInventory-200-schema-data').val(stringify(schema));
-                                        var result = $('#responses-searchInventory-200-schema-200');
+                                        $('#responses-registerUser-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-registerUser-200-schema-200');
                                         result.empty();
                                         result.append(view.render());
                                       });
                                     </script>
                                   </div>
-                                  <input id='responses-searchInventory-200-schema-data' type='hidden' value=''></input>
+                                  <input id='responses-registerUser-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 
-                            <h3> Status: 400 - bad input parameter </h3>
+                            <h3> Status: 400 - AJV invalid payload </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-registerUser-400-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-registerUser-400-schema">
+                                  <div id='responses-registerUser-400-schema-400' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "AJV invalid payload",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/AJV_InvalidPayload"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-registerUser-400-schema-data').val(stringify(schema));
+                                        var result = $('#responses-registerUser-400-schema-400');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-registerUser-400-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 409 - an existing item already exists </h3>
 
                             <ul class="nav nav-tabs nav-tabs-examples" >
                             </ul>
@@ -1433,7 +1556,7 @@ except ApiException as e:
             <div id="api-_footer">
               <p>Suggestions, contact, support and error reporting;
                   <div class="app-desc">Information URL: <a href="https://helloreverb.com">https://helloreverb.com</a></div>
-                  <div class="app-desc">Contact Info: <a href="you@your-company.com">you@your-company.com</a></div>
+                  <div class="app-desc">Contact Info: <a href="danssg08@gmail.com">danssg08@gmail.com</a></div>
               </p>
                 <div class="license-info">Apache 2.0</div>
                 <div class="license-url">http://www.apache.org/licenses/LICENSE-2.0.html</div>
