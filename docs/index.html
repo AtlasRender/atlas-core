@@ -690,7 +690,6 @@
     // Script section to load models into a JS Var
     var defs = {}
             defs["AJV_InvalidPayload"] = {
-  "required" : [ "errors", "name", "status" ],
   "type" : "object",
   "properties" : {
     "status" : { },
@@ -707,6 +706,29 @@
     }
   }
 };
+            defs["body"] = {
+  "required" : [ "password" ],
+  "type" : "object",
+  "properties" : {
+    "username" : {
+      "maxLength" : 50,
+      "minLength" : 3,
+      "type" : "string",
+      "example" : "JeyM1"
+    },
+    "email" : {
+      "type" : "string",
+      "format" : "email",
+      "example" : "1@gmail.com"
+    },
+    "password" : {
+      "maxLength" : 50,
+      "minLength" : 6,
+      "type" : "string",
+      "example" : "123456"
+    }
+  }
+};
             defs["inline_response_200"] = {
   "allOf" : [ {
     "$ref" : "#/components/schemas/OutUser"
@@ -720,6 +742,68 @@
         "example" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJKZXlNMSIsImV4cGlyZXMiOiIyMDIwLTExLTAzVDE5OjA5OjUwKzAyOjAwIiwiY3JlYXRlZEF0IjoiMjAyMC0xMS0wM1QxOTowOTo1MCswMjowMCIsImlhdCI6MTYwNDQxOTc5MH0.jMwBE0deUiuE0OntMPT1q5PoMubTN_Xbu_U9wr11-t0"
       }
     }
+  } ]
+};
+            defs["inline_response_200_1"] = {
+  "allOf" : [ {
+    "$ref" : "#/components/schemas/OutUser"
+  }, {
+    "type" : "object",
+    "properties" : {
+      "organizations" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/OutOrganization"
+        }
+      }
+    }
+  } ]
+};
+            defs["inline_response_200_2"] = {
+  "type" : "object",
+  "properties" : {
+    "success" : { }
+  }
+};
+            defs["inline_response_403"] = {
+  "oneOf" : [ {
+    "allOf" : [ {
+      "$ref" : "#/components/schemas/RequestError"
+    }, {
+      "description" : "It seems that you are not logged in as user, that specified by `user_id`.\n"
+    }, {
+      "type" : "object",
+      "properties" : {
+        "errors" : {
+          "example" : { }
+        },
+        "name" : {
+          "example" : "Forbidden."
+        },
+        "status" : {
+          "example" : 403
+        }
+      }
+    } ]
+  }, {
+    "allOf" : [ {
+      "$ref" : "#/components/schemas/RequestError"
+    }, {
+      "type" : "object",
+      "properties" : {
+        "errors" : {
+          "type" : "object",
+          "properties" : {
+            "password" : {
+              "type" : "string",
+              "default" : "incorrect"
+            }
+          }
+        }
+      }
+    }, {
+      "description" : "It seems that password in payload is incorrect\n"
+    } ]
   } ]
 };
             defs["inline_response_409"] = {
@@ -744,12 +828,37 @@
     }
   }
 };
+            defs["OneOfinline_response_403"] = {};
+            defs["OutOrganization"] = {
+  "type" : "object",
+  "properties" : {
+    "id" : {
+      "type" : "integer"
+    },
+    "name" : {
+      "type" : "string",
+      "example" : "Blizzard"
+    },
+    "description" : {
+      "type" : "string",
+      "example" : "Cool organization"
+    },
+    "createdAt" : {
+      "type" : "string",
+      "format" : "date-time"
+    },
+    "updatedAt" : {
+      "type" : "string",
+      "format" : "date-time"
+    }
+  },
+  "description" : "Organization info, returned by the system."
+};
             defs["OutUser"] = {
   "type" : "object",
   "properties" : {
     "id" : {
-      "type" : "integer",
-      "format" : "int64"
+      "type" : "integer"
     },
     "username" : {
       "type" : "string",
@@ -774,8 +883,30 @@
   },
   "description" : "User info, returned by the system."
 };
+            defs["RegisterUser"] = {
+  "required" : [ "email", "password", "username" ],
+  "type" : "object",
+  "properties" : {
+    "username" : {
+      "maxLength" : 50,
+      "minLength" : 3,
+      "type" : "string",
+      "example" : "JeyM1"
+    },
+    "email" : {
+      "type" : "string",
+      "format" : "email",
+      "example" : "1@gmail.com"
+    },
+    "password" : {
+      "maxLength" : 50,
+      "minLength" : 6,
+      "type" : "string",
+      "example" : "123456"
+    }
+  }
+};
             defs["RequestError"] = {
-  "required" : [ "errors", "name", "status" ],
   "type" : "object",
   "properties" : {
     "status" : {
@@ -809,8 +940,20 @@
             <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
                   <li class="nav-header" data-group="Users"><a href="#api-Users">API Methods - Users</a></li>
+                    <li data-group="Users" data-name="deleteUser" class="">
+                      <a href="#api-Users-deleteUser">deleteUser</a>
+                    </li>
+                    <li data-group="Users" data-name="editUser" class="">
+                      <a href="#api-Users-editUser">editUser</a>
+                    </li>
                     <li data-group="Users" data-name="getAllUsers" class="">
                       <a href="#api-Users-getAllUsers">getAllUsers</a>
+                    </li>
+                    <li data-group="Users" data-name="getUserById" class="">
+                      <a href="#api-Users-getUserById">getUserById</a>
+                    </li>
+                    <li data-group="Users" data-name="getUserOrganizations" class="">
+                      <a href="#api-Users-getUserOrganizations">getUserOrganizations</a>
                     </li>
                     <li data-group="Users" data-name="registerUser" class="">
                       <a href="#api-Users-registerUser">registerUser</a>
@@ -836,6 +979,942 @@
         <div id="sections">
                 <section id="api-Users">
                   <h1>Users</h1>
+                    <div id="api-Users-deleteUser">
+                      <article id="api-Users-deleteUser-0" data-group="User" data-name="deleteUser" data-version="0">
+                        <div class="pull-left">
+                          <h1>deleteUser</h1>
+                          <p>delete user from the system</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">This resource deletes an individual user account from the system. Each user is identified by a numeric &#x60;user_id&#x60;.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/users/{user_id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Users-deleteUser-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Users-deleteUser-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Users-deleteUser-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Users-deleteUser-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Users-deleteUser-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Users-deleteUser-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Users-deleteUser-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Users-deleteUser-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Users-deleteUser-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Users-deleteUser-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Users-deleteUser-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Users-deleteUser-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+-H "Accept: application/json"\
+"https://virtserver.swaggerhub.com/AtlasRender/atlas-core/1.0.0/users/{user_id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Users-deleteUser-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.UsersApi;
+
+import java.io.File;
+import java.util.*;
+
+public class UsersApiExample {
+
+    public static void main(String[] args) {
+        
+        UsersApi apiInstance = new UsersApi();
+        Integer userId = 56; // Integer | The user ID
+        try {
+            inline_response_200_2 result = apiInstance.deleteUser(userId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UsersApi#deleteUser");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Users-deleteUser-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UsersApi;
+
+public class UsersApiExample {
+
+    public static void main(String[] args) {
+        UsersApi apiInstance = new UsersApi();
+        Integer userId = 56; // Integer | The user ID
+        try {
+            inline_response_200_2 result = apiInstance.deleteUser(userId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UsersApi#deleteUser");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Users-deleteUser-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Users-deleteUser-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Integer *userId = 56; // The user ID
+
+UsersApi *apiInstance = [[UsersApi alloc] init];
+
+// delete user from the system
+[apiInstance deleteUserWith:userId
+              completionHandler: ^(inline_response_200_2 output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-deleteUser-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var AtlasCoreApi = require('atlas_core_api');
+
+var api = new AtlasCoreApi.UsersApi()
+var userId = 56; // {{Integer}} The user ID
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.deleteUser(userId, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Users-deleteUser-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Users-deleteUser-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class deleteUserExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new UsersApi();
+            var userId = 56;  // Integer | The user ID
+
+            try
+            {
+                // delete user from the system
+                inline_response_200_2 result = apiInstance.deleteUser(userId);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling UsersApi.deleteUser: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-deleteUser-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiUsersApi();
+$userId = 56; // Integer | The user ID
+
+try {
+    $result = $api_instance->deleteUser($userId);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling UsersApi->deleteUser: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-deleteUser-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::UsersApi;
+
+my $api_instance = WWW::SwaggerClient::UsersApi->new();
+my $userId = 56; # Integer | The user ID
+
+eval { 
+    my $result = $api_instance->deleteUser(userId => $userId);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling UsersApi->deleteUser: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-deleteUser-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.UsersApi()
+userId = 56 # Integer | The user ID
+
+try: 
+    # delete user from the system
+    api_response = api_instance.delete_user(userId)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling UsersApi->deleteUser: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">user_id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_deleteUser_userId">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      Integer
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          The user ID
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - user deleted successfully </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-deleteUser-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-deleteUser-200-schema">
+                                  <div id='responses-deleteUser-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "user deleted successfully",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/inline_response_200_2"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-deleteUser-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-deleteUser-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-deleteUser-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 403 - This action is forbidden. </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-deleteUser-403-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-deleteUser-403-schema">
+                                  <div id='responses-deleteUser-403-schema-403' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "This action is forbidden.",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/inline_response_403"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-deleteUser-403-schema-data').val(stringify(schema));
+                                        var result = $('#responses-deleteUser-403-schema-403');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-deleteUser-403-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 404 - User not found. </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-deleteUser-404-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-deleteUser-404-schema">
+                                  <div id='responses-deleteUser-404-schema-404' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "User not found.",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/RequestError"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-deleteUser-404-schema-data').val(stringify(schema));
+                                        var result = $('#responses-deleteUser-404-schema-404');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-deleteUser-404-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Users-editUser">
+                      <article id="api-Users-editUser-0" data-group="User" data-name="editUser" data-version="0">
+                        <div class="pull-left">
+                          <h1>editUser</h1>
+                          <p>edit user data in the system</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">This resource edits an individual user in the system. Each user is identified by a numeric &#x60;user_id&#x60;.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/users/{user_id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Users-editUser-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Users-editUser-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Users-editUser-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Users-editUser-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Users-editUser-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Users-editUser-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Users-editUser-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Users-editUser-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Users-editUser-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Users-editUser-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Users-editUser-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Users-editUser-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Accept: application/json"\
+-H "Content-Type: application/json"\
+"https://virtserver.swaggerhub.com/AtlasRender/atlas-core/1.0.0/users/{user_id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Users-editUser-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.UsersApi;
+
+import java.io.File;
+import java.util.*;
+
+public class UsersApiExample {
+
+    public static void main(String[] args) {
+        
+        UsersApi apiInstance = new UsersApi();
+        Integer userId = 56; // Integer | The user ID
+        Body body = ; // Body | User data for editing
+        try {
+            inline_response_200_2 result = apiInstance.editUser(userId, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UsersApi#editUser");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Users-editUser-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UsersApi;
+
+public class UsersApiExample {
+
+    public static void main(String[] args) {
+        UsersApi apiInstance = new UsersApi();
+        Integer userId = 56; // Integer | The user ID
+        Body body = ; // Body | User data for editing
+        try {
+            inline_response_200_2 result = apiInstance.editUser(userId, body);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UsersApi#editUser");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Users-editUser-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Users-editUser-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Integer *userId = 56; // The user ID
+Body *body = ; // User data for editing (optional)
+
+UsersApi *apiInstance = [[UsersApi alloc] init];
+
+// edit user data in the system
+[apiInstance editUserWith:userId
+    body:body
+              completionHandler: ^(inline_response_200_2 output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-editUser-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var AtlasCoreApi = require('atlas_core_api');
+
+var api = new AtlasCoreApi.UsersApi()
+var userId = 56; // {{Integer}} The user ID
+var opts = { 
+  'body':  // {{Body}} User data for editing
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.editUser(userId, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Users-editUser-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Users-editUser-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class editUserExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new UsersApi();
+            var userId = 56;  // Integer | The user ID
+            var body = new Body(); // Body | User data for editing (optional) 
+
+            try
+            {
+                // edit user data in the system
+                inline_response_200_2 result = apiInstance.editUser(userId, body);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling UsersApi.editUser: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-editUser-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiUsersApi();
+$userId = 56; // Integer | The user ID
+$body = ; // Body | User data for editing
+
+try {
+    $result = $api_instance->editUser($userId, $body);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling UsersApi->editUser: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-editUser-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::UsersApi;
+
+my $api_instance = WWW::SwaggerClient::UsersApi->new();
+my $userId = 56; # Integer | The user ID
+my $body = WWW::SwaggerClient::Object::Body->new(); # Body | User data for editing
+
+eval { 
+    my $result = $api_instance->editUser(userId => $userId, body => $body);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling UsersApi->editUser: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-editUser-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.UsersApi()
+userId = 56 # Integer | The user ID
+body =  # Body | User data for editing (optional)
+
+try: 
+    # edit user data in the system
+    api_response = api_instance.edit_user(userId, body=body)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling UsersApi->editUser: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">user_id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_editUser_userId">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      Integer
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          The user ID
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">body </td>
+                                <td>
+                                
+                                
+                                <script>
+                                $(document).ready(function() {
+                                  var schemaWrapper = {
+  "description" : "User data for editing",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/body"
+      }
+    }
+  }
+};
+                                  var schema = schemaWrapper.content["application/json"].schema;
+                                  if (schema.$ref != null) {
+                                    schema = defsParser.$refs.get(schema.$ref);
+                                  } else {
+                                    schemaWrapper.components = {};
+                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                    $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                      console.log(err);
+                                    });
+                                  }
+                                
+                                  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+                                  var result = $('#d2e199_editUser_body');
+                                  result.empty();
+                                  result.append(view.render());
+                                });
+                                </script>
+                                <div id="d2e199_editUser_body"></div>
+                                </td>
+                                </tr>
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - user edited successfully </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-editUser-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-editUser-200-schema">
+                                  <div id='responses-editUser-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "user edited successfully",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/inline_response_200_2"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-editUser-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-editUser-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-editUser-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 400 - AJV invalid payload </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-editUser-400-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-editUser-400-schema">
+                                  <div id='responses-editUser-400-schema-400' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "AJV invalid payload",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/AJV_InvalidPayload"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-editUser-400-schema-data').val(stringify(schema));
+                                        var result = $('#responses-editUser-400-schema-400');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-editUser-400-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 403 - This action is forbidden. </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-editUser-403-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-editUser-403-schema">
+                                  <div id='responses-editUser-403-schema-403' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "This action is forbidden.",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/inline_response_403"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-editUser-403-schema-data').val(stringify(schema));
+                                        var result = $('#responses-editUser-403-schema-403');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-editUser-403-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 404 - User not found. </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-editUser-404-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-editUser-404-schema">
+                                  <div id='responses-editUser-404-schema-404' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "User not found.",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/RequestError"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-editUser-404-schema-data').val(stringify(schema));
+                                        var result = $('#responses-editUser-404-schema-404');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-editUser-404-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 409 - conflicting user data </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-editUser-409-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-editUser-409-schema">
+                                  <div id='responses-editUser-409-schema-409' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "conflicting user data",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/inline_response_409"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-editUser-409-schema-data').val(stringify(schema));
+                                        var result = $('#responses-editUser-409-schema-409');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-editUser-409-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Users-getAllUsers">
                       <article id="api-Users-getAllUsers-0" data-group="User" data-name="getAllUsers" data-version="0">
                         <div class="pull-left">
@@ -1184,6 +2263,700 @@ except ApiException as e:
                         </article>
                       </div>
                       <hr>
+                    <div id="api-Users-getUserById">
+                      <article id="api-Users-getUserById-0" data-group="User" data-name="getUserById" data-version="0">
+                        <div class="pull-left">
+                          <h1>getUserById</h1>
+                          <p>get information about user by it&#x27;s id.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">This resource represents an individual user in the system. Each user is identified by a numeric &#x60;user_id&#x60;.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/users/{user_id}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Users-getUserById-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Users-getUserById-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Users-getUserById-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Users-getUserById-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Users-getUserById-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Users-getUserById-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Users-getUserById-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Users-getUserById-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Users-getUserById-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Users-getUserById-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Users-getUserById-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Users-getUserById-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"https://virtserver.swaggerhub.com/AtlasRender/atlas-core/1.0.0/users/{user_id}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Users-getUserById-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.UsersApi;
+
+import java.io.File;
+import java.util.*;
+
+public class UsersApiExample {
+
+    public static void main(String[] args) {
+        
+        UsersApi apiInstance = new UsersApi();
+        Integer userId = 56; // Integer | The user ID
+        try {
+            inline_response_200_1 result = apiInstance.getUserById(userId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UsersApi#getUserById");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Users-getUserById-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UsersApi;
+
+public class UsersApiExample {
+
+    public static void main(String[] args) {
+        UsersApi apiInstance = new UsersApi();
+        Integer userId = 56; // Integer | The user ID
+        try {
+            inline_response_200_1 result = apiInstance.getUserById(userId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UsersApi#getUserById");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Users-getUserById-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Users-getUserById-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Integer *userId = 56; // The user ID
+
+UsersApi *apiInstance = [[UsersApi alloc] init];
+
+// get information about user by it's id.
+[apiInstance getUserByIdWith:userId
+              completionHandler: ^(inline_response_200_1 output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-getUserById-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var AtlasCoreApi = require('atlas_core_api');
+
+var api = new AtlasCoreApi.UsersApi()
+var userId = 56; // {{Integer}} The user ID
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.getUserById(userId, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Users-getUserById-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Users-getUserById-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class getUserByIdExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new UsersApi();
+            var userId = 56;  // Integer | The user ID
+
+            try
+            {
+                // get information about user by it's id.
+                inline_response_200_1 result = apiInstance.getUserById(userId);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling UsersApi.getUserById: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-getUserById-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiUsersApi();
+$userId = 56; // Integer | The user ID
+
+try {
+    $result = $api_instance->getUserById($userId);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling UsersApi->getUserById: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-getUserById-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::UsersApi;
+
+my $api_instance = WWW::SwaggerClient::UsersApi->new();
+my $userId = 56; # Integer | The user ID
+
+eval { 
+    my $result = $api_instance->getUserById(userId => $userId);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling UsersApi->getUserById: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-getUserById-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.UsersApi()
+userId = 56 # Integer | The user ID
+
+try: 
+    # get information about user by it's id.
+    api_response = api_instance.get_user_by_id(userId)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling UsersApi->getUserById: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">user_id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_getUserById_userId">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      Integer
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          The user ID
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - user&#x60;s information </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-getUserById-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-getUserById-200-schema">
+                                  <div id='responses-getUserById-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "user`s information",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/inline_response_200_1"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-getUserById-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-getUserById-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-getUserById-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 404 - User not found. </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-getUserById-404-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-getUserById-404-schema">
+                                  <div id='responses-getUserById-404-schema-404' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "User not found.",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/RequestError"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-getUserById-404-schema-data').val(stringify(schema));
+                                        var result = $('#responses-getUserById-404-schema-404');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-getUserById-404-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Users-getUserOrganizations">
+                      <article id="api-Users-getUserOrganizations-0" data-group="User" data-name="getUserOrganizations" data-version="0">
+                        <div class="pull-left">
+                          <h1>getUserOrganizations</h1>
+                          <p>get information about user organizations by user id.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">This resource represents individual user&#x60;s organizations in the system. Each user is identified by a numeric &#x60;user_id&#x60;.
+</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/users/{user_id}/organizations</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Users-getUserOrganizations-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Users-getUserOrganizations-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Users-getUserOrganizations-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Users-getUserOrganizations-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Users-getUserOrganizations-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Users-getUserOrganizations-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Users-getUserOrganizations-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Users-getUserOrganizations-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Users-getUserOrganizations-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Users-getUserOrganizations-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Users-getUserOrganizations-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Users-getUserOrganizations-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"https://virtserver.swaggerhub.com/AtlasRender/atlas-core/1.0.0/users/{user_id}/organizations"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Users-getUserOrganizations-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.UsersApi;
+
+import java.io.File;
+import java.util.*;
+
+public class UsersApiExample {
+
+    public static void main(String[] args) {
+        
+        UsersApi apiInstance = new UsersApi();
+        Integer userId = 56; // Integer | The user ID
+        try {
+            array[OutOrganization] result = apiInstance.getUserOrganizations(userId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UsersApi#getUserOrganizations");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Users-getUserOrganizations-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.UsersApi;
+
+public class UsersApiExample {
+
+    public static void main(String[] args) {
+        UsersApi apiInstance = new UsersApi();
+        Integer userId = 56; // Integer | The user ID
+        try {
+            array[OutOrganization] result = apiInstance.getUserOrganizations(userId);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling UsersApi#getUserOrganizations");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Users-getUserOrganizations-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Users-getUserOrganizations-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Integer *userId = 56; // The user ID
+
+UsersApi *apiInstance = [[UsersApi alloc] init];
+
+// get information about user organizations by user id.
+[apiInstance getUserOrganizationsWith:userId
+              completionHandler: ^(array[OutOrganization] output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-getUserOrganizations-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var AtlasCoreApi = require('atlas_core_api');
+
+var api = new AtlasCoreApi.UsersApi()
+var userId = 56; // {{Integer}} The user ID
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.getUserOrganizations(userId, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Users-getUserOrganizations-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Users-getUserOrganizations-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class getUserOrganizationsExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new UsersApi();
+            var userId = 56;  // Integer | The user ID
+
+            try
+            {
+                // get information about user organizations by user id.
+                array[OutOrganization] result = apiInstance.getUserOrganizations(userId);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling UsersApi.getUserOrganizations: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-getUserOrganizations-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiUsersApi();
+$userId = 56; // Integer | The user ID
+
+try {
+    $result = $api_instance->getUserOrganizations($userId);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling UsersApi->getUserOrganizations: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-getUserOrganizations-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::UsersApi;
+
+my $api_instance = WWW::SwaggerClient::UsersApi->new();
+my $userId = 56; # Integer | The user ID
+
+eval { 
+    my $result = $api_instance->getUserOrganizations(userId => $userId);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling UsersApi->getUserOrganizations: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Users-getUserOrganizations-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.UsersApi()
+userId = 56 # Integer | The user ID
+
+try: 
+    # get information about user organizations by user id.
+    api_response = api_instance.get_user_organizations(userId)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling UsersApi->getUserOrganizations: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">user_id*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_getUserOrganizations_userId">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      Integer
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          The user ID
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - user&#x60;s organizations </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-getUserOrganizations-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-getUserOrganizations-200-schema">
+                                  <div id='responses-getUserOrganizations-200-schema-200' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "user`s organizations",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/OutOrganization"
+        },
+        "x-content-type" : "application/json"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-getUserOrganizations-200-schema-data').val(stringify(schema));
+                                        var result = $('#responses-getUserOrganizations-200-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-getUserOrganizations-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 404 - User not found. </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-getUserOrganizations-404-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-getUserOrganizations-404-schema">
+                                  <div id='responses-getUserOrganizations-404-schema-404' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "User not found.",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/RequestError"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-getUserOrganizations-404-schema-data').val(stringify(schema));
+                                        var result = $('#responses-getUserOrganizations-404-schema-404');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-getUserOrganizations-404-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Users-registerUser">
                       <article id="api-Users-registerUser-0" data-group="User" data-name="registerUser" data-version="0">
                         <div class="pull-left">
@@ -1193,7 +2966,8 @@ except ApiException as e:
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">Adds user to the system</p>
+                        <p class="marked">Adds user to the system
+</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/users</span></code></pre>
@@ -1235,7 +3009,7 @@ public class UsersApiExample {
     public static void main(String[] args) {
         
         UsersApi apiInstance = new UsersApi();
-        OutUser body = ; // OutUser | Inventory item to add
+        RegisterUser body = ; // RegisterUser | User data for registration
         try {
             inline_response_200 result = apiInstance.registerUser(body);
             System.out.println(result);
@@ -1254,7 +3028,7 @@ public class UsersApiExample {
 
     public static void main(String[] args) {
         UsersApi apiInstance = new UsersApi();
-        OutUser body = ; // OutUser | Inventory item to add
+        RegisterUser body = ; // RegisterUser | User data for registration
         try {
             inline_response_200 result = apiInstance.registerUser(body);
             System.out.println(result);
@@ -1270,7 +3044,7 @@ public class UsersApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-Users-registerUser-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">OutUser *body = ; // Inventory item to add (optional)
+                              <pre class="prettyprint"><code class="language-cpp">RegisterUser *body = ; // User data for registration (optional)
 
 UsersApi *apiInstance = [[UsersApi alloc] init];
 
@@ -1292,7 +3066,7 @@ UsersApi *apiInstance = [[UsersApi alloc] init];
 
 var api = new AtlasCoreApi.UsersApi()
 var opts = { 
-  'body':  // {{OutUser}} Inventory item to add
+  'body':  // {{RegisterUser}} User data for registration
 };
 var callback = function(error, data, response) {
   if (error) {
@@ -1323,7 +3097,7 @@ namespace Example
         {
 
             var apiInstance = new UsersApi();
-            var body = new OutUser(); // OutUser | Inventory item to add (optional) 
+            var body = new RegisterUser(); // RegisterUser | User data for registration (optional) 
 
             try
             {
@@ -1346,7 +3120,7 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiUsersApi();
-$body = ; // OutUser | Inventory item to add
+$body = ; // RegisterUser | User data for registration
 
 try {
     $result = $api_instance->registerUser($body);
@@ -1363,7 +3137,7 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::UsersApi;
 
 my $api_instance = WWW::SwaggerClient::UsersApi->new();
-my $body = WWW::SwaggerClient::Object::OutUser->new(); # OutUser | Inventory item to add
+my $body = WWW::SwaggerClient::Object::RegisterUser->new(); # RegisterUser | User data for registration
 
 eval { 
     my $result = $api_instance->registerUser(body => $body);
@@ -1383,7 +3157,7 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.UsersApi()
-body =  # OutUser | Inventory item to add (optional)
+body =  # RegisterUser | User data for registration (optional)
 
 try: 
     # adds user to the system
@@ -1411,11 +3185,11 @@ except ApiException as e:
                                 <script>
                                 $(document).ready(function() {
                                   var schemaWrapper = {
-  "description" : "Inventory item to add",
+  "description" : "User data for registration",
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/OutUser"
+        "$ref" : "#/components/schemas/RegisterUser"
       }
     }
   }
@@ -1541,7 +3315,7 @@ except ApiException as e:
                                 </div>
                             </div>
 
-                            <h3> Status: 409 - an existing user data already exists </h3>
+                            <h3> Status: 409 - conflicting user data </h3>
 
                             <ul class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
@@ -1556,7 +3330,7 @@ except ApiException as e:
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = {
-  "description" : "an existing user data already exists",
+  "description" : "conflicting user data",
   "content" : {
     "application/json" : {
       "schema" : {
