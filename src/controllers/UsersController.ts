@@ -68,11 +68,11 @@ export default class UsersController extends Controller {
     public async registerUser(ctx: Context): Promise<void> {
 
         if (await User.findOne({username: ctx.request.body.username})) {
-            throw new RequestError(400, "user with this username already exists",
+            throw new RequestError(409, "user with this username already exists",
                 {errors: {exists: "username"}});
         }
         if (await User.findOne({email: ctx.request.body.email})) {
-            throw new RequestError(400, "user with this email already exists",
+            throw new RequestError(409, "user with this email already exists",
                 {errors: {exists: "email"}});
         }
 

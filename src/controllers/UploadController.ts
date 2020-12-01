@@ -58,7 +58,7 @@ export default class UploadController extends Controller {
             .where("user.id = :id", {id: user.id})
             .getOne();
         if (!userStored)
-            throw new RequestError(400, "User don't exist.");
+            throw new RequestError(404, "User don't exist.");
 
         const extraRecords: number[] = userStored.temp.slice(9).map((file: Temp): number => file.id);
         if (extraRecords.length) await Temp.delete([...extraRecords]);

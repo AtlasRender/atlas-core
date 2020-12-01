@@ -316,7 +316,7 @@ export default class OrganizationsController extends Controller {
         });
         ctx.request.body.userIds.forEach(userId => {
             if (!users.find(user => user.id === userId)) {
-                throw new RequestError(400, "User not exist.", {errors: {notExist: userId}});
+                throw new RequestError(404, "User not exist.", {errors: {notExist: userId}});
             }
         });
 
