@@ -690,11 +690,13 @@
     // Script section to load models into a JS Var
     var defs = {}
             defs["AJV_InvalidPayload"] = {
+  "required" : [ "errors", "name", "status" ],
   "type" : "object",
   "properties" : {
+    "status" : { },
     "name" : {
-      "title" : "AJV_INVALID_PAYLOAD",
-      "type" : "string"
+      "type" : "string",
+      "default" : "AJV_INVALID_PAYLOAD"
     },
     "errors" : {
       "type" : "array",
@@ -713,50 +715,32 @@
     "properties" : {
       "bearer" : {
         "type" : "string",
-        "description" : "JWT token for user login"
+        "description" : "JWT token for user login",
+        "format" : "jwt",
+        "example" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJKZXlNMSIsImV4cGlyZXMiOiIyMDIwLTExLTAzVDE5OjA5OjUwKzAyOjAwIiwiY3JlYXRlZEF0IjoiMjAyMC0xMS0wM1QxOTowOTo1MCswMjowMCIsImlhdCI6MTYwNDQxOTc5MH0.jMwBE0deUiuE0OntMPT1q5PoMubTN_Xbu_U9wr11-t0"
       }
     }
   } ]
 };
-            defs["InventoryItem"] = {
-  "required" : [ "id", "manufacturer", "name", "releaseDate" ],
-  "type" : "object",
-  "properties" : {
-    "id" : {
-      "type" : "string",
-      "format" : "uuid",
-      "example" : "d290f1ee-6c54-4b01-90e6-d701748f0851"
-    },
-    "name" : {
-      "type" : "string",
-      "example" : "Widget Adapter"
-    },
-    "releaseDate" : {
-      "type" : "string",
-      "format" : "date-time",
-      "example" : "2016-08-29T09:12:33.001Z"
-    },
-    "manufacturer" : {
-      "$ref" : "#/components/schemas/Manufacturer"
+            defs["inline_response_409"] = {
+  "allOf" : [ {
+    "$ref" : "#/components/schemas/RequestError"
+  }, {
+    "type" : "object",
+    "properties" : {
+      "errors" : {
+        "$ref" : "#/components/schemas/inline_response_409_errors"
+      }
     }
-  }
+  } ]
 };
-            defs["Manufacturer"] = {
-  "required" : [ "name" ],
+            defs["inline_response_409_errors"] = {
   "type" : "object",
   "properties" : {
-    "name" : {
+    "exists" : {
       "type" : "string",
-      "example" : "ACME Corporation"
-    },
-    "homePage" : {
-      "type" : "string",
-      "format" : "url",
-      "example" : "https://www.acme-corp.com"
-    },
-    "phone" : {
-      "type" : "string",
-      "example" : "408-867-5309"
+      "example" : "username",
+      "enum" : [ "username", "email" ]
     }
   }
 };
@@ -789,6 +773,24 @@
     }
   },
   "description" : "User info, returned by the system."
+};
+            defs["RequestError"] = {
+  "required" : [ "errors", "name", "status" ],
+  "type" : "object",
+  "properties" : {
+    "status" : {
+      "type" : "number",
+      "example" : 409
+    },
+    "name" : {
+      "type" : "string",
+      "example" : "user with this username already exists"
+    },
+    "errors" : {
+      "type" : "object",
+      "description" : "Error Messages"
+    }
+  }
 };
   </script>
 
@@ -1233,7 +1235,7 @@ public class UsersApiExample {
     public static void main(String[] args) {
         
         UsersApi apiInstance = new UsersApi();
-        InventoryItem body = ; // InventoryItem | Inventory item to add
+        OutUser body = ; // OutUser | Inventory item to add
         try {
             inline_response_200 result = apiInstance.registerUser(body);
             System.out.println(result);
@@ -1252,7 +1254,7 @@ public class UsersApiExample {
 
     public static void main(String[] args) {
         UsersApi apiInstance = new UsersApi();
-        InventoryItem body = ; // InventoryItem | Inventory item to add
+        OutUser body = ; // OutUser | Inventory item to add
         try {
             inline_response_200 result = apiInstance.registerUser(body);
             System.out.println(result);
@@ -1268,7 +1270,7 @@ public class UsersApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-Users-registerUser-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">InventoryItem *body = ; // Inventory item to add (optional)
+                              <pre class="prettyprint"><code class="language-cpp">OutUser *body = ; // Inventory item to add (optional)
 
 UsersApi *apiInstance = [[UsersApi alloc] init];
 
@@ -1290,7 +1292,7 @@ UsersApi *apiInstance = [[UsersApi alloc] init];
 
 var api = new AtlasCoreApi.UsersApi()
 var opts = { 
-  'body':  // {{InventoryItem}} Inventory item to add
+  'body':  // {{OutUser}} Inventory item to add
 };
 var callback = function(error, data, response) {
   if (error) {
@@ -1321,7 +1323,7 @@ namespace Example
         {
 
             var apiInstance = new UsersApi();
-            var body = new InventoryItem(); // InventoryItem | Inventory item to add (optional) 
+            var body = new OutUser(); // OutUser | Inventory item to add (optional) 
 
             try
             {
@@ -1344,7 +1346,7 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiUsersApi();
-$body = ; // InventoryItem | Inventory item to add
+$body = ; // OutUser | Inventory item to add
 
 try {
     $result = $api_instance->registerUser($body);
@@ -1361,7 +1363,7 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::UsersApi;
 
 my $api_instance = WWW::SwaggerClient::UsersApi->new();
-my $body = WWW::SwaggerClient::Object::InventoryItem->new(); # InventoryItem | Inventory item to add
+my $body = WWW::SwaggerClient::Object::OutUser->new(); # OutUser | Inventory item to add
 
 eval { 
     my $result = $api_instance->registerUser(body => $body);
@@ -1381,7 +1383,7 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.UsersApi()
-body =  # InventoryItem | Inventory item to add (optional)
+body =  # OutUser | Inventory item to add (optional)
 
 try: 
     # adds user to the system
@@ -1413,7 +1415,7 @@ except ApiException as e:
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/InventoryItem"
+        "$ref" : "#/components/schemas/OutUser"
       }
     }
   }
@@ -1539,12 +1541,52 @@ except ApiException as e:
                                 </div>
                             </div>
 
-                            <h3> Status: 409 - an existing item already exists </h3>
+                            <h3> Status: 409 - an existing user data already exists </h3>
 
                             <ul class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-registerUser-409-schema">Schema</a>
+                                </li>
+
                             </ul>
 
                             <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-registerUser-409-schema">
+                                  <div id='responses-registerUser-409-schema-409' style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "an existing user data already exists",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/inline_response_409"
+      }
+    }
+  }
+};
+                                        var schema = schemaWrapper.content["application/json"].schema;
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else {
+                                          schemaWrapper.components = {};
+                                          schemaWrapper.components.schemas = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        //console.log(JSON.stringify(schema));
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-registerUser-409-schema-data').val(stringify(schema));
+                                        var result = $('#responses-registerUser-409-schema-409');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-registerUser-409-schema-data' type='hidden' value=''></input>
+                                </div>
                             </div>
 
                         </article>
