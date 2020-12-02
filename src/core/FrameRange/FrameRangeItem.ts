@@ -49,7 +49,7 @@ export default class FrameRangeItem implements FrameRangeItemOptions {
         if (token.start > token.end)
             throw new RangeError(`Field 'start' can not be higher than 'end'.`);
 
-        if (token.step) {
+        if (token.step !== undefined) {
             if (typeof token.step !== "number")
                 throw new TypeError(`Incorrect type of field 'step', expected "number", got "${typeof token.step}"`);
             if (!_.isInteger(token.step))
@@ -58,14 +58,14 @@ export default class FrameRangeItem implements FrameRangeItemOptions {
                 throw new RangeError(`Field 'step' can not be equal 0`);
         }
 
-        if (token.renumberStart) {
+        if (token.renumberStart !== undefined) {
             if (typeof token.renumberStart !== "number")
                 throw new TypeError(`Incorrect type of field 'renumberStart', expected "number", got "${typeof token.renumberStart}"`);
             if (!_.isInteger(token.renumberStart))
                 throw new TypeError(`Field 'renumberStart', must be an integer! Got: (${token.renumberStart})`);
         }
 
-        if (token.renumberStep) {
+        if (token.renumberStep !== undefined) {
             if (typeof token.renumberStep !== "number")
                 throw new TypeError(`Incorrect type of field 'renumberStep', expected "number", got "${typeof token.renumberStep}"`);
             if (!_.isInteger(token.renumberStep))
@@ -90,7 +90,7 @@ export default class FrameRangeItem implements FrameRangeItemOptions {
         const result: FrameRangePair[] = [];
         let renumbered = this.renumberStart;
         for (let frame = this.start; frame <= this.end; frame += this.step) {
-            result.push({target: frame, renumbered: renumbered || frame});
+            result.push(new FrameRangePair(frame, renumbered || frame));
             if (renumbered)
                 renumbered+=this.renumberStep;
         }

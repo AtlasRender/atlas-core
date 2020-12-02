@@ -7,11 +7,9 @@
  */
 
 import * as dotenv from "dotenv";
-
+import "globals";
 
 dotenv.config();
-
-import "globals";
 
 import Server from "./core/Server";
 

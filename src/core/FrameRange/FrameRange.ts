@@ -49,7 +49,7 @@ export default class FrameRange extends Array<FrameRangePair>{
 
         for (let i = 0; i < range.length; i++) {
             const selfIndex = this.findIndex((candidate: FrameRangePair) => candidate.renumbered === range[i].renumbered);
-            if (selfIndex > 0) {
+            if (selfIndex >= 0) {
                 this[selfIndex] = range[i];
             } else {
                 this.push(range[i]);
@@ -61,13 +61,17 @@ export default class FrameRange extends Array<FrameRangePair>{
     public push(...items: FrameRangePair[]): number {
         for (const item of items) {
             if (!(item instanceof FrameRangePair))
-                throw new TypeError(`Incorrect input tpe, expected "RangeFramePair", got "${typeof item}`);
+                throw new TypeError(`Incorrect input tpe, expected "RangeFramePair", got "${item}`);
 
             const index: number = this.searchIndexToInsert(item);
-            if (this[index].renumbered === item.renumbered)
-                this.splice(index, 1, item);
-            else
-                this.splice(index, 0, item);
+            if (this.length < index) {
+                if (this[index].renumbered === item.renumbered)
+                    this.splice(index, 1, item);
+                else
+                    this.splice(index, 0, item);
+            } else {
+                super.push(item);
+            }
         }
         return this.length;
     }
@@ -85,7 +89,12 @@ export default class FrameRange extends Array<FrameRangePair>{
 
         while (end - start > 0) {
             const middle = Math.floor((end - start) / 2 + start);
-            if (end - start === 1) return middle;
+            if (end - start === 1) {
+                if (target.renumbered > this[start].renumbered)
+                    return end;
+                else
+                    return start;
+            }
 
             if (target.renumbered > this[middle].renumbered) {
                 start = middle;
