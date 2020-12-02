@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@atlasrender/render-plugin@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@atlasrender/render-plugin/-/render-plugin-0.1.1.tgz#8f672fd29fbb508a488c15ac686430822c3661ab"
-  integrity sha512-d3VgYQmrcvl8T+K9a4zmwSY26qPBrC0DviiqQOGdlZs8O2CudRHn/kLj31/IpV7gQ3LSSVfXLeCT0eRHKSlbyw==
+"@atlasrender/render-plugin@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@atlasrender/render-plugin/-/render-plugin-0.1.2.tgz#406d3709dcc01edc0aecfa264da5d07e74e5b521"
+  integrity sha512-W1vuyiJmkTwIxMtigutDGtWENHR94P0f7e70+dzsyzUl3UgRmiP5i8ogCfhujEcfKtQxQ+HEZpoGS82g3fwUtg==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4":
   version "7.10.4"
