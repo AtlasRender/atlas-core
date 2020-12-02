@@ -7,6 +7,7 @@
  */
 
 import * as _ from "lodash";
+import RangeFramePair from "./RangeFramePair";
 
 
 export interface FrameRangeItemOptions {
@@ -15,11 +16,6 @@ export interface FrameRangeItemOptions {
     step?: number;
     renumberStart?: number;
     renumberStep?: number;
-}
-
-export interface RangeFramePair {
-    readonly target: number;
-    readonly renumbered: number;
 }
 
 export default class FrameRangeItem implements FrameRangeItemOptions {
