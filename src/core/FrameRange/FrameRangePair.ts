@@ -10,9 +10,9 @@ import * as _ from "lodash";
 
 
 /**
- * RangeFramePair - class for frame range pair information.
+ * FrameRangePair - class for frame range pair information.
  */
-export default class RangeFramePair {
+export default class FrameRangePair {
     /**
      * target - target frame from the scene.
      */
@@ -25,12 +25,12 @@ export default class RangeFramePair {
     constructor(target: number, renumbered: number) {
         if (typeof target !== "number")
             throw new TypeError(`Incorrect type of 'target', expected "number", got "${typeof target}"`);
-        if (_.isInteger(target))
+        if (!_.isInteger(target))
             throw new TypeError(`Value 'target' must be integer!`);
 
         if (typeof renumbered !== "number")
             throw new TypeError(`Incorrect type of 'renumbered', expected "number", got "${typeof renumbered}"`);
-        if (_.isInteger(renumbered))
+        if (!_.isInteger(renumbered))
             throw new TypeError(`Value 'renumbered' must be integer!`);
 
         this.target = target;

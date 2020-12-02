@@ -7,7 +7,7 @@
  */
 
 import FrameRangeItem from "./FrameRangeItem";
-import RangeFramePair from "./RangeFramePair";
+import FrameRangePair from "./FrameRangePair";
 
 
 /**
@@ -15,7 +15,7 @@ import RangeFramePair from "./RangeFramePair";
  * @class
  * @author Danil Andreev
  */
-export default class FrameRange extends Array<RangeFramePair>{
+export default class FrameRange extends Array<FrameRangePair>{
     /**
      * Creates an instance of FrameRange.
      * @constructor
@@ -45,10 +45,10 @@ export default class FrameRange extends Array<RangeFramePair>{
         if (!(input instanceof FrameRangeItem))
             throw new TypeError(`Incorrect type of 'input', expected "FrameRangeItem", got "${typeof FrameRangeItem}"`);
 
-        const range: RangeFramePair[] = input.getRange();
+        const range: FrameRangePair[] = input.getRange();
 
         for (let i = 0; i < range.length; i++) {
-            const selfIndex = this.findIndex((candidate: RangeFramePair) => candidate.renumbered === range[i].renumbered);
+            const selfIndex = this.findIndex((candidate: FrameRangePair) => candidate.renumbered === range[i].renumbered);
             if (selfIndex > 0) {
                 this[selfIndex] = range[i];
             } else {
@@ -58,9 +58,9 @@ export default class FrameRange extends Array<RangeFramePair>{
         return this;
     }
 
-    public push(...items: RangeFramePair[]): number {
+    public push(...items: FrameRangePair[]): number {
         for (const item of items) {
-            if (!(item instanceof RangeFramePair))
+            if (!(item instanceof FrameRangePair))
                 throw new TypeError(`Incorrect input tpe, expected "RangeFramePair", got "${typeof item}`);
 
             const index: number = this.searchIndexToInsert(item);
@@ -78,7 +78,7 @@ export default class FrameRange extends Array<RangeFramePair>{
      * @param target - Target object ot place into array.
      * @author Danil Andreev
      */
-    protected searchIndexToInsert(target: RangeFramePair): number {
+    protected searchIndexToInsert(target: FrameRangePair): number {
         let start = 0;
         let end = this.length;
         if (!this.length) return 0;
