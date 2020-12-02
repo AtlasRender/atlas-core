@@ -35,7 +35,7 @@
     "exec": "ts-node ./src/index.ts"
   },
   "dependencies": {
-    "@atlasrender/render-plugin": "^0.1.1",
+    "@atlasrender/render-plugin": "^0.1.2",
     "ajv": "^6.12.6",
     "amqplib": "^0.6.0",
     "argon2": "^0.27.0",
