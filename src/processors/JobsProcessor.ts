@@ -14,6 +14,8 @@ import RenderTask from "../entities/RenderTask";
 import getFramesFromRange from "../utils/getFramesFromRange";
 import RenderJob from "../entities/RenderJob";
 import Logger from "../core/Logger";
+import FrameRange from "../core/FrameRange/FrameRange";
+import FrameRangeItem from "../core/FrameRange/FrameRangeItem";
 
 
 /**
@@ -35,7 +37,18 @@ export default async function JobsProcessor(): Promise<void> {
         try {
             const event: JobEvent = new JobEvent(JSON.parse(message.content.toString()));
             const inputJob: RenderJob = event.data;
-            const frames: number[] = getFramesFromRange(inputJob.frameRange);
+            //const frames: number[] = getFramesFromRange(inputJob.frameRange);
+            const range: FrameRange = new FrameRange();
+
+            for (const item of inputJob.frameRange) {
+                switch (typeof item) {
+                    case "string":
+                        range.addRange(item);
+                        break;
+                    case "object":
+                        range.addRange(new FrameRangeItem(item));
+                }
+            }
 
             // Find render job in database.
             const renderJob = await RenderJob.findOne({where: {id: inputJob.id}, relations: ["plugin"]});
@@ -44,9 +57,10 @@ export default async function JobsProcessor(): Promise<void> {
 
             // Generate render tasks for each frame.
             const tasks: RenderTask[] = [];
-            for (const frame in frames) {
+            for (const frame of range) {
                 const task = new RenderTask();
-                task.frame = +frame;
+                task.frame = frame.target;
+                task.renumbered = frame.renumbered;
                 task.status = "pending";
                 task.job = renderJob;
                 tasks.push(task);

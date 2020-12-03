@@ -36,7 +36,7 @@ export const JobSubmitValidator = bodyValidator({
                 type: "integer",
             },
             frameRange: {
-                type: "string",
+                type: "array",
             },
             plugin: {
                 type: "integer",
