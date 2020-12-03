@@ -12,24 +12,98 @@ import RenderTask from "../entities/RenderTask";
 import JobController from "./JobController";
 import UserJwt from "../interfaces/UserJwt";
 import RequestError from "../errors/RequestError";
+import RenderTaskAttempt from "../entities/RenderTaskAttempt";
+import RenderTaskAttemptLog from "../entities/RenderTaskAttemptLog";
 
 
 export default class RenderTaskAttemptController extends Controller {
     constructor() {
         super("/attempts");
-        this.get("/", this.getAttempts);
+        this.get("/:attemptId", this.getAttempt);
+        this.get("/:attemptId/log", this.getAttemptLogs);
     }
 
-    public async getAttempts(ctx: Context) {
+    /**
+     * Route __[GET]__ ___attempts/:attemptId___ - returns render task attempt detailed information.
+     * @code 200, 404, 403
+     * @throws RequestError
+     * @method
+     * @author Danil Andreev
+     */
+    public async getAttempt(ctx: Context): Promise<void> {
         const userJwt: UserJwt = ctx.state.user;
-        const {taskId} = ctx.params;
+        const {attemptId} = ctx.params;
 
-        const task: RenderTask = await RenderTask.findOne({where: {id: taskId}, relations: ["renderTaskAttempts", "job"]})
-        if (!task)
-            throw new RequestError(404, "Task not found");
-        if (!await JobController.checkUserHaveAccessToJob(userJwt.id, task.job.id))
+        const attempt: RenderTaskAttempt = await RenderTaskAttempt.findOne(
+            {
+                where: {id: attemptId},
+                relations: ["task", "task.job"]
+            });
+
+        if (!attempt)
+            throw new RequestError(404, "Render task not found.");
+
+        if (!await JobController.checkUserHaveAccessToJob(userJwt.id, attempt.task.job.id))
             throw new RequestError(403, "You have no access to view this data.");
 
-        ctx.body = task.renderTaskAttempts;
+        delete attempt.task;
+        ctx.body = attempt;
+    }
+
+    /**
+     * Route __[GET]__ ___attempts/:attemptId/logs___ - returns all render task attempt logs.
+     * @code 200, 404, 403
+     * @throws RequestError
+     * @method
+     * @author Danil Andreev
+     */
+    public async getAttemptLogs(ctx: Context): Promise<void> {
+        const userJwt: UserJwt = ctx.state.user;
+        const {attemptId} = ctx.params;
+
+        const attempt: RenderTaskAttempt = await RenderTaskAttempt.findOne(
+            {
+                where: {id: attemptId},
+                relations: ["task", "task.job", "logs"]
+            });
+
+        if (!attempt)
+            throw new RequestError(404, "Render task not found.");
+
+        if (!await JobController.checkUserHaveAccessToJob(userJwt.id, attempt.task.job.id))
+            throw new RequestError(403, "You have no access to view this data.");
+
+        ctx.body = attempt.logs;
+    }
+
+    /**
+     * Route __[GET]__ ___attempts/:attemptId/logs/:logId___ - returns all render task attempt logs.
+     * @code 200, 404, 403
+     * @throws RequestError
+     * @method
+     * @author Danil Andreev
+     */
+    public async getAttemptLog(ctx: Context): Promise<void> {
+        const userJwt: UserJwt = ctx.state.user;
+        const {attemptId, logId} = ctx.params;
+
+        const attempt: RenderTaskAttempt = await RenderTaskAttempt.findOne(
+            {
+                where: {id: attemptId},
+                relations: ["task", "task.job"]
+            });
+
+        if (!attempt)
+            throw new RequestError(404, "Render task not found.");
+
+        if (!await JobController.checkUserHaveAccessToJob(userJwt.id, attempt.task.job.id))
+            throw new RequestError(403, "You have no access to view this data.");
+
+        const log: RenderTaskAttemptLog = await RenderTaskAttemptLog.findOne({where: {id: logId}});
+
+        if (!log)
+            throw new RequestError(404, "Render task log record not found.");
+
+        ctx.body = log;
     }
 }

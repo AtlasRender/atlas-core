@@ -77,7 +77,7 @@ export default class UserTokensController extends Controller {
      * @param ctx - HTTP Context
      * @author Danil Andreev
      */
-    public async getAllTokens(ctx: Context) {
+    public async getAllTokens(ctx: Context): Promise<void> {
         const user: UserJwt = ctx.state.user;
         const tokens = await getRepository<UserToken>(UserToken)
             .createQueryBuilder("user_token")

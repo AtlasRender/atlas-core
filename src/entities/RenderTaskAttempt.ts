@@ -44,6 +44,12 @@ export default class RenderTaskAttempt extends BaseEntity {
     status: string;
 
     /**
+     * progress - progress of the task. calculated in percents. Max value - 100.
+     */
+    @Column({type: "float", default: 0})
+    progress: number;
+
+    /**
      * task - render task this attempt belongs to.
      */
     @ManyToOne(type => RenderTask, renderTask => renderTask.renderTaskAttempts, {onDelete: "CASCADE"})

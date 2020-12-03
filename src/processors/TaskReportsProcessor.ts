@@ -31,13 +31,11 @@ export default async function TaskReportsProcessor(): Promise<void> {
      */
     async function handler(message: Message, channel: Channel): Promise<void> {
         const handleStart = async (body) => {
-            console.log("handleStart -------------", body);
+            // console.log("handleStart -------------", body);
             const {task, reportType, slave} = body;
-            console.log("HandleStart: Looking for render task");
             const renderTask = await RenderTask.findOne({where: {id: task}, relations: ["renderTaskAttempts"]});
             if (!renderTask)
                 throw new ReferenceError(`Render task with id "${body.task}" does not exist`);
-            console.log("render task: ", renderTask);
             if (renderTask.renderTaskAttempts.some(item => item.status === "done"))
                 throw new ReferenceError(`Task with id "${renderTask.id}" is already finished with positive status.`);
 
@@ -56,17 +54,18 @@ export default async function TaskReportsProcessor(): Promise<void> {
             console.log("HandleStart: Creating new attempt log");
             const attemptLog = new RenderTaskAttemptLog();
             attemptLog.renderTaskAttempt = attempt;
-            attemptLog.data = `Starting render process on slave "'${attempt.slaveUID}".`;
+            attemptLog.message = `Starting render process on slave "'${attempt.slaveUID}".`;
             attemptLog.type = "info";
             await attemptLog.save();
             console.log("HandleStart: Creating new attempt log finished");
         };
         const handleReport = async (body) => {
-            console.log("handleReport -----------------", body);
-            // TODO: check "data" type
+            // console.log("handleReport -----------------", body);
             const {task, reportType, slave, data} = body;
             if (!(reportType === "info" || reportType === "warning" || reportType === "error"))
-                throw new TypeError(`Incorrect type of reportType, expected "'info' | 'warning' | 'error', got "${reportType}"`);
+                throw new TypeError(`Incorrect type of 'reportType', expected "'info' | 'warning' | 'error', got "${reportType}"`);
+            if (typeof data !== "object")
+                throw new TypeError(`Incorrect type of 'data', expected "object", got "${typeof data}"`);
 
             const attempt: RenderTaskAttempt = await RenderTaskAttempt.findOne({where: {status: "processing", task}});
             if (!attempt)
@@ -74,18 +73,28 @@ export default async function TaskReportsProcessor(): Promise<void> {
             if (attempt.slaveUID !== slave) // TODO: Change to slave.UID
                 throw new ReferenceError(`Task attempt "${attempt.id}" belongs to another slave.`);
 
+            if (data.progress !== undefined) {
+                if (typeof data.progress !== "number")
+                    throw new TypeError(`Incorrect type of 'data.progress', expected "number | undefined", got "${typeof data.progress}"`);
+                if (data.progress < 0 || data.progress > 100)
+                    throw new TypeError(`Incorrect value of 'data.progress'. Expected number between 0 and 100`);
+                attempt.progress = data.progress;
+                await attempt.save();
+            }
+
             const attemptLog = new RenderTaskAttemptLog();
             attemptLog.renderTaskAttempt = attempt;
             attemptLog.type = reportType;
-            attemptLog.data = data;
+            attemptLog.message = String(data.message);
             await attemptLog.save();
         };
         const handleFinish = async (body) => {
-            console.log("handleFinish ----------", body);
-            // TODO: check "data" type
+            // console.log("handleFinish ----------", body);
             const {task, reportType, slave, data} = body;
             if (!(reportType === "info" || reportType === "warning" || reportType === "error"))
                 throw new TypeError(`Incorrect type of reportType, expected "'info' | 'warning' | 'error', got "${reportType}"`);
+            if (typeof data !== "object")
+                throw new TypeError(`Incorrect type of 'data', expected "object", got "${typeof data}"`);
 
             const attempt = await RenderTaskAttempt.findOne({where: {status: "processing", task}, relations: ["task"]});
             if (!attempt)
@@ -96,7 +105,7 @@ export default async function TaskReportsProcessor(): Promise<void> {
             const attemptLog = new RenderTaskAttemptLog();
             attemptLog.renderTaskAttempt = attempt;
             attemptLog.type = reportType;
-            attemptLog.data = data;
+            attemptLog.message = String(data.message);
             await attemptLog.save();
 
             const renderTask = attempt.task;
