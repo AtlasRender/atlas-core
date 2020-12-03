@@ -8,6 +8,7 @@
 
 import FrameRangeItem from "./FrameRangeItem";
 import FrameRangePair from "./FrameRangePair";
+import * as _ from "lodash";
 
 
 /**
@@ -41,11 +42,16 @@ export default class FrameRange extends Array<FrameRangePair>{
      * @param input - Input frame range item
      * @author Danil Andreev
      */
-    public addRange(input: FrameRangeItem): FrameRange {
-        if (!(input instanceof FrameRangeItem))
-            throw new TypeError(`Incorrect type of 'input', expected "FrameRangeItem", got "${typeof FrameRangeItem}"`);
+    public addRange(input: FrameRangeItem | string): FrameRange {
+        let range: FrameRangePair[] = [];
 
-        const range: FrameRangePair[] = input.getRange();
+        if (input instanceof FrameRangeItem) {
+            range = input.getRange();
+        } else if (typeof input === "string") {
+            range = FrameRange.getFramesFromRange(input);
+        } else {
+            throw new TypeError(`Incorrect type of 'input', expected "FrameRangeItem | string", got "${typeof FrameRangeItem}"`);
+        }
 
         for (let i = 0; i < range.length; i++) {
             const selfIndex = this.findIndex((candidate: FrameRangePair) => candidate.renumbered === range[i].renumbered);
@@ -105,5 +111,35 @@ export default class FrameRange extends Array<FrameRangePair>{
             }
         }
         return start;
+    }
+
+    /**
+     * getFramesFromRange - returns array of FrameRangePair from frame range notation.
+     * @method
+     * @param range - Input information in range notation.
+     * @throws SyntaxError
+     * @author Danil Andreev
+     */
+    static getFramesFromRange(range: string): FrameRangePair[] {
+        const tokens: string[] = range.split(" ");
+        const frames = new Set<FrameRangePair>();
+        const rangeRe = /([0-9]+)-([0-9]+)/;
+        const singleRe = /([0-9]+)/;
+        for (const token of tokens) {
+            if (rangeRe.test(token)) {
+                const [, start, end] = rangeRe.exec(token);
+                if (+end < +start) continue;
+                const localFrames = _.range(+start, +end + 1);
+                for (const frame of localFrames) {
+                    frames.add(new FrameRangePair(frame, frame));
+                }
+            } else if (singleRe.test(token)) {
+                frames.add(new FrameRangePair(+token, +token));
+            } else {
+                throw new SyntaxError(`Incorrect syntax at or near "${token}".`);
+            }
+        }
+
+        return [...frames];
     }
 }

@@ -22,6 +22,8 @@ import {PluginSettingsSpec, SettingsPayload, ValidationError} from "@atlasrender
 import User from "../entities/User";
 import UserJwt from "../interfaces/UserJwt";
 import TasksController from "./TasksController";
+import FrameRange from "../core/FrameRange/FrameRange";
+import FrameRangeItem from "../core/FrameRange/FrameRangeItem";
 
 
 /**
@@ -137,7 +139,20 @@ export default class JobController extends Controller {
             renderJob = new RenderJob();
 
             try {
-                renderJob.pendingTasks = getFramesFromRange(inputJob.frameRange).length;
+                const range: FrameRange = new FrameRange();
+                for (const item of inputJob.frameRange) {
+                    switch (typeof item) {
+                        case "string":
+                            range.addRange(item);
+                            break;
+                        case "object":
+                            range.addRange(new FrameRangeItem(item));
+                            break;
+                        default:
+                            throw new TypeError("Invalid token in frame range");
+                    }
+                }
+                renderJob.pendingTasks = range.length;
             } catch (error) {
                 throw new RequestError(400, error.message);
             }
