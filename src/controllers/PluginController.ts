@@ -171,7 +171,7 @@ export default class PluginController extends Controller {
      * @method
      * @author DanilAndreev
      */
-    public async getPlugins(ctx: Context) {
+    public async getPlugins(ctx: Context): Promise<void> {
         const {organization: organizationId} = ctx.request.query;
 
         const organization: Organization = await Organization.findOne({where: {id: organizationId}});
@@ -188,7 +188,7 @@ export default class PluginController extends Controller {
         ctx.body = plugins;
     }
 
-    public async getPluginPreview(ctx: Context) {
+    public async getPluginPreview(ctx: Context): Promise<void> {
         const {id} = ctx.params;
 
         const plugin: Plugin = await Plugin
@@ -211,7 +211,7 @@ export default class PluginController extends Controller {
         ctx.body = plugin;
     }
 
-    public async getPlugin(ctx: Context) {
+    public async getPlugin(ctx: Context): Promise<void> {
         const {id} = ctx.params;
 
         const plugin: Plugin = await Plugin

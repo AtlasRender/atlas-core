@@ -36,7 +36,7 @@ export default class UploadController extends Controller {
      * @method
      * @author DanilAndreev
      */
-    public async uploadFile(ctx: Context) {
+    public async uploadFile(ctx: Context): Promise<void> {
         const user = ctx.state.user;
         const files: File[] = _.values((ctx.request as any).files);
         const results = [];
@@ -95,7 +95,7 @@ export default class UploadController extends Controller {
      * @method
      * @author DanilAndreev
      */
-    public async downloadFile(ctx: Context) {
+    public async downloadFile(ctx: Context): Promise<void> {
         const user = ctx.state.user;
         const {remove} = ctx.request.query;
         const {id} = ctx.params;
@@ -120,7 +120,7 @@ export default class UploadController extends Controller {
      * @method
      * @author DanilAndreev
      */
-    public async removeFile(ctx: Context) {
+    public async removeFile(ctx: Context): Promise<void> {
         const user = ctx.state.user;
         const {id} = ctx.params;
 
