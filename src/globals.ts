@@ -47,4 +47,27 @@ export const ajvInstance = new Ajv({
 
 
 // CLIENT_WEB_SOCKET_EVENT_TYPES
+/**
+ * CWS_RENDER_JOB_UPDATE - event type for render job update action.
+ */
 export const CWS_RENDER_JOB_UPDATE = "RENDER_JOB_UPDATE";
+
+/**
+ * CWS_RENDER_JOB_CREATE - event type for render job create action.
+ */
+export const CWS_RENDER_JOB_CREATE = "RENDER_JOB_CREATE";
+
+/**
+ * CWS_RENDER_JOB_DELETE - event type for render job delete action.
+ */
+export const CWS_RENDER_JOB_DELETE = "RENDER_JOB_DELETE";
+
+/**
+ * CWS_RENDER_JOB_ATTEMPT_LOG_CREATE - event type for render job attempt log create action.
+ */
+export const CWS_RENDER_JOB_ATTEMPT_LOG_CREATE = "RENDER_JOB_ATTEMPT_LOG_CREATE";
+
+/**
+ * CWS_RENDER_TASK_UPDATE - event type for render task update action.
+ */
+export const CWS_RENDER_TASK_UPDATE = "RENDER_TASK_UPDATE";

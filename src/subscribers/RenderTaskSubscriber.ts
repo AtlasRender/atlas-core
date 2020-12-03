@@ -11,7 +11,7 @@ import RenderTask from "../entities/RenderTask";
 import RenderJob from "../entities/RenderJob";
 import User from "../entities/User";
 import WebSocket from "../core/WebSocket";
-import {CWS_RENDER_JOB_UPDATE} from "../globals";
+import {CWS_RENDER_TASK_UPDATE} from "../globals";
 
 
 @EventSubscriber()
@@ -20,7 +20,7 @@ export class RenderTaskSubscriber implements EntitySubscriberInterface<RenderTas
         return RenderTask;
     }
 
-    async afterUpdate(event: UpdateEvent<RenderTask>): Promise<any> {
+    public async afterUpdate(event: UpdateEvent<RenderTask>): Promise<any> {
         try {
             const task: RenderTask = await RenderTask.findOne({
                 where: {id: event.databaseEntity.id},
@@ -30,7 +30,7 @@ export class RenderTaskSubscriber implements EntitySubscriberInterface<RenderTas
             const users: User[] = task.job.organization.users;
 
             for (const user of users) {
-                WebSocket.sendToUser(user.id, {type: CWS_RENDER_JOB_UPDATE, payload: {id: task.job.id}});
+                WebSocket.sendToUser(user.id, {type: CWS_RENDER_TASK_UPDATE, payload: {id: task.id}});
             }
         } catch (error) {
             //TODO: handle error

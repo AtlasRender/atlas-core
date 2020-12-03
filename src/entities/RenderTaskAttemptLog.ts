@@ -30,15 +30,16 @@ export default class RenderTaskAttemptLog extends BaseEntity {
     id: number;
 
     /**
-     * data - log data.
+     * message - log message.
      */
-    @Column({type: "jsonb"})
-    data: any;
+    @Column({nullable: false})
+    message: string;
 
     /**
      * type - a type of the record. Needs to correctly interpret data.
+     * @type "info" | "error" | "warning"
      */
-    @Column({type: "varchar", default: 50})
+    @Column({type: "varchar", default: "info"})
     type: string;
 
     /**
