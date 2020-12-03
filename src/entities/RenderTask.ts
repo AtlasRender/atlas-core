@@ -39,6 +39,12 @@ export default class RenderTask extends BaseEntity {
     frame: number;
 
     /**
+     * renumbered - frame number of the task after renumbering.
+     */
+    @Column()
+    renumbered: number;
+
+    /**
      * status - render task status.
      * @type "pending" | "done" | "failed" | "processing"
      */

@@ -17,11 +17,13 @@ import Organization from "../entities/Organization";
 import RenderJob from "../entities/RenderJob";
 import getFramesFromRange from "../utils/getFramesFromRange";
 import {JobSubmitValidator} from "../validators/JobRequestValidators";
-import RenderTask from "../entities/RenderTask";
 import Plugin from "../entities/Plugin";
 import {PluginSettingsSpec, SettingsPayload, ValidationError} from "@atlasrender/render-plugin";
 import User from "../entities/User";
 import UserJwt from "../interfaces/UserJwt";
+import TasksController from "./TasksController";
+import FrameRange from "../core/FrameRange/FrameRange";
+import FrameRangeItem from "../core/FrameRange/FrameRangeItem";
 
 
 /**
@@ -38,8 +40,8 @@ export default class JobController extends Controller {
         this.delete("/:jobId", this.deleteJob);
         this.delete("/:jobId/fail", this.failJob);
 
-        this.get("/:jobId/tasks", this.getTasks);
-        this.get("/:jobId/tasks/:taskId", this.getTask);
+        const taskController = new TasksController();
+        this.use("/:jobId" + taskController.baseRoute, taskController.routes(), taskController.allowedMethods());
     }
 
     /**
@@ -137,7 +139,20 @@ export default class JobController extends Controller {
             renderJob = new RenderJob();
 
             try {
-                renderJob.pendingTasks = getFramesFromRange(inputJob.frameRange).length;
+                const range: FrameRange = new FrameRange();
+                for (const item of inputJob.frameRange) {
+                    switch (typeof item) {
+                        case "string":
+                            range.addRange(item);
+                            break;
+                        case "object":
+                            range.addRange(new FrameRangeItem(item));
+                            break;
+                        default:
+                            throw new TypeError("Invalid token in frame range");
+                    }
+                }
+                renderJob.pendingTasks = range.length;
             } catch (error) {
                 throw new RequestError(400, error.message);
             }
@@ -245,51 +260,5 @@ export default class JobController extends Controller {
         // TODO: add mor info, for example: plugin spec, ...
 
         ctx.body = job;
-    }
-
-    /**
-     * Route __[GET]__ ___/jobs/:jobId/tasks___ - returns all tasks of render job.
-     * @code 200, 404, 403
-     * @throws RequestError
-     * @method
-     * @author Danil Andreev
-     */
-    public async getTasks(ctx: Context) {
-        const user = ctx.state.user;
-        const {jobId} = ctx.params;
-
-        if (!await JobController.checkUserHaveAccessToJob(user.id, jobId))
-            throw new RequestError(403, "You don't have permissions to this data.");
-
-        const job = await RenderJob.findOne({where: {id: jobId}});
-        if (!job)
-            throw new RequestError(404, "Render job not found");
-
-        const tasks = await RenderTask.find({where: {job}});
-        if (!tasks)
-            throw new RequestError(404, "Render job not found");
-
-        ctx.body = tasks;
-    }
-
-    /**
-     * Route __[GET]__ ___/jobs/:jobId/tasks/:taskId___ - returns job detailed information.
-     * @code 200, 404, 403
-     * @throws RequestError
-     * @method
-     * @author Danil Andreev
-     */
-    public async getTask(ctx: Context) {
-        const user = ctx.state.user;
-        const {jobId, taskId} = ctx.params;
-
-        if (!await JobController.checkUserHaveAccessToJob(user.id, jobId))
-            throw new RequestError(403, "You don't have permissions to this data.");
-
-        const task = await RenderTask.findOne({where: {id: +taskId}});
-        if (!task)
-            throw new RequestError(404, "Render task not found");
-
-        ctx.body = task;
     }
 }

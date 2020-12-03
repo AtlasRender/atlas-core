@@ -181,7 +181,7 @@ export default class PluginController extends Controller {
         const plugins: Plugin[] = await Plugin
             .getRepository()
             .createQueryBuilder("plugin")
-            .select(["plugin.id", "plugin.name", "plugin.description", "plugin.note"])
+            .select(["plugin.id", "plugin.name", "plugin.description", "plugin.note", "plugin.version"])
             .where("plugin.organization = :id", {id: organization.id})
             .getMany();
 
