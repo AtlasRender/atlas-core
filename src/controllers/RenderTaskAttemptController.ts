@@ -21,6 +21,7 @@ export default class RenderTaskAttemptController extends Controller {
         super("/attempts");
         this.get("/:attemptId", this.getAttempt);
         this.get("/:attemptId/log", this.getAttemptLogs);
+        this.get("/:attemptId/log/:logId", this.getAttemptLog);
     }
 
     /**
