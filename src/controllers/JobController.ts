@@ -233,9 +233,13 @@ export default class JobController extends Controller {
         const user: User = await User.findOne({where: {id: jwtUser.id}});
         let jobs: RenderJob[] | RenderJob = null;
         if (!id) {
-            jobs = await RenderJob.find({where: {submitter: user}, relations: ["submitter"], order: {createdAt: "DESC"}});
+            jobs = await RenderJob.find({
+                where: {submitter: user},
+                relations: ["submitter", "organization"],
+                order: {createdAt: "DESC"}
+            });
         } else {
-            jobs = await RenderJob.findOne({where: {id}, relations: ["submitter"]});
+            jobs = await RenderJob.findOne({where: {id}, relations: ["submitter", "organization"]});
         }
         ctx.body = jobs;
     }
