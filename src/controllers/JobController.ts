@@ -257,7 +257,7 @@ export default class JobController extends Controller {
         if (!await JobController.checkUserHaveAccessToJob(user.id, jobId))
             throw new RequestError(403, "You don't have permissions to this data.");
 
-        const job = await RenderJob.findOne({where: {id: +jobId}});
+        const job = await RenderJob.findOne({where: {id: +jobId}, relations: ["organization"]});
         if (!job)
             throw new RequestError(404, "Render job not found");
 
