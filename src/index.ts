@@ -28,6 +28,8 @@ import UploadController from "./controllers/UploadController";
 import PluginController from "./controllers/PluginController";
 import UserNotificationProcessor from "./processors/UserNotificationProcessor";
 import WebSocket from "./core/WebSocket";
+import TasksController from "./controllers/TasksController";
+import RenderTaskAttemptController from "./controllers/RenderTaskAttemptController";
 
 
 async function startServer() {
@@ -46,6 +48,8 @@ async function startServer() {
     server.useController(new VersionsController());
     server.useController(new UploadController());
     server.useController(new PluginController());
+    server.useController(new TasksController());
+    server.useController(new RenderTaskAttemptController());
     server.start();
 }
 

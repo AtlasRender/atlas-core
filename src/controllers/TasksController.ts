@@ -67,5 +67,4 @@ export default class TasksController extends Controller {
 
         ctx.body = task.renderTaskAttempts;
     }
-
 }
