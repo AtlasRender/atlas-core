@@ -56,8 +56,8 @@ export default class RenderJob extends BaseEntity {
      * frameRange - frame range structure.
      * It contains information about frames to render and reordering information.
      */
-    @Column({type: "text", nullable: false})
-    frameRange: string;
+    @Column({type: "jsonb", nullable: false})
+    frameRange: Array<object>;
 
     /**
      * failed - displays state of the job.
