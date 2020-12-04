@@ -61,12 +61,12 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
             });
 
             const users: User[] = job.organization.users;
-
             for (const user of users) {
                 WebSocket.sendToUser(user.id, {type: CWS_RENDER_JOB_DELETE, payload: {id: job.id}});
             }
         } catch(error) {
             //TODO: handle.
+            console.error(error);
         }
     }
 }
