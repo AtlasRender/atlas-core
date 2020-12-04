@@ -105,10 +105,16 @@ export default class JobController extends Controller {
         if (!await JobController.checkUserHaveAccessToJob(user.id, jobId))
             throw new RequestError(403, "You don't have permissions to this data.");
 
-        const result = await RenderJob.delete({id: jobId});
-
-        if (!result.affected)
+        const job: RenderJob = await RenderJob.findOne(jobId);
+        if(!job)
             throw new RequestError(404, "Render job not found.");
+        const result = await job.remove();
+
+
+        // const result = await RenderJob.delete({id: jobId});
+        //
+        // if (!result.affected)
+        //     throw new RequestError(404, "Render job not found.");
 
         // TODO: send message to slave about job fail.
 
