@@ -170,6 +170,7 @@ export default class Server extends Koa {
         Server.current.use(bodyParser({
             formidable: {uploadDir: TempDirectory},
             multipart: true,
+            parsedMethods: ["POST", "PUT", "PATCH", "DELETE"]
         }));
 
         // Creating typeorm connection
