@@ -12,6 +12,7 @@ import RequestError from "../errors/RequestError";
 import RenderTask from "../entities/RenderTask";
 import JobController from "./JobController";
 import UserJwt from "../interfaces/UserJwt";
+import RenderTaskAttempt from "../entities/RenderTaskAttempt";
 
 
 /**

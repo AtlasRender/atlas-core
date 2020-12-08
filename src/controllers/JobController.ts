@@ -23,6 +23,8 @@ import UserJwt from "../interfaces/UserJwt";
 import FrameRange from "../core/FrameRange/FrameRange";
 import FrameRangeItem from "../core/FrameRange/FrameRangeItem";
 import RenderTask from "../entities/RenderTask";
+import {SelectQueryBuilder} from "typeorm";
+import RenderTaskAttempt from "../entities/RenderTaskAttempt";
 
 
 /**
@@ -290,7 +292,26 @@ export default class JobController extends Controller {
         if (!job)
             throw new RequestError(404, "Render job not found");
 
-        const tasks = await RenderTask.find({where: {job}});
+        const tasks = await RenderTask
+            .getRepository()
+            .createQueryBuilder("task")
+            .select(["task.*", "attempt.progress"])
+            .where("task.job = :job", {job: job.id})
+            .innerJoin((sq: SelectQueryBuilder<RenderTaskAttempt>) => {
+                return sq
+                    .select(["ordered_attempts.progress", "ordered_attempts.task_id"])
+                    .from((sq1: SelectQueryBuilder<RenderTaskAttempt>) => {
+                        return sq1
+                            .select(["sub_attempt.*"])
+                            .addSelect("task.id", "task_id")
+                            .from(RenderTaskAttempt, "sub_attempt")
+                            .orderBy("sub_attempt.createdAt")
+                            .innerJoin("sub_attempt.task", "task")
+                    }, "ordered_attempts")
+                    .distinctOn(["ordered_attempts.task_id"]);
+            }, "attempt", "attempt.task_id = task.id")
+            .execute();
+
         if (!tasks)
             throw new RequestError(404, "Render job not found");
 
