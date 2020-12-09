@@ -98,6 +98,7 @@ export default class PluginController extends Controller {
                 await stream
                     .pipe(UnZipper.Parse())
                     .on("entry", async (entry) => {
+                        //TODO: handle error in function catch. Now does not works.
                         const {path, type, size} = entry;
                         switch (path.toLowerCase()) {
                             case "spec.json": {
@@ -151,7 +152,10 @@ export default class PluginController extends Controller {
                                 entry.autodrain();
                         }
                     })
-                    .promise();
+                    .promise()
+                    .catch(error => {
+                        throw error
+                    });
             } catch (error) {
                 if (error instanceof RequestError)
                     throw error;

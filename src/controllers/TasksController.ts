@@ -39,6 +39,14 @@ export default class TasksController extends Controller {
         const {taskId} = ctx.params;
 
         const task = await RenderTask.findOne({where: {id: +taskId}, relations: ["job"]});
+
+        const attempt: RenderTaskAttempt = await RenderTaskAttempt
+            .getRepository()
+            .createQueryBuilder("attempt")
+            .select("attempt.progress")
+            .orderBy("attempt.createdAt", "DESC")
+            .getOne();
+
         if (!task)
             throw new RequestError(404, "Render task not found");
 
@@ -46,7 +54,10 @@ export default class TasksController extends Controller {
             throw new RequestError(403, "You don't have permissions to this data.");
 
         delete task.job;
-        ctx.body = task;
+        ctx.body = {
+            ...task,
+            progress: attempt.progress
+        };
     }
 
     /**

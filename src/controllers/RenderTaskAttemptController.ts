@@ -52,7 +52,7 @@ export default class RenderTaskAttemptController extends Controller {
     }
 
     /**
-     * Route __[GET]__ ___attempts/:attemptId/logs___ - returns all render task attempt logs.
+     * Route __[GET]__ ___attempts/:attemptId/log___ - returns all render task attempt logs.
      * @code 200, 404, 403
      * @throws RequestError
      * @method
@@ -78,7 +78,7 @@ export default class RenderTaskAttemptController extends Controller {
     }
 
     /**
-     * Route __[GET]__ ___attempts/:attemptId/logs/:logId___ - returns all render task attempt logs.
+     * Route __[GET]__ ___attempts/:attemptId/log/:logId___ - returns all render task attempt logs.
      * @code 200, 404, 403
      * @throws RequestError
      * @method
