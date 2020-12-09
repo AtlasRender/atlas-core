@@ -11,6 +11,7 @@ import RenderTaskAttemptLog from "../entities/RenderTaskAttemptLog";
 import User from "../entities/User";
 import WebSocket from "../core/WebSocket";
 import {CWS_RENDER_JOB_ATTEMPT_LOG_CREATE} from "../globals";
+import RenderTaskAttempt from "../entities/RenderTaskAttempt";
 
 
 @EventSubscriber()
@@ -21,21 +22,31 @@ export default class RenderTaskAttemptLogSubscriber implements EntitySubscriberI
 
     public async afterInsert(event: InsertEvent<RenderTaskAttemptLog>): Promise<any> {
         try {
-            const log: RenderTaskAttemptLog = await RenderTaskAttemptLog.findOne({
-                where: {id: event.entity.id},
-                relations: [
-                    "renderTaskAttempt",
-                    "renderTaskAttempt.task",
-                    "renderTaskAttempt.task.job",
-                    "renderTaskAttempt.task.job.organization",
-                    "renderTaskAttempt.task.job.organization.users",
-                ]
-            });
+            // const log: RenderTaskAttemptLog = await RenderTaskAttemptLog.findOne({
+            //     where: {id: event.entity.id},
+            //     relations: [
+            //         "renderTaskAttempt",
+            //         "renderTaskAttempt.task",
+            //         "renderTaskAttempt.task.job",
+            //         "renderTaskAttempt.task.job.organization",
+            //         "renderTaskAttempt.task.job.organization.users",
+            //     ]
+            // });
 
-            const users: User[] = log.renderTaskAttempt.task.job.organization.users;
+            const attempt: RenderTaskAttempt = await RenderTaskAttempt.findOne({
+                where: {id: event.entity.renderTaskAttempt.id},
+                relations: [
+                    "task",
+                    "task.job",
+                    "task.job.organization",
+                    "task.job.organization.users",
+                ]
+            })
+
+            const users: User[] = attempt.task.job.organization.users;
 
             for (const user of users) {
-                WebSocket.sendToUser(user.id, {type: CWS_RENDER_JOB_ATTEMPT_LOG_CREATE, payload: {id: log.id}});
+                WebSocket.sendToUser(user.id, {type: CWS_RENDER_JOB_ATTEMPT_LOG_CREATE, payload: {id: event.entity.id}});
             }
         } catch (error) {
             //TODO: handle
