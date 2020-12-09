@@ -297,7 +297,7 @@ export default class JobController extends Controller {
             .createQueryBuilder("task")
             .select(["task.*", "attempt.progress"])
             .where("task.job = :job", {job: job.id})
-            .innerJoin((sq: SelectQueryBuilder<RenderTaskAttempt>) => {
+            .leftJoin((sq: SelectQueryBuilder<RenderTaskAttempt>) => {
                 return sq
                     .select(["ordered_attempts.progress", "ordered_attempts.task_id"])
                     .from((sq1: SelectQueryBuilder<RenderTaskAttempt>) => {

@@ -13,6 +13,7 @@ import RenderTask from "../entities/RenderTask";
 import RenderTaskAttempt from "../entities/RenderTaskAttempt";
 import Logger from "../core/Logger";
 import RenderTaskAttemptLog from "../entities/RenderTaskAttemptLog";
+import * as _ from "lodash";
 
 
 /**
@@ -74,11 +75,13 @@ export default async function TaskReportsProcessor(): Promise<void> {
                 throw new ReferenceError(`Task attempt "${attempt.id}" belongs to another slave.`);
 
             if (data.progress !== undefined) {
-                if (typeof data.progress !== "number")
-                    throw new TypeError(`Incorrect type of 'data.progress', expected "number | undefined", got "${typeof data.progress}"`);
-                if (data.progress < 0 || data.progress > 100)
+                const progress: number = +data.progress;
+                if (typeof progress !== "number" || _.isNaN(progress))
+                    throw new TypeError(`Incorrect type of 'data.progress', expected "number | undefined", got "${typeof progress}"`);
+                if (progress < 0 || progress > 100)
                     throw new TypeError(`Incorrect value of 'data.progress'. Expected number between 0 and 100`);
-                attempt.progress = data.progress;
+                console.log("progress: ", progress);
+                attempt.progress = progress;
                 await attempt.save();
             }
 
@@ -112,6 +115,7 @@ export default async function TaskReportsProcessor(): Promise<void> {
             renderTask.status = reportType === "error" ? "failed" : "done";
 
             attempt.status = reportType === "error" ? "failed" : "done";
+            if (reportType !== "error") attempt.progress = 100;
             await Promise.all([attempt.save(), renderTask.save()]);
         };
 

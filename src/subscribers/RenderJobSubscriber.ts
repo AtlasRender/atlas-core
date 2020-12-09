@@ -11,6 +11,7 @@ import RenderJob from "../entities/RenderJob";
 import User from "../entities/User";
 import WebSocket from "../core/WebSocket";
 import {CWS_RENDER_JOB_CREATE, CWS_RENDER_JOB_DELETE, CWS_RENDER_JOB_UPDATE} from "../globals";
+import Organization from "../entities/Organization";
 
 
 @EventSubscriber()
@@ -21,15 +22,15 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
 
     public async afterInsert(event: InsertEvent<RenderJob>): Promise<any> {
         try {
-            const job: RenderJob = await RenderJob.findOne({
-                where: {id: event.entity.id},
-                relations: ["organization", "organization.users"]
+            const organization: Organization = await Organization.findOne({
+                where: {id: event.entity.organization.id},
+                relations: ["users"]
             });
 
-            const users: User[] = job.organization.users;
+            const users: User[] = organization.users;
 
             for (const user of users) {
-                WebSocket.sendToUser(user.id, {type: CWS_RENDER_JOB_CREATE, payload: {id: job.id}});
+                WebSocket.sendToUser(user.id, {type: CWS_RENDER_JOB_CREATE, payload: {id: event.entity.id}});
             }
         } catch (error) {
             //TODO: handle
