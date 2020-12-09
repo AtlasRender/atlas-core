@@ -22,17 +22,6 @@ export default class RenderTaskAttemptLogSubscriber implements EntitySubscriberI
 
     public async afterInsert(event: InsertEvent<RenderTaskAttemptLog>): Promise<any> {
         try {
-            // const log: RenderTaskAttemptLog = await RenderTaskAttemptLog.findOne({
-            //     where: {id: event.entity.id},
-            //     relations: [
-            //         "renderTaskAttempt",
-            //         "renderTaskAttempt.task",
-            //         "renderTaskAttempt.task.job",
-            //         "renderTaskAttempt.task.job.organization",
-            //         "renderTaskAttempt.task.job.organization.users",
-            //     ]
-            // });
-
             const attempt: RenderTaskAttempt = await RenderTaskAttempt.findOne({
                 where: {id: event.entity.renderTaskAttempt.id},
                 relations: [
