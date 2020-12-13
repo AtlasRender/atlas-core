@@ -31,12 +31,22 @@ export default class RenderTaskAttemptLogSubscriber implements EntitySubscriberI
                     "task.job.organization",
                     "task.job.organization.users",
                 ]
-            })
+            });
 
             const users: User[] = attempt.task.job.organization.users;
 
             for (const user of users) {
-                WebSocket.sendToUser(user.id, {type: CWS_RENDER_JOB_ATTEMPT_LOG_CREATE, payload: {id: event.entity.id}});
+                WebSocket.sendToUser(
+                    user.id,
+                    {
+                        type: CWS_RENDER_JOB_ATTEMPT_LOG_CREATE,
+                        payload: {
+                            id: event.entity.id,
+                            attemptId: attempt.id,
+                            taskId: attempt.task.id
+                        }
+                    }
+                );
             }
         } catch (error) {
             //TODO: handle
