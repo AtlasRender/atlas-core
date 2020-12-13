@@ -32,7 +32,7 @@ export default async function TaskReportsProcessor(): Promise<void> {
      */
     async function handler(message: Message, channel: Channel): Promise<void> {
         const handleStart = async (body) => {
-            // console.log("handleStart -------------", body);
+            console.log("handleStart -------------");
             const {task, reportType, slave} = body;
             const renderTask = await RenderTask.findOne({where: {id: task}, relations: ["renderTaskAttempts"]});
             if (!renderTask)
@@ -42,6 +42,9 @@ export default async function TaskReportsProcessor(): Promise<void> {
 
             // TODO: is task is processing via other slave and last report was
             //  long time ago - fail current task and start new with input slave.
+
+            renderTask.status = "processing";
+            await renderTask.save();
 
             console.log("HandleStart: Creating new attempt");
             let attempt = new RenderTaskAttempt();
@@ -61,7 +64,7 @@ export default async function TaskReportsProcessor(): Promise<void> {
             console.log("HandleStart: Creating new attempt log finished");
         };
         const handleReport = async (body) => {
-            // console.log("handleReport -----------------", body);
+            // console.log("handleReport -----------------");
             const {task, reportType, slave, data} = body;
             if (!(reportType === "info" || reportType === "warning" || reportType === "error"))
                 throw new TypeError(`Incorrect type of 'reportType', expected "'info' | 'warning' | 'error', got "${reportType}"`);
@@ -92,7 +95,7 @@ export default async function TaskReportsProcessor(): Promise<void> {
             await attemptLog.save();
         };
         const handleFinish = async (body) => {
-            // console.log("handleFinish ----------", body);
+            console.log("handleFinish ----------");
             const {task, reportType, slave, data} = body;
             if (!(reportType === "info" || reportType === "warning" || reportType === "error"))
                 throw new TypeError(`Incorrect type of reportType, expected "'info' | 'warning' | 'error', got "${reportType}"`);
@@ -154,7 +157,7 @@ export default async function TaskReportsProcessor(): Promise<void> {
     await channel.assertQueue(AMQP_TASK_REPORTS_QUEUE);
     await channel.prefetch(1);
     await channel.consume(AMQP_TASK_REPORTS_QUEUE, async (message: Message) => {
-        console.log("Processing job report");
+        // console.log("Processing job report");
         await handler(message, channel);
     });
 }
