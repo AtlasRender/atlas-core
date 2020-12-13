@@ -12,6 +12,7 @@ import User from "../entities/User";
 import WebSocket from "../core/WebSocket";
 import {CWS_RENDER_JOB_ATTEMPT_LOG_CREATE} from "../globals";
 import RenderTaskAttempt from "../entities/RenderTaskAttempt";
+import Logger from "../core/Logger";
 
 
 @EventSubscriber()
@@ -39,6 +40,9 @@ export default class RenderTaskAttemptLogSubscriber implements EntitySubscriberI
             }
         } catch (error) {
             //TODO: handle
+            console.error(error);
+            Logger.error(error.message + " " + error.stack).then();
+
         }
     }
 }

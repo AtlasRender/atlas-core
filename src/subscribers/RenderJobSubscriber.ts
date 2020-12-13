@@ -12,6 +12,7 @@ import User from "../entities/User";
 import WebSocket from "../core/WebSocket";
 import {CWS_RENDER_JOB_CREATE, CWS_RENDER_JOB_DELETE, CWS_RENDER_JOB_UPDATE} from "../globals";
 import Organization from "../entities/Organization";
+import Logger from "../core/Logger";
 
 
 @EventSubscriber()
@@ -34,6 +35,7 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
             }
         } catch (error) {
             //TODO: handle
+            console.error(error);
         }
     }
 
@@ -51,6 +53,7 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
             }
         } catch(error) {
             //TODO: handle.
+            console.error(error);
         }
     }
 
@@ -68,6 +71,8 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
         } catch(error) {
             //TODO: handle.
             console.error(error);
+            Logger.error(error.message + " " + error.stack).then();
+
         }
     }
 }
