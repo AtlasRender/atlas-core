@@ -12,6 +12,7 @@ import RenderJob from "../entities/RenderJob";
 import User from "../entities/User";
 import WebSocket from "../core/WebSocket";
 import {CWS_RENDER_TASK_UPDATE} from "../globals";
+import Logger from "../core/Logger";
 
 
 @EventSubscriber()
@@ -26,7 +27,6 @@ export class RenderTaskSubscriber implements EntitySubscriberInterface<RenderTas
                 where: {id: event.databaseEntity.id},
                 relations: ["job", "job.organization", "job.organization.users"]
             });
-
             const users: User[] = task.job.organization.users;
 
             for (const user of users) {
@@ -34,6 +34,8 @@ export class RenderTaskSubscriber implements EntitySubscriberInterface<RenderTas
             }
         } catch (error) {
             //TODO: handle error
+            console.error(error);
+            Logger.error(error.message + " " + error.stack).then();
         }
 
         if (event.updatedColumns.some(column => column.propertyName === "status")) {
@@ -68,7 +70,7 @@ export class RenderTaskSubscriber implements EntitySubscriberInterface<RenderTas
                         job.failedTasks = +report.quantity;
                         break;
                     default:
-                        //TODO: add log to db
+                    //TODO: add log to db
                 }
             }
 

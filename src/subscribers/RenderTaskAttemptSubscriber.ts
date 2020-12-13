@@ -6,13 +6,15 @@
  * All rights reserved.
  */
 
-import {EntitySubscriberInterface, UpdateEvent} from "typeorm";
+import {EntitySubscriberInterface, EventSubscriber, UpdateEvent} from "typeorm";
 import RenderTaskAttempt from "../entities/RenderTaskAttempt";
 import User from "../entities/User";
 import WebSocket from "../core/WebSocket";
 import {CWS_RENDER_TASK_UPDATE} from "../globals";
+import Logger from "../core/Logger";
 
 
+@EventSubscriber()
 export default class RenderTaskAttemptSubscriber implements EntitySubscriberInterface<RenderTaskAttempt> {
     listenTo(): Function | string {
         return RenderTaskAttempt;
@@ -32,6 +34,8 @@ export default class RenderTaskAttemptSubscriber implements EntitySubscriberInte
             }
         } catch (error) {
             //TODO: handle
+            console.error(error);
+            Logger.error(error.message + " " + error.stack).then();
         }
     }
 }
