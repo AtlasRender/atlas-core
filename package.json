@@ -38,7 +38,7 @@
     "@atlasrender/render-plugin": "^0.1.2",
     "ajv": "^6.12.6",
     "amqplib": "^0.6.0",
-    "argon2": "^0.27.0",
+    "argon2": "^0.27.1",
     "crypto-random-string": "^3.3.0",
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
