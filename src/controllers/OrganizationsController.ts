@@ -312,7 +312,7 @@ export default class OrganizationsController extends Controller {
             where: {
                 id: In(ctx.request.body.userIds)
             },
-            relations: ["roles"]
+            relations: ["roles", "roles.organization"]
         });
         ctx.request.body.userIds.forEach(userId => {
             if (!users.find(user => user.id === userId)) {
