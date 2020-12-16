@@ -179,17 +179,21 @@ export default class RolesController extends Controller {
                 role.name = ctx.request.body.name;
             }
         }
-        role.permissionLevel = ctx.request.body.permissionLevel || role.permissionLevel;
-        role.color = ctx.request.body.color || role.color;
-        role.description = ctx.request.body.description || role.description;
-        role.canManageUsers = ctx.request.body.canManageUsers || role.canManageUsers;
-        role.canManageRoles = ctx.request.body.canManageRoles || role.canManageRoles;
-        role.canCreateJobs = ctx.request.body.canCreateJobs || role.canCreateJobs;
-        role.canDeleteJobs = ctx.request.body.canDeleteJobs || role.canDeleteJobs;
-        role.canEditJobs = ctx.request.body.canEditJobs || role.canEditJobs;
-        role.canManagePlugins = ctx.request.body.canManagePlugins || role.canManagePlugins;
-        role.canManageTeams = ctx.request.body.canManageTeams || role.canManageTeams;
-        role.canEditAudit = ctx.request.body.canEditAudit;
+
+        Object.entries(ctx.request.body).forEach(([key, value]) => {
+            role[key] = value;
+        });
+        // role.permissionLevel = ctx.request.body.permissionLevel || role.permissionLevel;
+        // role.color = ctx.request.body.color || role.color;
+        // role.description = ctx.request.body.description || role.description;
+        // role.canManageUsers = ctx.request.body.canManageUsers || role.canManageUsers;
+        // role.canManageRoles = ctx.request.body.canManageRoles || role.canManageRoles;
+        // role.canCreateJobs = ctx.request.body.canCreateJobs || role.canCreateJobs;
+        // role.canDeleteJobs = ctx.request.body.canDeleteJobs || role.canDeleteJobs;
+        // role.canEditJobs = ctx.request.body.canEditJobs || role.canEditJobs;
+        // role.canManagePlugins = ctx.request.body.canManagePlugins || role.canManagePlugins;
+        // role.canManageTeams = ctx.request.body.canManageTeams || role.canManageTeams;
+        // role.canEditAudit = ctx.request.body.canEditAudit;
         await role.save();
 
         ctx.body = {success: true};

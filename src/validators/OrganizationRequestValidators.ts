@@ -168,6 +168,7 @@ export const RoleAddValidator = bodyValidator({
 export const RoleEditValidator = bodyValidator({
     $id: "RoleEditValidator",
     type: "object",
+    additionalProperties: false,
     properties: {
         name: {
             // TODO: alphanumeric only
