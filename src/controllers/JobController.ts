@@ -236,16 +236,27 @@ export default class JobController extends Controller {
     public async getJobs(ctx: Context): Promise<void> {
         //TODO: add query validator
         //TODO: send not every field.
-        const {id} = ctx.request.query;
+        const {id, organization: organizationId} = ctx.request.query;
         const jwtUser: UserJwt = ctx.state.user;
-        const user: User = await User.findOne({where: {id: jwtUser.id}});
         let jobs: RenderJob[] | RenderJob = null;
-        if (!id) {
-            jobs = await RenderJob.find({
-                where: {submitter: user},
-                relations: ["submitter", "organization"],
-                order: {createdAt: "DESC"}
-            });
+        if (id == null) {
+            if (organizationId != null) {
+                const organization = Organization.findOne({where: {id: organizationId}});
+                if (!organization)
+                    throw new RequestError(404, "Organization not found.");
+                jobs = await RenderJob.find({
+                    where: {organization},
+                    relations: ["submitter", "organization"],
+                    order: {createdAt: "DESC"}
+                });
+            } else {
+                const user: User = await User.findOne({where: {id: jwtUser.id}});
+                jobs = await RenderJob.find({
+                    where: {submitter: user},
+                    relations: ["submitter", "organization"],
+                    order: {createdAt: "DESC"}
+                });
+            }
         } else {
             jobs = await RenderJob.findOne({where: {id}, relations: ["submitter", "organization"]});
         }
