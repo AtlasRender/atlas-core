@@ -23,6 +23,7 @@ import {IncludeUsernameInQueryValidator} from "../validators/UserRequestValidato
 import {findOneOrganizationByRequestParams} from "../middlewares/organizationRequestMiddlewares";
 import {canManageUsers} from "../middlewares/withRoleAccessMiddleware";
 import Role from "../entities/Role";
+import {UserPermissions, UserWithPermissions} from "../interfaces/UserWithPermissions";
 
 
 /**
@@ -99,6 +100,12 @@ export default class OrganizationsController extends Controller {
         this.get("/:organization_id/availableUsers", IncludeUsernameInQueryValidator, this.getAvailableUsers);
 
         this.get("/:organization_id/users/:user_id", this.getOrgUserById);
+
+        this.get(
+            "/:organization_id/users/:user_id/permissions",
+            findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}),
+            this.getUserPermissions
+        );
 
         // connect RolesController
         const rolesController = new RolesController();
@@ -186,7 +193,7 @@ export default class OrganizationsController extends Controller {
         }
 
         // add users from body
-        if(ctx.request.body.userIds) {
+        if (ctx.request.body.userIds) {
             await addUsersToOrg(ctx.request.body.userIds, savedOrg);
         }
 
@@ -322,6 +329,7 @@ export default class OrganizationsController extends Controller {
 
         let usersToDelete = [];
         for (const deleteUser of users) {
+            // TODO: CHECK PERMISSION LEVEL OF USER TO DELETE.
             // TODO: if ownerUser deleted - set new user by role permissionLevel.
             // if user not in org
             if (!org.users.find(usr => usr.id === deleteUser.id)) {
@@ -371,6 +379,7 @@ export default class OrganizationsController extends Controller {
         ctx.body = users;
     }
 
+
     /**
      * Route __[GET]__ ___/organizations/:organization_id/users/:user_id___ - get user in context of organization.
      * @method
@@ -381,6 +390,56 @@ export default class OrganizationsController extends Controller {
         if (!org) {
             throw new RequestError(404, "Organization not found.");
         }
+        const user: UserWithPermissions = await getRepository(User)
+            .createQueryBuilder("user")
+            .leftJoin("user.organizations", "userOrg", "userOrg.id = :orgId",
+                {orgId: org.id})
+            .where({id: ctx.params.user_id})
+            .andWhere("userOrg.id = :orgId", {orgId: org.id})
+            .leftJoin("user.roles", "userRoles", "userRoles.organization = :orgId",
+                {orgId: org.id})
+            .orderBy({"userRoles.permissionLevel": "DESC"})
+            .select([
+                "user.id", "user.username", "user.email", "user.deleted", "user.createdAt", "user.updatedAt",
+                "userRoles"
+            ])
+            .getOne();
+        if (!user) {
+            throw new RequestError(404, "User not found in this organization",
+                {errors: {user: 404}});
+        }
+        user.permissions = user.roles.reduce((perms, role) => ({
+                canManageUsers: (role.canManageUsers && perms.canManageUsers < role.permissionLevel) ? role.permissionLevel : perms.canManageUsers,
+                canManageRoles: (role.canManageRoles && perms.canManageRoles < role.permissionLevel) ? role.permissionLevel : perms.canManageRoles,
+                canCreateJobs: (role.canCreateJobs && perms.canCreateJobs < role.permissionLevel) ? role.permissionLevel : perms.canCreateJobs,
+                canDeleteJobs: (role.canDeleteJobs && perms.canDeleteJobs < role.permissionLevel) ? role.permissionLevel : perms.canDeleteJobs,
+                canEditJobs: (role.canEditJobs && perms.canEditJobs < role.permissionLevel) ? role.permissionLevel : perms.canEditJobs,
+                canManagePlugins: (role.canManagePlugins && perms.canManagePlugins < role.permissionLevel) ? role.permissionLevel : perms.canManagePlugins,
+                canManageTeams: (role.canManageTeams && perms.canManageTeams < role.permissionLevel) ? role.permissionLevel : perms.canManageTeams,
+                canEditAudit: (role.canEditAudit && perms.canEditAudit < role.permissionLevel) ? role.permissionLevel : perms.canEditAudit
+            }),
+            {
+                canManageUsers: -1,
+                canManageRoles: -1,
+                canCreateJobs: -1,
+                canDeleteJobs: -1,
+                canEditJobs: -1,
+                canManagePlugins: -1,
+                canManageTeams: -1,
+                canEditAudit: -1
+            }
+        );
+
+        ctx.body = user;
+    }
+
+    /**
+     * Route __[GET]__ ___/organizations/:organization_id/users/:user_id/permissions___ - get user permissions in organization.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async getUserPermissions(ctx: Context) {
+        const org = ctx.state.organization;
         const user = await getRepository(User)
             .createQueryBuilder("user")
             .leftJoin("user.organizations", "userOrg", "userOrg.id = :orgId",
@@ -400,6 +459,28 @@ export default class OrganizationsController extends Controller {
                 {errors: {user: 404}});
         }
 
-        ctx.body = user;
+        const permissions: UserPermissions = user.roles.reduce((perms, role) => ({
+                canManageUsers: (role.canManageUsers && perms.canManageUsers < role.permissionLevel) ? role.permissionLevel : perms.canManageUsers,
+                canManageRoles: (role.canManageRoles && perms.canManageRoles < role.permissionLevel) ? role.permissionLevel : perms.canManageRoles,
+                canCreateJobs: (role.canCreateJobs && perms.canCreateJobs < role.permissionLevel) ? role.permissionLevel : perms.canCreateJobs,
+                canDeleteJobs: (role.canDeleteJobs && perms.canDeleteJobs < role.permissionLevel) ? role.permissionLevel : perms.canDeleteJobs,
+                canEditJobs: (role.canEditJobs && perms.canEditJobs < role.permissionLevel) ? role.permissionLevel : perms.canEditJobs,
+                canManagePlugins: (role.canManagePlugins && perms.canManagePlugins < role.permissionLevel) ? role.permissionLevel : perms.canManagePlugins,
+                canManageTeams: (role.canManageTeams && perms.canManageTeams < role.permissionLevel) ? role.permissionLevel : perms.canManageTeams,
+                canEditAudit: (role.canEditAudit && perms.canEditAudit < role.permissionLevel) ? role.permissionLevel : perms.canEditAudit
+            }),
+            {
+                canManageUsers: -1,
+                canManageRoles: -1,
+                canCreateJobs: -1,
+                canDeleteJobs: -1,
+                canEditJobs: -1,
+                canManagePlugins: -1,
+                canManageTeams: -1,
+                canEditAudit: -1
+            }
+        );
+
+        ctx.body = permissions;
     }
 }
