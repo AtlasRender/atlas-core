@@ -191,7 +191,8 @@ export default class OrganizationsController extends Controller {
         // add roles from body
         if (ctx.request.body.roles) {
             for (const roleData of ctx.request.body.roles) {
-                if(roleData.name === defaultRole.name || ctx.request.body.roles.find(role => role.name === roleData.name)) {
+                const roleNamesSet = new Set(ctx.request.body.roles.map(role => role.name));
+                if(roleData.name === defaultRole.name || roleNamesSet.size !== ctx.request.body.roles.length) {
                     throw new RequestError(409, "Conflicting role names.", {errors: {roles: 409}});
                 }
                 let role = new Role();
