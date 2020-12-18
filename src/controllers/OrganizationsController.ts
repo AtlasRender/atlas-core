@@ -132,8 +132,10 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     public async addOrganization(ctx: Context): Promise<void> {
+        // TODO: re-edit all with transactions.
+
         if (await Organization.findOne({name: ctx.request.body.name})) {
-            throw new RequestError(409, "Organization with this name already exists.");
+            throw new RequestError(409, "Organization with this name already exists.", {errors: {organization: 409}});
         }
 
         const authUser: User = await User.findOne(ctx.state.user.id);
@@ -150,18 +152,33 @@ export default class OrganizationsController extends Controller {
         const savedOrg = await organization.save();
 
         let defaultRole = new Role();
-        defaultRole.name = "user";
-        defaultRole.description = "Default user role.";
-        defaultRole.color = "#090";
-        defaultRole.permissionLevel = 0;
+        if(ctx.request.body.defaultRole) {
+            const defaultRoleData = ctx.request.body.defaultRole;
+            defaultRole.name = defaultRoleData.name;
+            defaultRole.description = defaultRoleData.description || "Default user role.";
+            defaultRole.color = defaultRoleData.color || "#090";
+            defaultRole.permissionLevel = defaultRoleData.permissionLevel;
+            defaultRole.canManageUsers = defaultRoleData.canManageUsers;
+            defaultRole.canManageRoles = defaultRoleData.canManageRoles;
+            defaultRole.canCreateJobs = defaultRoleData.canCreateJobs;
+            defaultRole.canDeleteJobs = defaultRoleData.canDeleteJobs;
+            defaultRole.canEditJobs = defaultRoleData.canEditJobs;
+            defaultRole.canManagePlugins = defaultRoleData.canManagePlugins;
+            defaultRole.canManageTeams = defaultRoleData.canManageTeams;
+        } else {
+            defaultRole.name = "user";
+            defaultRole.description = "Default user role.";
+            defaultRole.color = "#090";
+            defaultRole.permissionLevel = 0;
+            defaultRole.canManageUsers = false;
+            defaultRole.canManageRoles = false;
+            defaultRole.canCreateJobs = true;
+            defaultRole.canDeleteJobs = false;
+            defaultRole.canEditJobs = false;
+            defaultRole.canManagePlugins = true;
+            defaultRole.canManageTeams = true;
+        }
         defaultRole.organization = savedOrg;
-        defaultRole.canManageUsers = false;
-        defaultRole.canManageRoles = false;
-        defaultRole.canCreateJobs = true;
-        defaultRole.canDeleteJobs = false;
-        defaultRole.canEditJobs = false;
-        defaultRole.canManagePlugins = true;
-        defaultRole.canManageTeams = true;
         await defaultRole.save();
 
         await getConnection()
@@ -174,6 +191,9 @@ export default class OrganizationsController extends Controller {
         // add roles from body
         if (ctx.request.body.roles) {
             for (const roleData of ctx.request.body.roles) {
+                if(roleData.name === defaultRole.name || ctx.request.body.roles.find(role => role.name === roleData.name)) {
+                    throw new RequestError(409, "Conflicting role names.", {errors: {roles: 409}});
+                }
                 let role = new Role();
                 role.name = roleData.name;
                 role.description = roleData.description;

@@ -53,8 +53,10 @@ export const OrganizationRegisterValidator = bodyValidator({
             roles: {
                 type: "array",
                 items: {$ref: "RoleAddValidator"},
+            },
+            defaultRole: {
+                $ref: "RoleAddValidator"
             }
-
         }
     },
     ajvInstance);
