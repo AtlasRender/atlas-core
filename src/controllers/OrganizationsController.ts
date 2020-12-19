@@ -31,9 +31,10 @@ import {UserPermissions, UserWithPermissions} from "../interfaces/UserWithPermis
  * addUsersToOrg - for each userId provided in userIds, finds and adds user to organization.
  * @param userIds - array of user ids.
  * @param org - organization, where users will be added.
+ * @param defaultRole - defaultRole which will apply for each user in organization. Its org.defaultRole by default.
  * @author Denis Afendikov
  */
-const addUsersToOrg = async (userIds: number[], org: Organization): Promise<void> => {
+const addUsersToOrg = async (userIds: number[], org: Organization, defaultRole = org.defaultRole): Promise<void> => {
     let errors = [];
     const users = await User.find({
         where: {
@@ -50,7 +51,7 @@ const addUsersToOrg = async (userIds: number[], org: Organization): Promise<void
         if (org.users.find(user => user.id === addUser.id)) {
             errors.push({present: addUser.id});
         } else {
-            addUser.roles.push(org.defaultRole);
+            addUser.roles.push(defaultRole);
             org.users.push(addUser);
 
             await addUser.save();
@@ -215,7 +216,7 @@ export default class OrganizationsController extends Controller {
 
         // add users from body
         if (ctx.request.body.userIds) {
-            await addUsersToOrg(ctx.request.body.userIds, savedOrg);
+            await addUsersToOrg(ctx.request.body.userIds, savedOrg, defaultRole);
         }
 
         ctx.body = {
