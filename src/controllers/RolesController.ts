@@ -59,13 +59,16 @@ export default class RolesController extends Controller {
 
         // users
         this.get("/:role_id/users", this.getRoleUsers);
-        this.post(
-            "/:role_id/users",
-            IncludeUserIdInBodyValidator,
-            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
-            canManageUsers,
-            this.addRoleUser
-        );
+        // this.post(
+        //     "/:role_id/users",
+        //     IncludeUserIdInBodyValidator,
+        //     findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+        //     canManageUsers,
+        //     this.addRoleUser
+        // );
+
+        this.post("/:org_id/roles/:user_id", this.addRolesToUser);
+
         this.delete(
             "/:role_id/users",
             IncludeUserIdInBodyValidator,
@@ -76,7 +79,7 @@ export default class RolesController extends Controller {
     }
 
     /**
-     * Route __[GET]__ ___/:org_id/roles - get information about all organization's roles.
+     * Route __[GET]__ ___/:org_id/roles___ - get information about all organization's roles.
      * @method
      * @author Denis Afendikov
      */
@@ -101,7 +104,7 @@ export default class RolesController extends Controller {
     }
 
     /**
-     * Route __[POST]__ ___/:org_id/roles - add role.
+     * Route __[POST]__ ___/:org_id/roles___ - add role.
      * @method
      * @author Denis Afendikov
      */
@@ -200,7 +203,7 @@ export default class RolesController extends Controller {
     }
 
     /**
-     * Route __[DELETE]__ ___/:org_id/roles/:role_id - delete role.
+     * Route __[DELETE]__ ___/:org_id/roles/:role_id___ - delete role.
      * @method
      * @author Denis Afendikov
      */
@@ -214,7 +217,7 @@ export default class RolesController extends Controller {
     }
 
     /**
-     * Route __[GET]__ ___/:org_id/roles/:role_id/users - get information about all users in organization's roles.
+     * Route __[GET]__ ___/:org_id/roles/:role_id/users___ - get information about all users in organization's roles.
      * @method
      * @author Denis Afendikov
      */
@@ -239,35 +242,59 @@ export default class RolesController extends Controller {
         ctx.body = role.users;
     }
 
-    /**
-     * Route __[POST]__ ___/:org_id/roles/:role_id/users - add user to organization's role.
-     * @method
-     * @author Denis Afendikov
-     */
-    public async addRoleUser(ctx: Context): Promise<void> {
-        const role: Role = await Role.findOne(ctx.params.role_id, {relations: ["users"]});
-        if (!role) {
-            throw new RequestError(404, "Role not found.");
-        }
+    // /**
+    //  * Route __[POST]__ ___/:org_id/roles/:role_id/users___ - add user to organization's role.
+    //  * @method
+    //  * @author Denis Afendikov
+    //  */
+    // public async addRoleUser(ctx: Context): Promise<void> {
+    //     const role: Role = await Role.findOne(ctx.params.role_id, {relations: ["users"]});
+    //     if (!role) {
+    //         throw new RequestError(404, "Role not found.");
+    //     }
+    //
+    //     const addUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
+    //     if (!addUser) {
+    //         throw new RequestError(404, "User not found");
+    //     }
+    //
+    //     if (addUser.roles.find(userRole => userRole.id === role.id)) {
+    //         throw new RequestError(403, "User already owns this role.");
+    //     }
+    //
+    //     // role.users.push(addUser);
+    //     // await role.save();
+    //     await getConnection()
+    //         .createQueryBuilder()
+    //         .relation(Role, "users")
+    //         .of(role)
+    //         .add(addUser);
+    //
+    //     ctx.body = {success: true};
+    // }
 
-        const addUser: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
-        if (!addUser) {
+    /**
+     * Route __[POST]__ ___/:org_id/roles/:user_id___ - add roles to organization's user.
+     * @method
+     * @author Danil Andreev
+     */
+    public async addRolesToUser(ctx: Context): Promise<void> {
+        const ids = ctx.request.body.roles;
+
+        const roles: Role[] = await Role.findByIds(ids);
+
+        //TODO: check if user is a member this organization!!!
+        const user: User = await User.findOne(ctx.request.body.userId, {relations: ["roles"]});
+        if (!user) {
             throw new RequestError(404, "User not found");
         }
 
-        if (addUser.roles.find(userRole => userRole.id === role.id)) {
-            throw new RequestError(403, "User already owns this role.");
+        for (const role of roles) {
+            if(!user.roles.find(candidate => candidate.id === role.id))
+                user.roles.push(role);
         }
 
-        // role.users.push(addUser);
-        // await role.save();
-        await getConnection()
-            .createQueryBuilder()
-            .relation(Role, "users")
-            .of(role)
-            .add(addUser);
-
-        ctx.body = {success: true};
+        await user.save();
     }
 
     /**
