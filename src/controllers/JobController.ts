@@ -161,6 +161,8 @@ export default class JobController extends Controller {
                     }
                 }
                 renderJob.pendingTasks = range.length;
+                if (!range.length)
+                    throw new RangeError("Invalid frame range");
             } catch (error) {
                 throw new RequestError(400, error.message);
             }
