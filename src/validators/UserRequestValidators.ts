@@ -68,7 +68,7 @@ export const UserLoginValidator = bodyValidator({
 export const UserEditValidator = bodyValidator({
     $id: "UserEditValidator",
     type: "object",
-    required: ["password"],
+    // required: ["password"],
     properties : {
         username: {
             // TODO: alphanumeric only
@@ -76,20 +76,20 @@ export const UserEditValidator = bodyValidator({
             minLength: 3,
             maxLength: 50
         },
-        password: {
-            type: "string",
-            minLength: 6,
-            maxLength: 50
-        },
+        // password: {
+        //     type: "string",
+        //     minLength: 6,
+        //     maxLength: 50
+        // },
         email: {
             type: "string",
             format: "email",
         },
-        newPassword: {
-            type: "string",
-            minLength: 6,
-            maxLength: 50
-        }
+        // newPassword: {
+        //     type: "string",
+        //     minLength: 6,
+        //     maxLength: 50
+        // }
     }
 }, ajvInstance);
 

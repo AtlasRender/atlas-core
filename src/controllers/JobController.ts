@@ -108,7 +108,7 @@ export default class JobController extends Controller {
             throw new RequestError(403, "You don't have permissions to this data.");
 
         const job: RenderJob = await RenderJob.findOne(jobId);
-        if(!job)
+        if (!job)
             throw new RequestError(404, "Render job not found.");
         const result = await job.remove();
 
@@ -139,7 +139,7 @@ export default class JobController extends Controller {
             const user: User = await User.findOne({where: {id: jwtUser.id}});
 
             const organization: Organization = await Organization.findOne({where: {id: inputJob.organization}});
-            if (!organization) throw new ReferenceError(`Organization does not exist`);
+            if (!organization) throw new RequestError(404, `Organization does not exist`);
             //TODO: check user can create job.
 
 
@@ -319,7 +319,7 @@ export default class JobController extends Controller {
                             .addSelect("task.id", "task_id")
                             .from(RenderTaskAttempt, "sub_attempt")
                             .orderBy("sub_attempt.createdAt")
-                            .innerJoin("sub_attempt.task", "task")
+                            .innerJoin("sub_attempt.task", "task");
                     }, "ordered_attempts")
                     .distinctOn(["ordered_attempts.task_id"]);
             }, "attempt", "attempt.task_id = task.id")

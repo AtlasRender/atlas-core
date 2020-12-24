@@ -138,9 +138,10 @@ export default class UsersController extends Controller {
         if (ctx.state.user.id !== user.id) {
             throw new RequestError(403, "Forbidden.");
         }
-        if (!await argon2.verify(user.privateData.password, ctx.request.body.password)) {
-            throw new RequestError(403, "Forbidden.", {errors: {password: "incorrect"}});
-        }
+        // TODO: get this back when frontend will be ready.
+        // if (!await argon2.verify(user.privateData.password, ctx.request.body.password)) {
+        //     throw new RequestError(403, "Forbidden.", {errors: {password: "incorrect"}});
+        // }
 
         let errors = {};
         // if email changed
