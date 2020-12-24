@@ -22,8 +22,11 @@ export class RenderTaskSubscriber implements EntitySubscriberInterface<RenderTas
     }
 
     public async afterUpdate(event: UpdateEvent<RenderTask>): Promise<any> {
+        let task: RenderTask; // with old status in DB
+        const updatedEntity = event.entity; // updated entity with updated status
+
         try {
-            const task: RenderTask = await RenderTask.findOne({
+            task = await RenderTask.findOne({
                 where: {id: event.databaseEntity.id},
                 relations: ["job", "job.organization", "job.organization.users"]
             });
@@ -39,40 +42,56 @@ export class RenderTaskSubscriber implements EntitySubscriberInterface<RenderTas
         }
 
         if (event.updatedColumns.some(column => column.propertyName === "status")) {
-            const task: RenderTask = await RenderTask.findOne({
-                where: {id: event.databaseEntity.id},
-                relations: ["job", "job.organization", "job.organization.users"]
-            });
+            // const task: RenderTask = await RenderTask.findOne({
+            //     where: {id: event.databaseEntity.id},
+            //     relations: ["job", "job.organization", "job.organization.users"]
+            // });
             const job: RenderJob = task.job;
+            console.log("Updated task:", task);
 
-            const done: any[] = await RenderTask
-                .getRepository()
-                .createQueryBuilder("task")
-                .select("COUNT(task.status)", "quantity")
-                .addSelect(["task.status"])
-                .where("task.job = :job", {job: job.id})
-                .groupBy("task.status")
-                .printSql()
-                .getRawMany();
-
-            for (const report of done) {
-                switch (report.task_status) {
-                    case "pending":
-                        job.pendingTasks = +report.quantity;
-                        break;
-                    case "processing":
-                        job.processingTasks = +report.quantity;
-                        break;
-                    case "done":
-                        job.doneTasks = +report.quantity;
-                        break;
-                    case "failed":
-                        job.failedTasks = +report.quantity;
-                        break;
-                    default:
-                    //TODO: add log to db
-                }
+            const mapping = {
+                pending: "pendingTasks",
+                processing: "processingTasks",
+                done: "doneTasks",
+                failed: "failedTasks"
             }
+
+            --job[mapping[task.status]];
+            ++job[mapping[updatedEntity.status]];
+
+
+            console.log("Got reports:", job);
+
+            // const done: any[] = await RenderTask
+            //     .getRepository()
+            //     .createQueryBuilder("task")
+            //     .select("COUNT(task.status)", "quantity")
+            //     .addSelect(["task.status"])
+            //     .where("task.job = :job", {job: job.id})
+            //     .groupBy("task.status")
+            //     .printSql()
+            //     .getRawMany();
+
+            // console.log("Got reports:", done);
+
+            // for (const report of done) {
+            //     switch (report.task_status) {
+            //         case "pending":
+            //             job.pendingTasks = +report.quantity;
+            //             break;
+            //         case "processing":
+            //             job.processingTasks = +report.quantity;
+            //             break;
+            //         case "done":
+            //             job.doneTasks = +report.quantity;
+            //             break;
+            //         case "failed":
+            //             job.failedTasks = +report.quantity;
+            //             break;
+            //         default:
+            //         //TODO: add log to db
+            //     }
+            // }
 
             await job.save();
         }
