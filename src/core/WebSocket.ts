@@ -10,6 +10,7 @@ import * as WS from "ws";
 import * as CryptoRandomString from "crypto-random-string";
 import {IncomingMessage} from "http";
 import WebSocketSession from "../interfaces/WebSocketSession";
+import WebSocketOptions from "../interfaces/WebSocketOptions";
 import RequestError from "../errors/RequestError";
 import {URL} from "url";
 import JSONObject from "../interfaces/JSONObject";

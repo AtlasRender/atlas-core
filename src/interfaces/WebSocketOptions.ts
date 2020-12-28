@@ -11,7 +11,7 @@
  * @interface
  * @author Danil Andreev
  */
-interface WebSocketOptions {
+export default interface WebSocketOptions {
     /**
      * port - web socket server port.
      * @default 3003
