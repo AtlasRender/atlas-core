@@ -92,6 +92,7 @@ export default abstract class WebSocket extends WS.Server {
      * @author Danil Andreev
      */
     protected static generateUID(): string {
+        //TODO: change to generator to optimize speed.
         let uid: string = "";
         let attempts: number = 0;
         do {
