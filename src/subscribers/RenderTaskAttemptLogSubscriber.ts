@@ -9,7 +9,7 @@
 import {EntitySubscriberInterface, EventSubscriber, InsertEvent} from "typeorm";
 import RenderTaskAttemptLog from "../entities/RenderTaskAttemptLog";
 import User from "../entities/User";
-import WebSocket from "../core/WebSocket";
+import ClientWS from "../core/ClientWS";
 import {CWS_RENDER_JOB_ATTEMPT_LOG_CREATE} from "../globals";
 import RenderTaskAttempt from "../entities/RenderTaskAttempt";
 import Logger from "../core/Logger";
@@ -36,7 +36,7 @@ export default class RenderTaskAttemptLogSubscriber implements EntitySubscriberI
             const users: User[] = attempt.task.job.organization.users;
 
             for (const user of users) {
-                WebSocket.sendToUser(
+                ClientWS.sendToUser(
                     user.id,
                     {
                         type: CWS_RENDER_JOB_ATTEMPT_LOG_CREATE,

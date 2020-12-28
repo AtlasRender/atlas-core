@@ -9,7 +9,7 @@
 import {EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent} from "typeorm";
 import RenderJob from "../entities/RenderJob";
 import User from "../entities/User";
-import WebSocket from "../core/WebSocket";
+import ClientWS from "../core/ClientWS";
 import {CWS_RENDER_JOB_CREATE, CWS_RENDER_JOB_DELETE, CWS_RENDER_JOB_UPDATE} from "../globals";
 import Organization from "../entities/Organization";
 import Logger from "../core/Logger";
@@ -31,7 +31,7 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
             const users: User[] = organization.users;
 
             for (const user of users) {
-                WebSocket.sendToUser(user.id, {type: CWS_RENDER_JOB_CREATE, payload: {id: event.entity.id}});
+                ClientWS.sendToUser(user.id, {type: CWS_RENDER_JOB_CREATE, payload: {id: event.entity.id}});
             }
         } catch (error) {
             //TODO: handle
@@ -49,7 +49,7 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
             const users: User[] = job.organization.users;
 
             for (const user of users) {
-                WebSocket.sendToUser(user.id, {type: CWS_RENDER_JOB_UPDATE, payload: {id: job.id}});
+                ClientWS.sendToUser(user.id, {type: CWS_RENDER_JOB_UPDATE, payload: {id: job.id}});
             }
         } catch(error) {
             //TODO: handle.
@@ -66,7 +66,7 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
 
             const users: User[] = job.organization.users;
             for (const user of users) {
-                WebSocket.sendToUser(user.id, {type: CWS_RENDER_JOB_DELETE, payload: {id: job.id}});
+                ClientWS.sendToUser(user.id, {type: CWS_RENDER_JOB_DELETE, payload: {id: job.id}});
             }
         } catch(error) {
             //TODO: handle.
