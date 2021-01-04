@@ -27,8 +27,8 @@ jobs:
             sudo apt-get update -y
             sudo apt-get install -y "git-crypt"
             sudo apt-get install -y "cl-base64"
-            sudo echo "$GIT_CRYPT_KEY_B64" > "pathfinder-core/key_base64.txt"
-            sudo base64 -d "pathfinder-core/key_base64.txt" > "atlas-core/key"
+            sudo echo "$GIT_CRYPT_KEY_B64" > "atlas-core/key_base64.txt"
+            sudo base64 -d "atlas-core/key_base64.txt" > "atlas-core/key"
             cd "atlas-core" && sudo git-crypt unlock "key"
             cd ../ && sudo rm -f "docker-compose.yaml"
             sudo mv "atlas-core/docker-compose/pathfinder-data-storage-start-dev.yaml" "docker-compose.yaml"
