@@ -10,7 +10,6 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 import "globals";
-import addFormats from "ajv-formats"
 
 
 import Server from "./core/Server";
@@ -32,12 +31,9 @@ import UserNotificationProcessor from "./processors/UserNotificationProcessor";
 import WebSocket from "./core/WebSocket";
 import TasksController from "./controllers/TasksController";
 import RenderTaskAttemptController from "./controllers/RenderTaskAttemptController";
-import {ajvInstance} from "./globals";
 
 
 async function startServer() {
-    // @ts-ignore
-    addFormats(ajvInstance);
     const server = await Server.createServer(config);
     await JobsProcessor();
     await TaskReportsProcessor();

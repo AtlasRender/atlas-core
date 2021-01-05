@@ -7,8 +7,10 @@
  */
 
 import Ajv from "ajv";
+import type AjvType from "ajv"
+import addFormats from "ajv-formats"
 
-export const ajvInstance = new Ajv({
+export const ajvInstance: AjvType = new Ajv({
     allErrors: true,
     useDefaults: true,
     // jsonPointers: true,
@@ -16,6 +18,8 @@ export const ajvInstance = new Ajv({
     // schemaId: "auto",
     messages: false,
 });
+// @ts-ignore
+addFormats(ajvInstance);
 
 /**
  * AMQP_CONNECTION_QUEUE - queue name for slaves connection reports.
