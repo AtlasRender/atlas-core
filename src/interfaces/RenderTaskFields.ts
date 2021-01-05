@@ -7,8 +7,8 @@
  */
 
 import {Column, CreateDateColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
-import RenderJob from "../entities/RenderJob";
-import RenderTaskAttempt from "../entities/RenderTaskAttempt";
+import RenderJob from "../entities/typeorm/RenderJob";
+import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
 import {Moment} from "moment";
 
 

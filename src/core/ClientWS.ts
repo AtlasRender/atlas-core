@@ -11,6 +11,7 @@ import Authenticator from "./Authenticator";
 import UserJwt from "../interfaces/UserJwt";
 import WebSocket from "./WebSocket";
 import JSONObject from "../interfaces/JSONObject";
+import WebSocketOptions from "../interfaces/WebSocketOptions";
 
 
 /**
@@ -30,10 +31,11 @@ export default class ClientWS extends WebSocket {
      * _This class uses a **singleton paradigm**_
      * @constructor
      */
-    constructor() {
-        super();
+    constructor(options?: WebSocketOptions) {
+        super(options);
         if (ClientWS.instance)
             throw new ReferenceError("Instance of the server has been already created.");
+        ClientWS.instance = this;
     }
 
     /**

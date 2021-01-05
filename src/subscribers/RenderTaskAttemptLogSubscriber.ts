@@ -7,11 +7,11 @@
  */
 
 import {EntitySubscriberInterface, EventSubscriber, InsertEvent} from "typeorm";
-import RenderTaskAttemptLog from "../entities/RenderTaskAttemptLog";
-import User from "../entities/User";
+import RenderTaskAttemptLog from "../entities/typeorm/RenderTaskAttemptLog";
+import User from "../entities/typeorm/User";
 import ClientWS from "../core/ClientWS";
 import {CWS_RENDER_JOB_ATTEMPT_LOG_CREATE} from "../globals";
-import RenderTaskAttempt from "../entities/RenderTaskAttempt";
+import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
 import Logger from "../core/Logger";
 
 

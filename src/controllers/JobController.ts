@@ -13,18 +13,18 @@ import * as Amqp from "amqplib";
 import RequestError from "../errors/RequestError";
 import {AMQP_JOBS_QUEUE} from "../globals";
 import JobEvent, {JobEventType} from "../core/JobEvent";
-import Organization from "../entities/Organization";
-import RenderJob from "../entities/RenderJob";
+import Organization from "../entities/typeorm/Organization";
+import RenderJob from "../entities/typeorm/RenderJob";
 import {JobSubmitValidator} from "../validators/JobRequestValidators";
-import Plugin from "../entities/Plugin";
+import Plugin from "../entities/typeorm/Plugin";
 import {PluginSettingsSpec, SettingsPayload, ValidationError} from "@atlasrender/render-plugin";
-import User from "../entities/User";
+import User from "../entities/typeorm/User";
 import UserJwt from "../interfaces/UserJwt";
-import FrameRange from "../core/FrameRange/FrameRange";
-import FrameRangeItem from "../core/FrameRange/FrameRangeItem";
-import RenderTask from "../entities/RenderTask";
+import FrameRange from "../entities/common/FrameRange";
+import FrameRangeItem from "../entities/common/FrameRangeItem";
+import RenderTask from "../entities/typeorm/RenderTask";
 import {SelectQueryBuilder} from "typeorm";
-import RenderTaskAttempt from "../entities/RenderTaskAttempt";
+import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
 
 
 /**

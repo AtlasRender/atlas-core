@@ -9,10 +9,10 @@
 import {Channel, Message} from "amqplib";
 import Server from "../core/Server";
 import {AMQP_TASK_REPORTS_QUEUE} from "../globals";
-import RenderTask from "../entities/RenderTask";
-import RenderTaskAttempt from "../entities/RenderTaskAttempt";
+import RenderTask from "../entities/typeorm/RenderTask";
+import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
 import Logger from "../core/Logger";
-import RenderTaskAttemptLog from "../entities/RenderTaskAttemptLog";
+import RenderTaskAttemptLog from "../entities/typeorm/RenderTaskAttemptLog";
 import * as _ from "lodash";
 
 

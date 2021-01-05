@@ -10,12 +10,12 @@ import {Channel, Message} from "amqplib";
 import Server from "../core/Server";
 import {AMQP_JOBS_QUEUE, AMQP_TASKS_QUEUE} from "../globals";
 import JobEvent from "../core/JobEvent";
-import RenderTask from "../entities/RenderTask";
+import RenderTask from "../entities/typeorm/RenderTask";
 import getFramesFromRange from "../utils/getFramesFromRange";
-import RenderJob from "../entities/RenderJob";
+import RenderJob from "../entities/typeorm/RenderJob";
 import Logger from "../core/Logger";
-import FrameRange from "../core/FrameRange/FrameRange";
-import FrameRangeItem from "../core/FrameRange/FrameRangeItem";
+import FrameRange from "../entities/common/FrameRange";
+import FrameRangeItem from "../entities/common/FrameRangeItem";
 
 
 /**

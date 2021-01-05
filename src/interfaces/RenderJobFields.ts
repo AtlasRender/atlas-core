@@ -6,10 +6,10 @@
  * All rights reserved.
  */
 
-import Organization from "../entities/Organization";
-import RenderTask from "../entities/RenderTask";
-import RenderJobLog from "../entities/RenderJobLog";
-import Plugin from "../entities/Plugin";
+import Organization from "../entities/typeorm/Organization";
+import RenderTask from "../entities/typeorm/RenderTask";
+import RenderJobLog from "../entities/typeorm/RenderJobLog";
+import Plugin from "../entities/typeorm/Plugin";
 import {Moment} from "moment";
 
 

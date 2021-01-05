@@ -7,11 +7,11 @@
  */
 
 import {EntitySubscriberInterface, EventSubscriber, InsertEvent, RemoveEvent, UpdateEvent} from "typeorm";
-import RenderJob from "../entities/RenderJob";
-import User from "../entities/User";
+import RenderJob from "../entities/typeorm/RenderJob";
+import User from "../entities/typeorm/User";
 import ClientWS from "../core/ClientWS";
 import {CWS_RENDER_JOB_CREATE, CWS_RENDER_JOB_DELETE, CWS_RENDER_JOB_UPDATE} from "../globals";
-import Organization from "../entities/Organization";
+import Organization from "../entities/typeorm/Organization";
 import Logger from "../core/Logger";
 
 

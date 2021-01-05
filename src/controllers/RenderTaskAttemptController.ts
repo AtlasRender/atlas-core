@@ -8,12 +8,12 @@
 
 import Controller from "../core/Controller";
 import {Context} from "koa";
-import RenderTask from "../entities/RenderTask";
+import RenderTask from "../entities/typeorm/RenderTask";
 import JobController from "./JobController";
 import UserJwt from "../interfaces/UserJwt";
 import RequestError from "../errors/RequestError";
-import RenderTaskAttempt from "../entities/RenderTaskAttempt";
-import RenderTaskAttemptLog from "../entities/RenderTaskAttemptLog";
+import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
+import RenderTaskAttemptLog from "../entities/typeorm/RenderTaskAttemptLog";
 
 
 export default class RenderTaskAttemptController extends Controller {

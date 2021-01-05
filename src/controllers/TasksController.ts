@@ -9,10 +9,10 @@
 import Controller from "../core/Controller";
 import {Context} from "koa";
 import RequestError from "../errors/RequestError";
-import RenderTask from "../entities/RenderTask";
+import RenderTask from "../entities/typeorm/RenderTask";
 import JobController from "./JobController";
 import UserJwt from "../interfaces/UserJwt";
-import RenderTaskAttempt from "../entities/RenderTaskAttempt";
+import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
 
 
 /**

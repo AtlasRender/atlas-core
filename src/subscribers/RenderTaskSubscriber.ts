@@ -7,9 +7,9 @@
  */
 
 import {EntitySubscriberInterface, EventSubscriber, UpdateEvent} from "typeorm";
-import RenderTask from "../entities/RenderTask";
-import RenderJob from "../entities/RenderJob";
-import User from "../entities/User";
+import RenderTask from "../entities/typeorm/RenderTask";
+import RenderJob from "../entities/typeorm/RenderJob";
+import User from "../entities/typeorm/User";
 import ClientWS from "../core/ClientWS";
 import {CWS_RENDER_TASK_UPDATE} from "../globals";
 import Logger from "../core/Logger";
