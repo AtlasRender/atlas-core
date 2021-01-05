@@ -7,6 +7,7 @@
  */
 
 import * as WS from "ws";
+import * as Ajv from "ajv";
 import WebSocketOptions from "../interfaces/WebSocketOptions";
 import WebSocket from "./WebSocket";
 import {IncomingMessage} from "http";
@@ -15,6 +16,20 @@ import JSONObject from "../interfaces/JSONObject";
 
 export default class SlaveWS extends WebSocket {
     public static instance: SlaveWS;
+    protected static readonly ajv = new Ajv();
+    public static readonly responseSchema: object = {
+        $id: "SlaveWS_responseSchema",
+        required: ["type"],
+        properties: {
+            type: {
+                type: "string",
+                enum: [
+                    "report"
+                ]
+            }
+        },
+        type: "object",
+    }
 
     public constructor(options: WebSocketOptions) {
         super(options);
