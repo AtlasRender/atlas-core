@@ -7,7 +7,15 @@
  */
 
 import {ajvInstance} from "../globals";
+import {JSONSchemaType, DefinedError} from "ajv";
 import {bodyValidator, queryValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
+
+
+export type UserRegisterData = {
+    username: string,
+    email: string,
+    password: string
+}
 
 /**
  * RegisterUserValidator - validator for user registration request.
@@ -34,7 +42,7 @@ export const UserRegisterValidator = bodyValidator({
                 maxLength: 50
             },
         }
-    },
+    } as JSONSchemaType<UserRegisterData>,
     ajvInstance);
 
 /**
@@ -69,7 +77,7 @@ export const UserEditValidator = bodyValidator({
     $id: "UserEditValidator",
     type: "object",
     // required: ["password"],
-    properties : {
+    properties: {
         username: {
             // TODO: alphanumeric only
             type: "string",
@@ -101,7 +109,7 @@ export const PasswordInBodyValidator = bodyValidator({
     $id: "PasswordInBodyValidator",
     type: "object",
     required: ["password"],
-    properties : {
+    properties: {
         password: {
             type: "string",
             minLength: 6,
