@@ -27,6 +27,7 @@ import ServerOptions from "../interfaces/ServerOptions";
 import * as Amqp from "amqplib";
 import {AMQP_CONNECTION_QUEUE, AMQP_TASKS_QUEUE} from "../globals";
 import * as TempDirectory from "temp-dir";
+import ResponseBody from "../interfaces/ResponseBody";
 
 
 /**
@@ -213,13 +214,17 @@ export default class Server extends Koa {
             try {
                 await next();
             } catch (err) {
-                console.error(err);
+                console.error(`Server [${moment().format("l")} ${moment().format("LTS")}]:`, err);
                 ctx.status = err.code || err.status || 500;
-                ctx.body = {
+                let body: ResponseBody = {
                     success: false,
                     message: err.message,
                     response: err.response
-                };
+                }
+                if(process.env.APP_DEBUG){
+                    body.stack = err.stack;
+                }
+                ctx.body = body;
                 // TODO: ctx.app.emit('error', err, ctx);
             }
         });
