@@ -2,5 +2,4 @@
 /dest
 *.log
 .env
-.env.*
 key

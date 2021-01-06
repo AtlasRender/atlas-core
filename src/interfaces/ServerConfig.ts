@@ -18,6 +18,10 @@ import * as Amqp from "amqplib";
  */
 export default interface ServerConfig {
     /**
+     * APP_DEBUG - controls if app is debugging.
+     */
+    appDebug: boolean,
+    /**
      * controllersDir - directory where server should look for controllers.
      * @author Danil Andreev
      */
