@@ -221,7 +221,7 @@ export default class Server extends Koa {
                     message: err.message,
                     response: err.response
                 }
-                if(process.env.APP_DEBUG){
+                if(config.APP_DEBUG){
                     body.stack = err.stack;
                 }
                 ctx.body = body;
