@@ -13,48 +13,28 @@ import WebSocket from "./WebSocket";
 import {IncomingMessage} from "http";
 import JSONObject from "../interfaces/JSONObject";
 import RequestError from "../errors/RequestError";
+import SlaveResponseSchema from "../validators/SlaveWS/SlaveResponseSchema";
+import SlaveResponsePayloadTaskReportSchema from "../validators/SlaveWS/SlaveResponsePayloadTaskReportSchema";
 
 
 export default class SlaveWS extends WebSocket {
+    /**
+     * instance - current SlaveWS instance.
+     */
     public static instance: SlaveWS;
+    /**
+     * ajv - ajv instance for validation.
+     */
     protected readonly ajv;
-    public static readonly responseSchema: object = {
-        $id: "SlaveWS_responseSchema",
-        required: ["type"],
-        properties: {
-            type: {
-                type: "string",
-                enum: [
-                    "report",
-                    "taskStart",
-                    "taskFinish"
-                ]
-            },
-            payload: {
-                type: "object"
-            }
-        },
-        type: "object",
-    }
+    public static readonly responseSchema: object = SlaveResponseSchema;
+    public static readonly responsePayloadTaskReportSchema = SlaveResponsePayloadTaskReportSchema;
 
-    public static readonly responsePayloadTaskReportSchema = {
-        $id: "SlaveWS_responsePayloadTaskReportSchema",
-        required: ["taskId"],
-        properties: {
-            taskId: {
-                type: "integer",
-            },
-            message: {
-                type: "string",
-            },
-            progress: {
-                type: "integer",
-                min: 0,
-                max: 100,
-            }
-        }
-    }
-
+    /**
+     * Creates an instance of the SlaveWS.
+     * @constructor
+     * @param options - Options.
+     * @author Danil Andreev
+     */
     public constructor(options: WebSocketOptions) {
         super(options);
         this.ajv = new Ajv();
@@ -65,11 +45,25 @@ export default class SlaveWS extends WebSocket {
         this.addHandler(this.handleMessage);
     }
 
-    public disconnectSlaveFromTask(slaveID, taskID) {
-        //TODO: slave can be connected hist to one core node simultaneously.
-        // Maybe it has sense to store connections in Redis.
+    /**
+     * disconnectSlaveFromTask - sends message to slave to interrupt current task processing.
+     * @method
+     * @param slaveID - Target slave ID.
+     * @param taskID - Target task ID.
+     * @author Danil Andreev
+     */
+    public disconnectSlaveFromTask(slaveID, taskID): void {
+        //TODO: slave can be connected just to one core node simultaneously.
+        // Maybe it has sense to store connections in Redis.s
     }
 
+    /**
+     * handleMessage - method for handling income web socket messages.
+     * @method
+     * @param ws - Web socket connection.
+     * @param message - Income message.
+     * @author Danil Andreev
+     */
     protected handleMessage(ws: WS, message: string): void {
         let data = null;
         try {
@@ -94,7 +88,14 @@ export default class SlaveWS extends WebSocket {
 
     }
 
-    protected validatePayload(data) {
+    /**
+     * validatePayload - validates income message payload.
+     * @method
+     * @param data - Input payload.
+     * @throws RequestError
+     * @author Danil Andreev
+     */
+    protected validatePayload(data): void {
         if (!this.ajv.validate(SlaveWS.responseSchema, data))
             throw new RequestError(400, "Incorrect payload", this.ajv.errorsText());
 
@@ -106,6 +107,13 @@ export default class SlaveWS extends WebSocket {
         }
     }
 
+    /**
+     * validateAuthorization - method, designed to validate authorization data on client connection.
+     * @method
+     * @param authorization - Authorization data.
+     * @param greeting - Greeting message from connection.
+     * @author Danil Andreev
+     */
     protected validateAuthorization(authorization: string, greeting: IncomingMessage): JSONObject | Promise<JSONObject> {
         return undefined;
     }
