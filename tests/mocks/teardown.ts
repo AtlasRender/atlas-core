@@ -10,6 +10,5 @@
  * This function will be invoked after all test suits.
  */
 export default async function() {
-    console.log("Closing server");
-    global.__server__.close();
+
 }
