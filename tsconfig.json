@@ -12,9 +12,13 @@
     "outDir": "dest",
     "resolveJsonModule": true,
     "removeComments": true,
-    "declaration": false,
+    "declaration": false
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "global.d.ts"
+  ],
   "exclude": [
     "node_modules"
   ]

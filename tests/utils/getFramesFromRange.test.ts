@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2020. This code created and belongs to Atlas render manager project.
+ * Copyright (c) 2021. This code created and belongs to Atlas render manager project.
  * Owner and project architect: Danil Andreev | danssg08@gmail.com |  https://github.com/DanilAndreev
  * Project: atlas-core
- * File last modified: 11/12/20, 5:25 PM
+ * File last modified: 13.11.2020, 20:11
  * All rights reserved.
  */
 
-import getFramesFromRange from "./getFramesFromRange";
+import getFramesFromRange from "../../src/utils/getFramesFromRange";
 
 
 describe("utils -> getFramesFromRange", () => {
@@ -19,12 +19,12 @@ describe("utils -> getFramesFromRange", () => {
     test("Test \"100 20-25\"", () => {
         const expected = [20, 21, 22, 23, 24, 25, 100];
         const range = "100 20-25";
-        expect(getFramesFromRange(range).sort()).toEqual(expected.sort());
+        expect(getFramesFromRange(range).sort((a, b) => a - b)).toEqual(expected.sort((a, b) => a - b));
     });
 
     test("Test \"20-30 22-24 100-0 29\"", () => {
         const expected = [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
         const range = "20-30 22-24 100-0 29";
-        expect(getFramesFromRange(range).sort()).toEqual(expected.sort());
+        expect(getFramesFromRange(range).sort((a, b) => a - b)).toEqual(expected.sort((a, b) => a - b));
     });
 });
