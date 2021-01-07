@@ -6,6 +6,11 @@
  * All rights reserved.
  */
 
+import Server from "../../src/core/Server";
+import {config} from "../../src/config";
+import LoginController from "../../src/controllers/LoginController";
+
+
 export default async function () {
-    console.log("Hello world!");
+    global.__server__ = await Server.createServer(config);
 }

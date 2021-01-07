@@ -14,28 +14,21 @@ import {config} from "../../src/config";
 // import {server} from "../index";
 
 describe("controllers -> LoginController", () => {
-    let server: Server;
-    beforeAll(async () => {
-        server = await Server.createServer(config);
-        server.useController(new LoginController());
-        server.start();
-    });
-
     test("Test if controller is instance of Controller", () => {
         const controller: LoginController = new LoginController();
         expect(controller instanceof Controller).toBe(true);
     });
 
-    test("Test without body", async (done) => {
-        const res = await request(server.callback()).post("/login");
-        expect(res.status).toBe(400);
-        expect(res.body.success).toBe(false);
-        expect(res.body.response.name).toBe("AJV_INVALID_PAYLOAD");
-        done();
-    });
-
-    afterAll((done) => {
-        server.close();
-        done();
-    });
+    // test("Test without body", async (done) => {
+    //     const res = await request(server.callback()).post("/login");
+    //     expect(res.status).toBe(400);
+    //     expect(res.body.success).toBe(false);
+    //     expect(res.body.response.name).toBe("AJV_INVALID_PAYLOAD");
+    //     done();
+    // });
+    //
+    // afterAll((done) => {
+    //     server.close();
+    //     done();
+    // });
 });
