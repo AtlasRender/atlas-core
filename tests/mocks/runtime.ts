@@ -26,24 +26,23 @@ import RenderTaskAttemptController from "../../src/controllers/RenderTaskAttempt
 /**
  * This function will be invoked before all test suits.
  */
-export default async function () {
-    const server = await Server.createServer(config);
-    await JobsProcessor();
-    await TaskReportsProcessor();
-    await UserNotificationProcessor();
-
-    const webSocketClient = new WebSocket();
-
-    server.useController(new UsersController());
-    server.useController(new LoginController());
-    server.useController(new OrganizationsController());
-    server.useController(new UserTokensController());
-    server.useController(new JobController());
-    server.useController(new VersionsController());
-    server.useController(new UploadController());
-    server.useController(new PluginController());
-    server.useController(new TasksController());
-    server.useController(new RenderTaskAttemptController());
-    server.start();
-    global.__server__ = server;
+export default async function() {
+    // const server = await Server.createServer(config);
+    // await JobsProcessor();
+    // await TaskReportsProcessor();
+    // await UserNotificationProcessor();
+    //
+    // const webSocketClient = new WebSocket();
+    //
+    // server.useController(new UsersController());
+    // server.useController(new LoginController());
+    // server.useController(new OrganizationsController());
+    // server.useController(new UserTokensController());
+    // server.useController(new JobController());
+    // server.useController(new VersionsController());
+    // server.useController(new UploadController());
+    // server.useController(new PluginController());
+    // server.useController(new TasksController());
+    // server.useController(new RenderTaskAttemptController());
+    // server.start();
 }
