@@ -19,12 +19,12 @@ describe("utils -> getFramesFromRange", () => {
     test("Test \"100 20-25\"", () => {
         const expected = [20, 21, 22, 23, 24, 25, 100];
         const range = "100 20-25";
-        expect(getFramesFromRange(range).sort()).toEqual(expected.sort());
+        expect(getFramesFromRange(range).sort((a, b) => a - b)).toEqual(expected.sort((a, b) => a - b));
     });
 
     test("Test \"20-30 22-24 100-0 29\"", () => {
         const expected = [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
         const range = "20-30 22-24 100-0 29";
-        expect(getFramesFromRange(range).sort()).toEqual(expected.sort());
+        expect(getFramesFromRange(range).sort((a, b) => a - b)).toEqual(expected.sort((a, b) => a - b));
     });
 });
