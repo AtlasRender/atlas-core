@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2020. This code created and belongs to Atlas render manager project.
+ * Copyright (c) 2021. This code created and belongs to Atlas render manager project.
  * Owner and project architect: Danil Andreev | danssg08@gmail.com |  https://github.com/DanilAndreev
  * Project: atlas-core
- * File last modified: 11/12/20, 5:25 PM
+ * File last modified: 13.11.2020, 20:11
  * All rights reserved.
  */
 
-import getFramesFromRange from "./getFramesFromRange";
+import getFramesFromRange from "../../src/utils/getFramesFromRange";
 
 
 describe("utils -> getFramesFromRange", () => {
