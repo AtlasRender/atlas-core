@@ -35,7 +35,7 @@ export default class Temp extends BaseEntity {
     meta: any;
 
     /**
-     * isPublic - of true, file can be used by everybody.
+     * isPublic - if true, file can be used by everybody.
      */
     @Column({default: false})
     isPublic: boolean;
