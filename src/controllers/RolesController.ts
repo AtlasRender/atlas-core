@@ -15,11 +15,11 @@ import {
     OrganizationRegisterValidator,
     RoleAddValidator, RoleEditValidator
 } from "../validators/OrganizationRequestValidators";
-import Role from "../entities/Role";
-import Organization from "../entities/Organization";
+import Role from "../entities/typeorm/Role";
+import Organization from "../entities/typeorm/Organization";
 import RequestError from "../errors/RequestError";
 import {getConnection, getRepository} from "typeorm";
-import User from "../entities/User";
+import User from "../entities/typeorm/User";
 import {findOneOrganizationByRequestParams} from "../middlewares/organizationRequestMiddlewares";
 import {canManageRoles, canManageUsers} from "../middlewares/withRoleAccessMiddleware";
 

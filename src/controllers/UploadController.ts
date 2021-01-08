@@ -11,10 +11,10 @@ import {Context} from "koa";
 import * as _ from "lodash";
 import * as fs from "fs";
 import {ReadStream} from "fs";
-import Temp from "../entities/Temp";
+import Temp from "../entities/typeorm/Temp";
 import RequestError from "../errors/RequestError";
 import streamToBuffer from "./../utils/streamToBuffer";
-import User from "../entities/User";
+import User from "../entities/typeorm/User";
 
 
 /**

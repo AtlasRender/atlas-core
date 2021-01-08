@@ -41,10 +41,10 @@ export default class Slave extends BaseEntity {
     description: string;
 
     /**
-     * Slave UID for connection.
+     * Slave token for authorization.
      */
     @Column("uuid")
-    uuid: string;
+    token: string;
 
     /**
      * organization - organization, this slave belongs to.

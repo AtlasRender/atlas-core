@@ -11,7 +11,7 @@ import Server from "../core/Server";
 import {AMQP_USER_NOTIFICATION_QUEUE} from "../globals";
 import Logger from "../core/Logger";
 import UserNotificationMessage from "../interfaces/UserNotificationMessage";
-import WebSocket from "../core/WebSocket";
+import ClientWS from "../core/ClientWS";
 
 
 /**
@@ -41,7 +41,7 @@ export default async function UserNotificationProcessor(): Promise<void> {
                 Logger.error(error).then().catch(error => console.error(error));
                 return;
             }
-            WebSocket.sendToUser(payload.userId, payload.message);
+            ClientWS.sendToUser(payload.userId, payload.message);
             channel.ack(message);
         } catch (error) {
             channel.nack(message);

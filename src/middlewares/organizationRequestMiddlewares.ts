@@ -6,7 +6,7 @@
  * All rights reserved.
  */
 
-import Organization from "../entities/Organization";
+import Organization from "../entities/typeorm/Organization";
 import RequestError from "../errors/RequestError";
 import {Context, Middleware, Next} from "koa";
 import {FindOneOptions} from "typeorm/find-options/FindOneOptions";

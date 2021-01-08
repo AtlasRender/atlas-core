@@ -10,7 +10,7 @@ import Controller from "../core/Controller";
 import {Context} from "koa";
 import * as argon2 from "argon2";
 
-import User from "../entities/User";
+import User from "../entities/typeorm/User";
 import {
     IncludeUsernameInQueryValidator,
     PasswordInBodyValidator,
@@ -22,7 +22,7 @@ import Authenticator from "../core/Authenticator";
 import OutUser from "../interfaces/OutUser";
 import {getRepository} from "typeorm";
 import RequestError from "../errors/RequestError";
-import UserPrivateData from "../entities/UserPrivateData";
+import UserPrivateData from "../entities/typeorm/UserPrivateData";
 
 
 /**
