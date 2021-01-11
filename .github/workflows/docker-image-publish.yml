@@ -84,3 +84,24 @@ jobs:
           registry: docker.pkg.github.com
           repository: atlasrender/atlas-core/atlas-core-dev
           tag_with_ref: true
+
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy image to kubernetes cluster
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+      - name: ssh pipelines
+        uses: cross-the-world/ssh-pipeline@master
+        with:
+          host: ${{secrets.CORE_KUBERNETES_IP}}
+          user: "atlas"
+          key: ${{secrets.GCLOUD_TEST_DATA_STORAGE_SSH_ID_RSA_PRIVATE}}
+          connect_timeout: 10s
+          script: |
+            cd /home/atlas-core
+            sudo git pull
+            sudo kubectl apply -f kubernetes/
