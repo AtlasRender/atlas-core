@@ -104,8 +104,8 @@ jobs:
           connect_timeout: 50s
           script: |
             whoami
-#            cd /home
-#            sudo rm -rf atlas-core
-#            sudo git clone "https://github.com/AtlasRender/atlas-core.git"
-#            cd atlas-core
-#            sudo kubectl apply -f kubernetes/
+            cd /home
+            sudo rm -rf atlas-core
+            sudo git clone "https://github.com/AtlasRender/atlas-core.git"
+            cd atlas-core
+            sudo kubectl apply -f kubernetes/
