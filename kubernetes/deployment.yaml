@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: atlas-core-app
+  name: atlas-core-app
+  namespace: atlas
+spec:
+  selector:
+    matchLabels:
+      app: atlas-core-app
+  template:
+    metadata:
+      labels:
+        app: atlas-core-app
+    spec:
+      containers:
+        - name: atlas-core-dev
+          image: danilandreev/pathfinder-core:latest
+          imagePullPolicy: Always
+      restartPolicy: Always
+  replicas: 1
