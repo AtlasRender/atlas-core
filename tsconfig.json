@@ -15,9 +15,7 @@
     "declaration": false
   },
   "include": [
-    "src/**/*",
-    "tests/**/*",
-    "global.d.ts"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules"
