@@ -5,7 +5,7 @@ metadata:
   namespace: atlas
 spec:
   selector:
-    app: atlas-core-app-2
+    app: atlas-core-app
   ports:
     - port: 3002
       nodePort: 30022
@@ -22,7 +22,7 @@ metadata:
   namespace: atlas
 spec:
   selector:
-    app: atlas-core-app-3
+    app: atlas-core-app
   ports:
     - port: 3003
       nodePort: 30023
@@ -39,7 +39,7 @@ metadata:
   namespace: atlas
 spec:
   selector:
-    app: atlas-core-app-4
+    app: atlas-core-app
   ports:
     - port: 3004
       nodePort: 30024
