@@ -15,6 +15,10 @@ import JSONObject from "../interfaces/JSONObject";
 import RequestError from "../errors/RequestError";
 import SlaveResponseSchema from "../validators/SlaveWS/SlaveResponseSchema";
 import SlaveResponsePayloadTaskReportSchema from "../validators/SlaveWS/SlaveResponsePayloadTaskReportSchema";
+import Slave from "../entities/typeorm/Slave";
+import Server from "./Server";
+import {RedisClient} from "redis";
+import {promisify} from "util";
 
 
 export default class SlaveWS extends WebSocket {
@@ -114,7 +118,20 @@ export default class SlaveWS extends WebSocket {
      * @param greeting - Greeting message from connection.
      * @author Danil Andreev
      */
-    protected validateAuthorization(authorization: string, greeting: IncomingMessage): JSONObject | Promise<JSONObject> {
-        return undefined;
+    protected async validateAuthorization(authorization: string, greeting: IncomingMessage): Promise<JSONObject> {
+        const slave: Slave = await Slave.findOne({where: {token: authorization}});
+
+        if (!slave) throw new Error("Unauthorized");
+
+        const redis: RedisClient = Server.getCurrent().getRedis();
+        // TODO: check if this slave is already connected.
+
+        //TODO: finish
+        const session: string = await promisify(redis.get)(authorization);
+
+
+        return {
+            id: slave.id,
+        };
     }
 }
