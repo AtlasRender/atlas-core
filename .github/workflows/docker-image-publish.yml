@@ -106,6 +106,7 @@ jobs:
             whoami
             cd /home
             sudo rm -rf atlas-core
+            ls -all
             sudo git clone "https://github.com/AtlasRender/atlas-core.git"
             cd atlas-core
             ls -all
