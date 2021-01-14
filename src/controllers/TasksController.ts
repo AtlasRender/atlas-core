@@ -11,8 +11,8 @@ import {Context} from "koa";
 import RequestError from "../errors/RequestError";
 import RenderTask from "../entities/typeorm/RenderTask";
 import JobController from "./JobController";
-import UserJwt from "../interfaces/UserJwt";
 import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
+import Authenticator from "../core/Authenticator";
 
 
 /**
@@ -68,7 +68,7 @@ export default class TasksController extends Controller {
      * @author Danil Andreev
      */
     public async getAttempts(ctx: Context): Promise<void> {
-        const userJwt: UserJwt = ctx.state.user;
+        const userJwt: Authenticator.UserJwt = ctx.state.user;
         const {taskId} = ctx.params;
 
         const task: RenderTask = await RenderTask.findOne({where: {id: taskId}, relations: ["renderTaskAttempts", "job"]})

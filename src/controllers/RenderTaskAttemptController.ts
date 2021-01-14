@@ -10,10 +10,10 @@ import Controller from "../core/Controller";
 import {Context} from "koa";
 import RenderTask from "../entities/typeorm/RenderTask";
 import JobController from "./JobController";
-import UserJwt from "../interfaces/UserJwt";
 import RequestError from "../errors/RequestError";
 import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
 import RenderTaskAttemptLog from "../entities/typeorm/RenderTaskAttemptLog";
+import Authenticator from "../core/Authenticator";
 
 
 export default class RenderTaskAttemptController extends Controller {
@@ -32,7 +32,7 @@ export default class RenderTaskAttemptController extends Controller {
      * @author Danil Andreev
      */
     public async getAttempt(ctx: Context): Promise<void> {
-        const userJwt: UserJwt = ctx.state.user;
+        const userJwt: Authenticator.UserJwt = ctx.state.user;
         const {attemptId} = ctx.params;
 
         const attempt: RenderTaskAttempt = await RenderTaskAttempt.findOne(
@@ -59,7 +59,7 @@ export default class RenderTaskAttemptController extends Controller {
      * @author Danil Andreev
      */
     public async getAttemptLogs(ctx: Context): Promise<void> {
-        const userJwt: UserJwt = ctx.state.user;
+        const userJwt: Authenticator.UserJwt = ctx.state.user;
         const {attemptId} = ctx.params;
 
         const attempt: RenderTaskAttempt = await RenderTaskAttempt.findOne(
@@ -85,7 +85,7 @@ export default class RenderTaskAttemptController extends Controller {
      * @author Danil Andreev
      */
     public async getAttemptLog(ctx: Context): Promise<void> {
-        const userJwt: UserJwt = ctx.state.user;
+        const userJwt: Authenticator.UserJwt = ctx.state.user;
         const {attemptId, logId} = ctx.params;
 
         const attempt: RenderTaskAttempt = await RenderTaskAttempt.findOne(

@@ -13,19 +13,46 @@ import * as Jwt from "koa-jwt";
 import * as jsonwebtoken from "jsonwebtoken";
 import * as moment from "moment";
 import {Moment} from "moment";
-import UserJwt from "./../interfaces/UserJwt";
 import Server from "./Server";
 import {REDIS_USER_JWT_PRIVATE_KEY} from "../globals";
 
 
-export interface JwtOptions {
+
+
+namespace Authenticator {
+    export interface JwtOptions {
+        /**
+         * expires - expiration timestamp of the token.
+         */
+        expires?: Moment;
+    }
+
     /**
-     * expires - expiration timestamp of the token.
+     * UserJwt - interface for information, contained in user JWT.
+     * @interface
+     * @author Danil Andreev
      */
-    expires?: Moment;
+    export interface UserJwt {
+        /**
+         * username - user username.
+         */
+        username: string;
+        /**
+         * id - user id.
+         */
+        id: number;
+        /**
+         * expires - expiration timestamp of the token.
+         */
+        expires: string;
+        /**
+         * createdAt - timestamp when token was created.
+         */
+        createdAt: string;
+    }
 }
 
-export default class Authenticator {
+class Authenticator {
     /**
      * jwtMiddleware - Jwt middleware.
      */
@@ -92,7 +119,7 @@ export default class Authenticator {
      * @param decodedToken - Decoded jwt token
      * @param token - Raw jwt token
      */
-    protected static async checkTokenRevoked(ctx: Context, decodedToken: UserJwt, token: string): Promise<boolean> {
+    protected static async checkTokenRevoked(ctx: Context, decodedToken: Authenticator.UserJwt, token: string): Promise<boolean> {
         if (new Date(decodedToken.expires) < new Date())
             return true;
         return false;
@@ -114,7 +141,7 @@ export default class Authenticator {
      * @param options - Additional options.
      * @author Danil Andreev
      */
-    public static async createJwt(data: object, options: JwtOptions = {}): Promise<string> {
+    public static async createJwt(data: object, options: Authenticator.JwtOptions = {}): Promise<string> {
         const createdAt: Moment = moment();
         if (options?.expires < createdAt)
             throw new RangeError(`Authenticator: "expires" can not be less than "createdAt"`);
@@ -133,7 +160,7 @@ export default class Authenticator {
      * @param token - Input token payload.
      * @author Danil Andreev
      */
-    public static async validateToken(token: string): Promise<UserJwt> {
+    public static async validateToken(token: string): Promise<Authenticator.UserJwt> {
         try {
             const decoded: any = jsonwebtoken.decode(token);
             if (typeof decoded !== "object")
@@ -150,3 +177,5 @@ export default class Authenticator {
         }
     }
 }
+
+export default Authenticator;

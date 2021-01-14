@@ -9,12 +9,12 @@
 import Controller from "../core/Controller";
 import {Context} from "koa";
 import * as CryptoRandomString from "crypto-random-string";
-import UserJwt from "../interfaces/UserJwt";
 import UserToken from "../entities/typeorm/UserToken";
 import User from "../entities/typeorm/User";
 import RequestError from "../errors/RequestError";
 import {getRepository} from "typeorm";
 import {UserTokenCreateBodyValidator} from "../validators/UserTokensValidators";
+import Authenticator from "../core/Authenticator";
 
 
 export default class UserTokensController extends Controller {
@@ -32,7 +32,7 @@ export default class UserTokensController extends Controller {
      * @author Danil Andreev
      */
     public async createUserToken(ctx: Context): Promise<void> {
-        const user: UserJwt = ctx.state.user;
+        const user: Authenticator.UserJwt = ctx.state.user;
         const input = ctx.request.body;
 
         const {description, name} = input;
@@ -59,7 +59,7 @@ export default class UserTokensController extends Controller {
      * @author Danil Andreev
      */
     public async deleteToken(ctx: Context): Promise<void> {
-        const user: UserJwt = ctx.state.user;
+        const user: Authenticator.UserJwt = ctx.state.user;
         const id: number = +ctx.params.id;
 
         const token = await UserToken.findOne({where: {id}, relations: ["user"]});
@@ -78,7 +78,7 @@ export default class UserTokensController extends Controller {
      * @author Danil Andreev
      */
     public async getAllTokens(ctx: Context): Promise<void> {
-        const user: UserJwt = ctx.state.user;
+        const user: Authenticator.UserJwt = ctx.state.user;
         const tokens = await getRepository<UserToken>(UserToken)
             .createQueryBuilder("user_token")
             .select([

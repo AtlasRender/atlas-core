@@ -19,12 +19,12 @@ import {JobSubmitValidator} from "../validators/JobRequestValidators";
 import Plugin from "../entities/typeorm/Plugin";
 import {PluginSettingsSpec, SettingsPayload, ValidationError} from "@atlasrender/render-plugin";
 import User from "../entities/typeorm/User";
-import UserJwt from "../interfaces/UserJwt";
 import FrameRange from "../entities/common/FrameRange";
 import FrameRangeItem from "../entities/common/FrameRangeItem";
 import RenderTask from "../entities/typeorm/RenderTask";
 import {SelectQueryBuilder} from "typeorm";
 import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
+import Authenticator from "../core/Authenticator";
 
 
 /**
@@ -132,7 +132,7 @@ export default class JobController extends Controller {
      */
     public async createJob(ctx: Context): Promise<void> {
         let renderJob: RenderJob = null;
-        const jwtUser: UserJwt = ctx.state.user;
+        const jwtUser: Authenticator.UserJwt = ctx.state.user;
         try {
             const inputJob = ctx.request.body;
 
@@ -239,7 +239,7 @@ export default class JobController extends Controller {
         //TODO: add query validator
         //TODO: send not every field.
         const {id, organization: organizationId} = ctx.request.query;
-        const jwtUser: UserJwt = ctx.state.user;
+        const jwtUser: Authenticator.UserJwt = ctx.state.user;
         let jobs: RenderJob[] | RenderJob = null;
         if (id == null) {
             if (organizationId != null) {
