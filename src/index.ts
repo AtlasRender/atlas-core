@@ -31,7 +31,9 @@ import UserNotificationProcessor from "./processors/UserNotificationProcessor";
 import ClientWS from "./core/ClientWS";
 import TasksController from "./controllers/TasksController";
 import RenderTaskAttemptController from "./controllers/RenderTaskAttemptController";
+import SystemOptions from "./core/SystemOptions";
 
+new SystemOptions();
 
 async function startServer() {
     const server = await Server.createServer(config);
