@@ -6,58 +6,18 @@
  * All rights reserved.
  */
 
+import "globals";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import "globals";
+
+// import SystemOptions from "./core/SystemOptions";
+// const options: SystemOptions.Options = {
+//     envMask: /ATLAS*/,
+// };
+// new SystemOptions(options);
+
+import main from "./main";
+main().then();
 
 
-import Server from "./core/Server";
-
-// Controllers
-import UsersController from "./controllers/UsersController";
-import LoginController from "./controllers/LoginController";
-import OrganizationsController from "./controllers/OrganizationsController";
-import UserTokensController from "./controllers/UserTokensController";
-//import * as config from "./config.json";
-import {config} from "./config";
-import JobController from "./controllers/JobController";
-import JobsProcessor from "./processors/JobsProcessor";
-import VersionsController from "./controllers/VersionsController";
-import TaskReportsProcessor from "./processors/TaskReportsProcessor";
-import UploadController from "./controllers/UploadController";
-import PluginController from "./controllers/PluginController";
-import UserNotificationProcessor from "./processors/UserNotificationProcessor";
-import ClientWS from "./core/ClientWS";
-import TasksController from "./controllers/TasksController";
-import RenderTaskAttemptController from "./controllers/RenderTaskAttemptController";
-import SystemOptions from "./core/SystemOptions";
-
-const options: SystemOptions.Options = {
-    envMask: /ATLAS*/,
-};
-
-new SystemOptions(options);
-
-async function startServer() {
-    const server = await Server.createServer(config);
-    await JobsProcessor();
-    await TaskReportsProcessor();
-    await UserNotificationProcessor();
-
-    const webSocketClient = new ClientWS();
-
-    server.useController(new UsersController());
-    server.useController(new LoginController());
-    server.useController(new OrganizationsController());
-    server.useController(new UserTokensController());
-    server.useController(new JobController());
-    server.useController(new VersionsController());
-    server.useController(new UploadController());
-    server.useController(new PluginController());
-    server.useController(new TasksController());
-    server.useController(new RenderTaskAttemptController());
-    server.start();
-}
-
-startServer().then();
