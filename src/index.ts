@@ -32,7 +32,7 @@ import TasksController from "./controllers/TasksController";
 import RenderTaskAttemptController from "./controllers/RenderTaskAttemptController";
 import SystemOptions from "./core/SystemOptions";
 
-// new SystemOptions();
+new SystemOptions();
 
 async function startServer() {
     const server = await Server.createServer(config);
