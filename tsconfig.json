@@ -12,7 +12,8 @@
     "outDir": "dest",
     "resolveJsonModule": true,
     "removeComments": true,
-    "declaration": false
+    "declaration": false,
+    "noEmit": false
   },
   "include": [
     "src/**/*"

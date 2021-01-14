@@ -11,11 +11,13 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 
-// import SystemOptions from "./core/SystemOptions";
-// const options: SystemOptions.Options = {
-//     envMask: /ATLAS*/,
-// };
-// new SystemOptions(options);
+import SystemOptions from "./core/SystemOptions";
+const options: SystemOptions.Options = {
+    envMask: /ATLAS*/,
+};
+new SystemOptions(options);
+//TODO: fix incorrect work with compiled project.
+console.log(SystemOptions.config);
 
 import main from "./main";
 main().then();
