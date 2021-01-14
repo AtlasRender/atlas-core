@@ -7,7 +7,7 @@
  */
 
 import * as WS from "ws";
-import * as Ajv from "ajv";
+import Ajv from "ajv";
 import WebSocketOptions from "../interfaces/WebSocketOptions";
 import WebSocket from "./WebSocket";
 import {IncomingMessage} from "http";
