@@ -7,28 +7,68 @@
  */
 
 import * as Koa from "koa";
-import * as http from "http";
 import {Context, Next} from "koa";
+import * as http from "http";
 import * as Router from "koa-router";
 import * as bodyParser from "koa-body";
 import * as moment from "moment";
 import {importClassesFromDirectories} from "typeorm/util/DirectoryExportedClassesLoader";
 import {Connection, ConnectionOptions, createConnection, Logger as TypeOrmLogger, QueryRunner} from "typeorm";
-// @ts-ignore
 import Controller from "./Controller";
 import Authenticator from "./Authenticator";
 import * as cors from "koa-cors";
 import * as Redis from "redis";
-// import * as Amqp from "amqp";
-import ServerConfig from "../interfaces/ServerConfig";
-import ServerOptions from "../interfaces/ServerOptions";
-// import * as koaMiddlewareConvert from "koa-convert";
-
 import * as Amqp from "amqplib";
-import {AMQP_CONNECTION_QUEUE, AMQP_TASKS_QUEUE} from "../globals";
+import {AMQP_CONNECTION_QUEUE} from "../globals";
 import * as TempDirectory from "temp-dir";
 import ResponseBody from "../interfaces/ResponseBody";
 
+
+namespace Server {
+    /**
+     * ServerOptions - additional options for Server setup.
+     * @interface
+     * @author Danil Andreev
+     */
+    export interface Options {
+    }
+
+    /**
+     * ServerConfig - configuration file for server.
+     * @interface
+     * @export ServerConfig
+     * @author Danil Andreev
+     */
+    export interface Config {
+        /**
+         * APP_DEBUG - controls if app is debugging.
+         */
+        appDebug: boolean,
+        /**
+         * controllersDir - directory where server should look for controllers.
+         * @author Danil Andreev
+         */
+        controllersDir?: string;
+        /**
+         * port - port, on which server will start.
+         * @author Danil Andreev
+         */
+        port?: number;
+        /**
+         * db - database connection options for typeorm
+         * @author Danil Andreev
+         */
+        db: ConnectionOptions;
+        /**
+         * redis - Redis connection options for redis-typescript.
+         */
+        redis: Redis.ClientOpts;
+        /**
+         * rabbit - RabbitMQ connection options for Amqp.
+         */
+        rabbit: Amqp.Options.Connect;
+    }
+}
 
 /**
  * Server - basic web server controller. It can load controllers and write log.
@@ -39,12 +79,12 @@ import ResponseBody from "../interfaces/ResponseBody";
  * const server = new Server({controllersDir: __dirname + "\\controllers\\**\\*"});
  * server.listen(3002);
  */
-export default class Server extends Koa {
+class Server extends Koa {
     /**
      * ServerConfig - server configuration data.
      * @readonly
      */
-    public readonly config: ServerConfig;
+    public readonly config: Server.Config;
 
     /**
      * controllers - array of server controllers. Needs for requests handling.
@@ -75,7 +115,7 @@ export default class Server extends Koa {
     /**
      * options - additional options for server;
      */
-    public readonly options: ServerOptions;
+    public readonly options: Server.Options;
 
     /**
      * hasInstance - flag, designed restrict several servers creation.
@@ -104,7 +144,7 @@ export default class Server extends Koa {
         return this.current;
     }
 
-    private constructor(config: ServerConfig, options?: ServerOptions) {
+    private constructor(config: Server.Config, options?: Server.Options) {
         super();
 
         this.config = config;
@@ -138,7 +178,7 @@ export default class Server extends Koa {
      * @param options - Additional option for web server.
      * @author Danil Andreev
      */
-    public static async createServer(config: ServerConfig, options?: ServerOptions): Promise<Server> {
+    public static async createServer(config: Server.Config, options?: Server.Options): Promise<Server> {
         if (Server.hasInstance)
             throw new ReferenceError(`Server: Server instance already exists. Can not create multiple instances of Server.`);
 
@@ -362,6 +402,8 @@ export default class Server extends Koa {
         this.use(this.router.routes()).use(this.router.allowedMethods());
     }
 }
+
+export default Server;
 
 /**
  * Logger - empty logger for Server importClassesFromDirectories() function.

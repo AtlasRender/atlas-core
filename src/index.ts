@@ -33,7 +33,11 @@ import TasksController from "./controllers/TasksController";
 import RenderTaskAttemptController from "./controllers/RenderTaskAttemptController";
 import SystemOptions from "./core/SystemOptions";
 
-new SystemOptions();
+const options: SystemOptions.Options = {
+    envMask: /ATLAS*/,
+};
+
+new SystemOptions(options);
 
 async function startServer() {
     const server = await Server.createServer(config);

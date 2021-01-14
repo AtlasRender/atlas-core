@@ -6,12 +6,10 @@
  * All rights reserved.
  */
 
-import WebSocketSession from "../interfaces/WebSocketSession";
 import Authenticator from "./Authenticator";
 import UserJwt from "../interfaces/UserJwt";
 import WebSocket from "./WebSocket";
 import JSONObject from "../interfaces/JSONObject";
-import WebSocketOptions from "../interfaces/WebSocketOptions";
 
 
 /**
@@ -31,7 +29,7 @@ export default class ClientWS extends WebSocket {
      * _This class uses a **singleton paradigm**_
      * @constructor
      */
-    constructor(options?: WebSocketOptions) {
+    constructor(options?: WebSocket.Options) {
         super(options);
         if (ClientWS.instance)
             throw new ReferenceError("Instance of the server has been already created.");
@@ -70,7 +68,7 @@ export default class ClientWS extends WebSocket {
 
         let affected = 0;
         for (const key in ClientWS.sessions) {
-            const candidate: WebSocketSession = ClientWS.sessions[key];
+            const candidate: WebSocket.Session = ClientWS.sessions[key];
             if (candidate.userId === userId) {
                 try {
                     candidate.ws.send(payload);
@@ -104,7 +102,7 @@ export default class ClientWS extends WebSocket {
 
         let affected = 0;
         for (const key in ClientWS.sessions) {
-            const candidate: WebSocketSession = ClientWS.sessions[key];
+            const candidate: WebSocket.Session = ClientWS.sessions[key];
             if (candidate.userId === userId) {
                 try {
                     candidate.ws.send(payload);

@@ -9,24 +9,53 @@
 import * as WS from "ws";
 import * as CryptoRandomString from "crypto-random-string";
 import {IncomingMessage} from "http";
-import WebSocketSession from "../interfaces/WebSocketSession";
-import WebSocketOptions from "../interfaces/WebSocketOptions";
 import RequestError from "../errors/RequestError";
 import {URL} from "url";
 import JSONObject from "../interfaces/JSONObject";
 
 
-/**
- * WebSocketSessions - type for ClientWS sessions storage object.
- */
-export type WebSocketSessions = { [key: string]: WebSocketSession };
+namespace WebSocket {
+    /**
+     * WebSocketOptions - interface for web socket additional options.
+     * @interface
+     * @author Danil Andreev
+     */
+    export interface Options {
+        /**
+         * port - web socket server port.
+         * @default 3003
+         */
+        port?: number;
+    }
 
-/**
- * WebSocketHandler - type for ClientWS handler function.
- * If handler returns truthy value - chained call will be stopped.
- * If not - next handler in chain will be called.
- */
-export type WebSocketHandler = (ws: WS, message: string) => Promise<boolean | void> | boolean | void;
+    /**
+     * WebSocketSession - interface for storing user web socket sessions.
+     * @interface
+     * @author Danil Andreev
+     */
+    export interface Session extends JSONObject<any> {
+        /**
+         * uid - unique identifier for web socket session.
+         */
+        uid: string;
+        /**
+         * ws - web socket session.
+         */
+        ws: WS;
+    }
+
+    /**
+     * WebSocketSessions - type for ClientWS sessions storage object.
+     */
+    export type Sessions = { [key: string]: WebSocket.Session };
+
+    /**
+     * WebSocketHandler - type for ClientWS handler function.
+     * If handler returns truthy value - chained call will be stopped.
+     * If not - next handler in chain will be called.
+     */
+    export type Handler = (ws: WS, message: string) => Promise<boolean | void> | boolean | void;
+}
 
 /**
  * ClientWS - class, designed to handle web socket connections.
@@ -34,7 +63,7 @@ export type WebSocketHandler = (ws: WS, message: string) => Promise<boolean | vo
  * @abstract
  * @author Danil Andreev
  */
-export default abstract class WebSocket extends WS.Server {
+abstract class WebSocket extends WS.Server {
     /**
      * KEY_GENERATING_ATTEMPTS - tries count before closing connection
      * with error when can not generate unique id for session.
@@ -44,12 +73,12 @@ export default abstract class WebSocket extends WS.Server {
     /**
      * sessions - key value pair structure of all web socket opened sessions.
      */
-    public static sessions: WebSocketSessions = {};
+    public static sessions: WebSocket.Sessions = {};
 
     /**
      * handlers - an array of client message handlers.
      */
-    protected handlers: WebSocketHandler[] = [];
+    protected handlers: WebSocket.Handler[] = [];
 
     /**
      * Creates an instance of WebSocket.
@@ -58,7 +87,7 @@ export default abstract class WebSocket extends WS.Server {
      * @throws ReferenceError
      * @author Danil Andreev
      */
-    protected constructor(options?: WebSocketOptions) {
+    protected constructor(options?: WebSocket.Options) {
         super({
             port: options?.port || 3003,
         });
@@ -81,7 +110,7 @@ export default abstract class WebSocket extends WS.Server {
      * @param handler - Handler callback.
      * @author Danil Andreev
      */
-    public addHandler(handler: WebSocketHandler) {
+    public addHandler(handler: WebSocket.Handler) {
         this.handlers.push(handler);
     }
 
@@ -172,3 +201,4 @@ export default abstract class WebSocket extends WS.Server {
     }
 }
 
+export default WebSocket;

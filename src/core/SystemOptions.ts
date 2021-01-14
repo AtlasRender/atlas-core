@@ -11,9 +11,38 @@ import JSONObject from "../interfaces/JSONObject";
 import * as fs from "fs";
 import * as _ from "lodash";
 
-export default class SystemOptions {
+
+namespace SystemOptions {
+    export interface Options {
+        envMask?: RegExp;
+    }
+}
+
+/**
+ * SystemOptions - class, designed for gathering and merging system configuration from several files.
+ * ### This mechanism can gather info from:
+ * - SYSTEM ENVIRONMENT VARIABLES
+ * - .env
+ * - config.ts
+ * - config.json
+ *
+ * > Note, list items ordered by priority.
+ *
+ * @class
+ * @author Danil Andreev
+ */
+class SystemOptions {
+    /**
+     * config - full system configuration object.
+     */
     public static config: JSONObject<any> = {};
 
+    /**
+     * Initializes the config field of the class by gathering info from all places.
+     * @constructor
+     * @param options - Gathering options.
+     * @author Danil Andreev
+     */
     constructor(options: SystemOptions.Options = {}) {
         dotenv.config();
 
@@ -39,8 +68,4 @@ export default class SystemOptions {
     }
 }
 
-namespace SystemOptions {
-    export interface Options {
-        envMask?: RegExp;
-    }
-}
+export default SystemOptions;

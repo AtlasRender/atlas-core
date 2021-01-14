@@ -8,7 +8,6 @@
 
 import * as WS from "ws";
 import Ajv from "ajv";
-import WebSocketOptions from "../interfaces/WebSocketOptions";
 import WebSocket from "./WebSocket";
 import {IncomingMessage} from "http";
 import JSONObject from "../interfaces/JSONObject";
@@ -21,7 +20,49 @@ import {RedisClient} from "redis";
 import {promisify} from "util";
 
 
-export default class SlaveWS extends WebSocket {
+namespace SlaveWS {
+    /**
+     * SlaveMessage - interface for slave income messages.
+     * @interface
+     * @author Danil Andreev
+     */
+    export interface SlaveMessage<T = JSONObject> extends JSONObject {
+        /**
+         * type - report type.
+         */
+        type: "report" | "taskStart" | "taskFinish";
+        /**
+         * payload - report payload. Can contain additional information.
+         */
+        payload?: T;
+        /**
+         * slaveId - slave identifier.
+         */
+        slaveId?: number;
+    }
+
+    /**
+     * TaskReport - interface for task report payload.
+     * @interface
+     * @author Danil Andreev
+     */
+    export interface TaskReport {
+        /**
+         * taskId - processing task id.
+         */
+        taskId: number;
+        /**
+         * message - report message. Will be placed to database and will appear in task log.
+         */
+        message?: string;
+        /**
+         * progress - current progress of the task.
+         */
+        progress?: number;
+    }
+}
+
+class SlaveWS extends WebSocket {
     /**
      * instance - current SlaveWS instance.
      */
@@ -39,7 +80,7 @@ export default class SlaveWS extends WebSocket {
      * @param options - Options.
      * @author Danil Andreev
      */
-    public constructor(options: WebSocketOptions) {
+    public constructor(options: WebSocket.Options) {
         super(options);
         this.ajv = new Ajv();
         if (SlaveWS.instance)
@@ -135,3 +176,5 @@ export default class SlaveWS extends WebSocket {
         };
     }
 }
+
+export default SlaveWS;
