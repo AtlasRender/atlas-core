@@ -118,16 +118,9 @@ export default abstract class WebSocket extends WS.Server {
     protected async onConnection(ws: WS, greeting: IncomingMessage): Promise<void> {
         try {
             const uid = WebSocket.generateUID();
-            // let clearQuery = greeting.url;
-            // if (clearQuery[0] === "/")
-            //     clearQuery = clearQuery.slice(2);
-            // else
-            //     clearQuery = clearQuery.slice(1);
+            //TODO: figure out how to solve problem with url correctly
+            const url = new URL("ws://host" + greeting.url);
 
-            const url = new URL(greeting.url);
-
-            //TODO: remove qs! Use URL
-            //const bearer: string = String(qs.parse(clearQuery).bearer);
             const bearer: string = url.searchParams.get("bearer");
             if (!bearer)
                 throw new RequestError(4401, "You must send Bearer to access this resource.");
@@ -139,12 +132,6 @@ export default abstract class WebSocket extends WS.Server {
                     ws,
                     uid,
                 };
-                // const userJwt: UserJwt = await Authenticator.validateToken(bearer);
-                // WebSocket.sessions[uid] = {
-                //     ws,
-                //     uid,
-                //     userId: userJwt.id,
-                // };
             } catch (error) {
                 throw new RequestError(4401, "Unauthorized");
             }

@@ -10,9 +10,9 @@ import {
     BaseEntity,
     Column,
     CreateDateColumn,
-    Entity,
+    Entity, Index,
     ManyToMany,
-    PrimaryGeneratedColumn,
+    PrimaryGeneratedColumn, Unique,
     UpdateDateColumn
 } from "typeorm";
 import Organization from "./Organization";
@@ -24,6 +24,7 @@ import {Moment} from "moment";
  * @author Denis Afendikov
  */
 @Entity()
+@Unique(["token"])
 export default class Slave extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
@@ -43,6 +44,7 @@ export default class Slave extends BaseEntity {
     /**
      * Slave token for authorization.
      */
+    @Index()
     @Column("uuid")
     token: string;
 
