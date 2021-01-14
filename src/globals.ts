@@ -6,8 +6,19 @@
  * All rights reserved.
  */
 
-import * as Ajv from "ajv";
-import exp = require("constants");
+import Ajv from "ajv";
+import addFormats from "ajv-formats"
+
+export const ajvInstance = new Ajv({
+    allErrors: true,
+    useDefaults: true,
+    // jsonPointers: true,
+    // errorDataPath: "property", // deprecated
+    // schemaId: "auto",
+    messages: false,
+});
+// @ts-ignore
+addFormats(ajvInstance);
 
 /**
  * AMQP_CONNECTION_QUEUE - queue name for slaves connection reports.
@@ -35,15 +46,6 @@ export const AMQP_USER_NOTIFICATION_QUEUE = "user_notifications";
  * REDIS_USER_JWT_PRIVATE_KEY - user JWT private key.
  */
 export const REDIS_USER_JWT_PRIVATE_KEY = "USER_JWT_PRIVATE_KEY";
-
-export const ajvInstance = new Ajv({
-    allErrors: true,
-    useDefaults: true,
-    // jsonPointers: true,
-    errorDataPath: "property", // deprecated
-    schemaId: "auto",
-    messages: false,
-});
 
 
 // CLIENT_WEB_SOCKET_EVENT_TYPES
