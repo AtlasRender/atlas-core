@@ -7,6 +7,7 @@
  */
 
 import * as WS from "ws";
+import JSONObject from "./JSONObject";
 
 
 /**
@@ -14,15 +15,11 @@ import * as WS from "ws";
  * @interface
  * @author Danil Andreev
  */
-export default interface WebSocketSession {
+export default interface WebSocketSession extends JSONObject<any> {
     /**
      * uid - unique identifier for web socket session.
      */
     uid: string;
-    /**
-     * userId - session user id.
-     */
-    userId: number;
     /**
      * ws - web socket session.
      */

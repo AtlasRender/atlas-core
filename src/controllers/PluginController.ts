@@ -9,12 +9,12 @@
 import Controller from "../core/Controller";
 import {Context} from "koa";
 import RequestError from "../errors/RequestError";
-import Temp from "../entities/Temp";
+import Temp from "../entities/typeorm/Temp";
 import * as UnZipper from "unzipper";
 import * as StreamBuffers from "stream-buffers";
 import streamToBuffer from "../utils/streamToBuffer";
-import Plugin from "../entities/Plugin";
-import Organization from "../entities/Organization";
+import Plugin from "../entities/typeorm/Plugin";
+import Organization from "../entities/typeorm/Organization";
 import {PluginCreateBodyValidator} from "../validators/PluginRequestValidators";
 import {PluginSettingsSpec, ValidationError} from "@atlasrender/render-plugin";
 

@@ -6,7 +6,7 @@
  * All rights reserved.
  */
 
-import SystemLog from "../entities/SystemLog";
+import SystemLog from "../entities/typeorm/SystemLog";
 
 export type LOG_LEVELS = "info" | "warning" | "error";
 

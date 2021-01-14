@@ -6,7 +6,7 @@
  * All rights reserved.
  */
 
-import User from "../entities/User";
+import User from "../entities/typeorm/User";
 
 
 export interface UserPermissions {

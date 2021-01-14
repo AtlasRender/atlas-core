@@ -6,9 +6,9 @@
  * All rights reserved.
  */
 
-import FrameRange from "../../../src/core/FrameRange/FrameRange";
-import FrameRangeItem from "../../../src/core/FrameRange/FrameRangeItem";
-import FrameRangePair from "../../../src/core/FrameRange/FrameRangePair";
+import FrameRange from "../../../src/entities/common/FrameRange";
+import FrameRangeItem from "../../../src/entities/common/FrameRangeItem";
+import FrameRangePair from "../../../src/entities/common/FrameRangePair";
 
 
 describe("core->FrameRange->FrameRange", () => {

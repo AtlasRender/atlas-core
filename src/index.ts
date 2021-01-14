@@ -28,7 +28,7 @@ import TaskReportsProcessor from "./processors/TaskReportsProcessor";
 import UploadController from "./controllers/UploadController";
 import PluginController from "./controllers/PluginController";
 import UserNotificationProcessor from "./processors/UserNotificationProcessor";
-import WebSocket from "./core/WebSocket";
+import ClientWS from "./core/ClientWS";
 import TasksController from "./controllers/TasksController";
 import RenderTaskAttemptController from "./controllers/RenderTaskAttemptController";
 
@@ -39,7 +39,7 @@ async function startServer() {
     await TaskReportsProcessor();
     await UserNotificationProcessor();
 
-    const webSocketClient = new WebSocket();
+    const webSocketClient = new ClientWS();
 
     server.useController(new UsersController());
     server.useController(new LoginController());

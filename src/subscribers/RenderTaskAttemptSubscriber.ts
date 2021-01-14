@@ -7,9 +7,9 @@
  */
 
 import {EntitySubscriberInterface, EventSubscriber, UpdateEvent} from "typeorm";
-import RenderTaskAttempt from "../entities/RenderTaskAttempt";
-import User from "../entities/User";
-import WebSocket from "../core/WebSocket";
+import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
+import User from "../entities/typeorm/User";
+import ClientWS from "../core/ClientWS";
 import {CWS_RENDER_TASK_UPDATE} from "../globals";
 import Logger from "../core/Logger";
 
@@ -30,7 +30,7 @@ export default class RenderTaskAttemptSubscriber implements EntitySubscriberInte
             const users: User[] = attempt.task.job.organization.users;
 
             for (const user of users) {
-                WebSocket.sendToUser(user.id, {type: CWS_RENDER_TASK_UPDATE, payload: {id: attempt.task.id}});
+                ClientWS.sendToUser(user.id, {type: CWS_RENDER_TASK_UPDATE, payload: {id: attempt.task.id}});
             }
         } catch (error) {
             //TODO: handle

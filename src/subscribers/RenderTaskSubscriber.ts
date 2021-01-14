@@ -7,10 +7,10 @@
  */
 
 import {EntitySubscriberInterface, EventSubscriber, UpdateEvent} from "typeorm";
-import RenderTask from "../entities/RenderTask";
-import RenderJob from "../entities/RenderJob";
-import User from "../entities/User";
-import WebSocket from "../core/WebSocket";
+import RenderTask from "../entities/typeorm/RenderTask";
+import RenderJob from "../entities/typeorm/RenderJob";
+import User from "../entities/typeorm/User";
+import ClientWS from "../core/ClientWS";
 import {CWS_RENDER_TASK_UPDATE} from "../globals";
 import Logger from "../core/Logger";
 
@@ -33,7 +33,7 @@ export class RenderTaskSubscriber implements EntitySubscriberInterface<RenderTas
             const users: User[] = task.job.organization.users;
 
             for (const user of users) {
-                WebSocket.sendToUser(user.id, {type: CWS_RENDER_TASK_UPDATE, payload: {id: task.id}});
+                ClientWS.sendToUser(user.id, {type: CWS_RENDER_TASK_UPDATE, payload: {id: task.id}});
             }
         } catch (error) {
             //TODO: handle error

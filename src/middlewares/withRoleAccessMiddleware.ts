@@ -8,9 +8,9 @@
 
 import {Context, Middleware, Next} from "koa";
 import {getRepository} from "typeorm";
-import User from "../entities/User";
+import User from "../entities/typeorm/User";
 import RequestError from "../errors/RequestError";
-import Role from "../entities/Role";
+import Role from "../entities/typeorm/Role";
 
 
 /**

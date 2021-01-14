@@ -11,7 +11,14 @@
         <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/AtlasRender/atlas-core">
         <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/AtlasRender/atlas-core/pathfinder-core-run-tests">
         <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/AtlasRender/atlas-core">
-    </div>
+    </div>   
+    <div align="center">
+        <img alt="Sonar bugs" src="https://sonarcloud.io/api/project_badges/measure?project=AtlasRender_atlas-core&metric=bugs"/>
+        <img alt="Sonar lines of code" src="https://sonarcloud.io/api/project_badges/measure?project=AtlasRender_atlas-core&metric=ncloc"/>
+        <img alt="Sonar maintainability raiting" src="https://sonarcloud.io/api/project_badges/measure?project=AtlasRender_atlas-core&metric=sqale_rating"/>
+        <img alt="Sonar security" src="https://sonarcloud.io/api/project_badges/measure?project=AtlasRender_atlas-core&metric=security_rating"/>
+        <img alt="Sonar reliability" src="https://sonarcloud.io/api/project_badges/measure?project=AtlasRender_atlas-core&metric=reliability_rating"/>
+    </div>   
 </a>
 
 ### Management and control unit.

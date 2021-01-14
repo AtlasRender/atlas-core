@@ -9,20 +9,20 @@
 
 import Controller from "../core/Controller";
 import {Context} from "koa";
-import Organization from "../entities/Organization";
+import Organization from "../entities/typeorm/Organization";
 import {
     IncludeUserIdsInBodyValidator,
     OrganizationEditValidator,
     OrganizationRegisterValidator
 } from "../validators/OrganizationRequestValidators";
 import RolesController from "./RolesController";
-import User from "../entities/User";
+import User from "../entities/typeorm/User";
 import RequestError from "../errors/RequestError";
 import {getConnection, getRepository, In} from "typeorm";
 import {IncludeUsernameInQueryValidator} from "../validators/UserRequestValidators";
 import {findOneOrganizationByRequestParams} from "../middlewares/organizationRequestMiddlewares";
 import {canManageUsers} from "../middlewares/withRoleAccessMiddleware";
-import Role from "../entities/Role";
+import Role from "../entities/typeorm/Role";
 import {UserPermissions, UserWithPermissions} from "../interfaces/UserWithPermissions";
 
 
