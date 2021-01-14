@@ -21,7 +21,7 @@ export default class SystemOptions {
             const configJson: JSONObject<any> = require("./../config.json");
             _.merge(SystemOptions.config, configJson);
         } catch (error) {
-            if (error.code !== "ENOENT")
+            if (error.code !== "MODULE_NOT_FOUND")
                 console.error(`Unable to load configuration from "config.json" file.`, error);
         }
 
