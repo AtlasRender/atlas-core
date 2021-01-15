@@ -45,6 +45,12 @@ export const UserRegisterValidator = bodyValidator({
     } as JSONSchemaType<UserRegisterData>,
     ajvInstance);
 
+
+export type UserLoginData = {
+    username: string,
+    password: string
+}
+
 /**
  * LoginUserValidator - validator for user login request.
  * @author Denis Afendikov
@@ -66,72 +72,91 @@ export const UserLoginValidator = bodyValidator({
                 maxLength: 50
             },
         }
-    },
+    } as JSONSchemaType<UserLoginData>,
     ajvInstance);
+
+
+export type UserEditData = {
+    username?: string,
+    email?: string
+}
 
 /**
  * UserEditValidator - validator for user edit request.
  * @author Denis Afendikov
  */
 export const UserEditValidator = bodyValidator({
-    $id: "UserEditValidator",
-    type: "object",
-    // required: ["password"],
-    properties: {
-        username: {
-            // TODO: alphanumeric only
-            type: "string",
-            minLength: 3,
-            maxLength: 50
-        },
-        // password: {
-        //     type: "string",
-        //     minLength: 6,
-        //     maxLength: 50
-        // },
-        email: {
-            type: "string",
-            format: "email",
-        },
-        // newPassword: {
-        //     type: "string",
-        //     minLength: 6,
-        //     maxLength: 50
-        // }
-    }
-}, ajvInstance);
+        $id: "UserEditValidator",
+        type: "object",
+        // required: ["password"],
+        properties: {
+            username: {
+                // TODO: alphanumeric only
+                type: "string",
+                minLength: 3,
+                maxLength: 50
+            },
+            // password: {
+            //     type: "string",
+            //     minLength: 6,
+            //     maxLength: 50
+            // },
+            email: {
+                type: "string",
+                format: "email",
+            },
+            // newPassword: {
+            //     type: "string",
+            //     minLength: 6,
+            //     maxLength: 50
+            // }
+        }
+    } as JSONSchemaType<UserEditData>,
+    ajvInstance);
+
+
+export type PasswordInBodyData = {
+    password: string,
+}
 
 /**
  * PasswordInBodyValidator - validator for password in request body.
  * @author Denis Afendikov
  */
 export const PasswordInBodyValidator = bodyValidator({
-    $id: "PasswordInBodyValidator",
-    type: "object",
-    required: ["password"],
-    properties: {
-        password: {
-            type: "string",
-            minLength: 6,
-            maxLength: 50
+        $id: "PasswordInBodyValidator",
+        type: "object",
+        required: ["password"],
+        properties: {
+            password: {
+                type: "string",
+                minLength: 6,
+                maxLength: 50
+            }
         }
-    }
-}, ajvInstance);
+    } as JSONSchemaType<PasswordInBodyData>,
+    ajvInstance);
+
+
+export type IncludeUsernameInQueryData = {
+    username?: string,
+}
 
 /**
  * IncludeUsernameInQueryValidator - validator for query username field in request.
  * @author Denis Afendikov
  */
 export const IncludeUsernameInQueryValidator = queryValidator({
-    $id: "IncludeUsernameInBodyValidator",
-    type: "object",
-    // required: ["username"],
-    properties: {
-        username: {
-            // TODO: alphanumeric only
-            type: "string",
-            // minLength: 3,
-            maxLength: 50
-        },
-    }
-}, ajvInstance);
+        $id: "IncludeUsernameInBodyValidator",
+        type: "object",
+        // required: ["username"],
+        properties: {
+            username: {
+                // TODO: alphanumeric only
+                type: "string",
+                // minLength: 3,
+                maxLength: 50
+            },
+        }
+    } as JSONSchemaType<IncludeUsernameInQueryData>,
+    ajvInstance);
