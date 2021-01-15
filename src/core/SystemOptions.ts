@@ -14,7 +14,6 @@ import root from "../utils/getProjectRoot";
 import createRef from "../utils/createRef";
 import Ref from "../interfaces/Ref";
 import EnvDispatcher = SystemOptions.EnvDispatcher;
-import validation from "ajv/dist/vocabularies/validation";
 
 
 namespace SystemOptions {
@@ -22,7 +21,7 @@ namespace SystemOptions {
      * EnvDispatcher - type for environment dispatcher function.
      * This function should place data from ENV to right place in config.
      */
-    export type EnvDispatcher = (configRef: Ref<JSONObject>, value: string, execArray: RegExpExecArray, regExp: RegExp, key: string) => void;
+    export type EnvDispatcher = (configRef: Ref<JSONObject>, value: string, execArray: RegExpExecArray, regExp: RegExp) => void;
 
     export interface Options {
         /**
@@ -121,7 +120,7 @@ class SystemOptions {
             if (!regExp || regExp.test(key)) {
                 const execArray: RegExpExecArray = regExp.exec(key);
                 const envDispatcher: EnvDispatcher = SystemOptions.options?.envDispatcher || SystemOptions.defaultEnvDispatcher;
-                envDispatcher(configRef, process.env[key], execArray, regExp, key);
+                envDispatcher(configRef, process.env[key], execArray, regExp);
             }
         }
         _.merge(SystemOptions.config, configRef.current);
@@ -157,8 +156,8 @@ class SystemOptions {
         return env;
     }
 
-    protected static defaultEnvDispatcher(configRef: Ref<JSONObject>, value: string, execArray: RegExpExecArray, regExp: RegExp, key: string): void {
-        configRef.current[key] = value;
+    public static defaultEnvDispatcher(configRef: Ref<JSONObject>, value: string, execArray: RegExpExecArray, regExp: RegExp): void {
+        configRef.current[execArray.input] = value;
     }
 }
 

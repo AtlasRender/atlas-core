@@ -7,17 +7,16 @@
  */
 
 import "globals";
-import * as dotenv from "dotenv";
 import {config} from "./config";
-dotenv.config();
-
+import envDispatcher from "./envDispatcher";
 
 import SystemOptions from "./core/SystemOptions";
 const options: SystemOptions.Options = {
-    envMask: /ATLAS.+/,
+    envMask: /ATLAS_(.+)/,
     additionalConfigs: [
         config
     ],
+    envDispatcher
 };
 new SystemOptions(options);
 console.log(SystemOptions.config);
