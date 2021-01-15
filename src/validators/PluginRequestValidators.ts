@@ -8,6 +8,19 @@
 
 import {bodyValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 import {ajvInstance} from "../globals";
+import {JSONSchemaType} from "ajv";
+
+
+namespace PluginRequestValidators {
+    export type PluginCreateData = {
+        name?: string,
+        description?: string,
+        file: number,
+        note?: string,
+        version?: string,
+        readme?: string,
+    }
+}
 
 
 /**
@@ -44,6 +57,6 @@ export const PluginCreateBodyValidator = bodyValidator({
                 maxLength: 10000,
             },
         }
-    },
+    } as JSONSchemaType<PluginRequestValidators.PluginCreateData>,
     ajvInstance
 );
