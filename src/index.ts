@@ -18,7 +18,6 @@ const options: SystemOptions.Options = {
     additionalConfigs: [
         config
     ],
-    envKeyTranslator: (value: string) => value.slice(5)
 };
 new SystemOptions(options);
 console.log(SystemOptions.config);

@@ -11,9 +11,19 @@ import JSONObject from "../interfaces/JSONObject";
 import * as fs from "fs";
 import * as _ from "lodash";
 import root from "../utils/getProjectRoot";
+import createRef from "../utils/createRef";
+import Ref from "../interfaces/Ref";
+import EnvDispatcher = SystemOptions.EnvDispatcher;
+import validation from "ajv/dist/vocabularies/validation";
 
 
 namespace SystemOptions {
+    /**
+     * EnvDispatcher - type for environment dispatcher function.
+     * This function should place data from ENV to right place in config.
+     */
+    export type EnvDispatcher = (configRef: Ref<JSONObject>, value: string, execArray: RegExpExecArray, regExp: RegExp, key: string) => void;
+
     export interface Options {
         /**
          * envFiles - array of environment file paths. Each of this files will be loaded to config.
@@ -28,7 +38,7 @@ namespace SystemOptions {
          * @callback
             * @param value - Input value
          */
-        envKeyTranslator?: (value: string) => string;
+        envDispatcher?: EnvDispatcher;
         /**
          * additionalConfigs - additional config inputs.
          */
@@ -106,12 +116,15 @@ class SystemOptions {
 
         // Merging ENV variables to config
         const regExp: RegExp = options?.envMask;
-        let configEnv: JSONObject<string> = {};
+        const configRef: Ref<JSONObject> = createRef(SystemOptions.config);
         for (const key in process.env) {
-            if (!regExp || regExp.test(key))
-                configEnv[options?.envKeyTranslator ? options.envKeyTranslator(key) : key] = process.env[key];
+            if (!regExp || regExp.test(key)) {
+                const execArray: RegExpExecArray = regExp.exec(key);
+                const envDispatcher: EnvDispatcher = SystemOptions.options?.envDispatcher || SystemOptions.defaultEnvDispatcher;
+                envDispatcher(configRef, process.env[key], execArray, regExp, key);
+            }
         }
-        _.merge(SystemOptions.config, configEnv);
+        _.merge(SystemOptions.config, configRef.current);
     }
 
     /**
@@ -142,6 +155,10 @@ class SystemOptions {
         process.env = env;
 
         return env;
+    }
+
+    protected static defaultEnvDispatcher(configRef: Ref<JSONObject>, value: string, execArray: RegExpExecArray, regExp: RegExp, key: string): void {
+        configRef.current[key] = value;
     }
 }
 
