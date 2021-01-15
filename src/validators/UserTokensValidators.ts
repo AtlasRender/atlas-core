@@ -8,6 +8,15 @@
 
 import {bodyValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 import {ajvInstance} from "../globals";
+import {JSONSchemaType} from "ajv";
+
+
+namespace UserTokensValidator {
+    export type UserTokenCreateBodyData = {
+        name: string,
+        description?: string
+    }
+}
 
 
 /**
@@ -29,6 +38,6 @@ export const UserTokenCreateBodyValidator = bodyValidator({
                 maxLength: 255
             }
         }
-    },
+    } as JSONSchemaType<UserTokensValidator.UserTokenCreateBodyData>,
     ajvInstance
 );
