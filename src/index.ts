@@ -8,12 +8,17 @@
 
 import "globals";
 import * as dotenv from "dotenv";
+import {config} from "./config";
 dotenv.config();
 
 
 import SystemOptions from "./core/SystemOptions";
 const options: SystemOptions.Options = {
-    envMask: /ATLAS*/,
+    envMask: /ATLAS.+/,
+    additionalConfigs: [
+        config
+    ],
+    envKeyTranslator: (value: string) => value.slice(5)
 };
 new SystemOptions(options);
 //TODO: fix incorrect work with compiled project.
