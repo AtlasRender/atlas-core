@@ -17,7 +17,6 @@ export const ajvInstance = new Ajv({
     // schemaId: "auto",
     messages: false,
 });
-// @ts-ignore
 addFormats(ajvInstance);
 
 /**
