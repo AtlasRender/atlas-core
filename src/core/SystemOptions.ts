@@ -10,6 +10,7 @@ import * as dotenv from "dotenv";
 import JSONObject from "../interfaces/JSONObject";
 import * as fs from "fs";
 import * as _ from "lodash";
+import root from "../utils/getProjectRoot";
 
 
 namespace SystemOptions {
@@ -32,6 +33,11 @@ namespace SystemOptions {
          * additionalConfigs - additional config inputs.
          */
         additionalConfigs?: JSONObject<any>[];
+        /**
+         * disableOptionsMerging - if true, options will be merged with default SystemOptions options.
+         * @default false
+         */
+        disableOptionsMerging?: boolean;
     }
 }
 
@@ -53,7 +59,14 @@ class SystemOptions {
      * config - full system configuration object.
      */
     public static config: JSONObject<any> = {};
-    protected static options: SystemOptions.Options = {};
+    protected static options: SystemOptions.Options = {
+        envFiles: [
+            root + "\\..\\.env",
+            root + "\\..\\.env.production",
+            root + "\\..\\.env.development",
+            root + "\\..\\.env.local",
+        ]
+    };
 
     /**
      * Initializes the config field of the class by gathering info from all places.
@@ -61,10 +74,13 @@ class SystemOptions {
      * @param options - Gathering options.
      * @author Danil Andreev
      */
-    constructor(options: SystemOptions.Options = {}) {
-        SystemOptions.options = options;
-        // console.log("Working directory: ", __dirname);
-        // dotenv.config();
+    constructor(options?: SystemOptions.Options) {
+        if (options) {
+            if (options.disableOptionsMerging)
+                SystemOptions.options = options;
+            else
+                _.merge(SystemOptions.options, options);
+        }
 
         // Merging config.json variables to config
         try {
@@ -76,7 +92,7 @@ class SystemOptions {
         }
 
         // Merging additional configs to common config
-        if (options.additionalConfigs) {
+        if (options?.additionalConfigs) {
             for (const config of options.additionalConfigs) {
                 if (typeof config === "object") {
                     _.merge(SystemOptions.config, config);
@@ -119,6 +135,10 @@ class SystemOptions {
                 console.error(error);
             }
         }
+
+        const prevEnv = process.env;
+        _.merge(env, prevEnv);
+        process.env = env;
 
         return env;
     }
