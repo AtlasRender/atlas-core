@@ -9,6 +9,20 @@
 
 import {bodyValidator, queryValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 import {ajvInstance} from "../globals";
+import {JSONSchemaType} from "ajv";
+
+
+namespace JobRequestValidators {
+    export type JobSubmitData = {
+        name: string,
+        description?: string,
+        organization: number,
+        attempts_per_task_limit: number,
+        frameRange: any[],
+        plugin: number,
+        pluginSettings: object
+    }
+}
 
 
 /**
@@ -45,6 +59,6 @@ export const JobSubmitValidator = bodyValidator({
                 type: "object",
             }
         }
-    },
+    } as JSONSchemaType<JobRequestValidators.JobSubmitData>,
     ajvInstance
 );
