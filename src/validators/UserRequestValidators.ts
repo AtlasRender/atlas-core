@@ -7,15 +7,32 @@
  */
 
 import {ajvInstance} from "../globals";
-import {JSONSchemaType, DefinedError} from "ajv";
+import {JSONSchemaType} from "ajv";
 import {bodyValidator, queryValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 
 
-export type UserRegisterData = {
-    username: string,
-    email: string,
-    password: string
+namespace UserRequestValidators {
+    export type UserRegisterData = {
+        username: string,
+        email: string,
+        password: string
+    }
+    export type UserLoginData = {
+        username: string,
+        password: string
+    }
+    export type UserEditData = {
+        username?: string,
+        email?: string
+    }
+    export type PasswordInBodyData = {
+        password: string,
+    }
+    export type IncludeUsernameInQueryData = {
+        username?: string,
+    }
 }
+
 
 /**
  * RegisterUserValidator - validator for user registration request.
@@ -42,8 +59,9 @@ export const UserRegisterValidator = bodyValidator({
                 maxLength: 50
             },
         }
-    } as JSONSchemaType<UserRegisterData>,
+    } as JSONSchemaType<UserRequestValidators.UserRegisterData>,
     ajvInstance);
+
 
 /**
  * LoginUserValidator - validator for user login request.
@@ -66,72 +84,78 @@ export const UserLoginValidator = bodyValidator({
                 maxLength: 50
             },
         }
-    },
+    } as JSONSchemaType<UserRequestValidators.UserLoginData>,
     ajvInstance);
+
 
 /**
  * UserEditValidator - validator for user edit request.
  * @author Denis Afendikov
  */
 export const UserEditValidator = bodyValidator({
-    $id: "UserEditValidator",
-    type: "object",
-    // required: ["password"],
-    properties: {
-        username: {
-            // TODO: alphanumeric only
-            type: "string",
-            minLength: 3,
-            maxLength: 50
-        },
-        // password: {
-        //     type: "string",
-        //     minLength: 6,
-        //     maxLength: 50
-        // },
-        email: {
-            type: "string",
-            format: "email",
-        },
-        // newPassword: {
-        //     type: "string",
-        //     minLength: 6,
-        //     maxLength: 50
-        // }
-    }
-}, ajvInstance);
+        $id: "UserEditValidator",
+        type: "object",
+        // required: ["password"],
+        properties: {
+            username: {
+                // TODO: alphanumeric only
+                type: "string",
+                minLength: 3,
+                maxLength: 50
+            },
+            // password: {
+            //     type: "string",
+            //     minLength: 6,
+            //     maxLength: 50
+            // },
+            email: {
+                type: "string",
+                format: "email",
+            },
+            // newPassword: {
+            //     type: "string",
+            //     minLength: 6,
+            //     maxLength: 50
+            // }
+        }
+    } as JSONSchemaType<UserRequestValidators.UserEditData>,
+    ajvInstance);
+
 
 /**
  * PasswordInBodyValidator - validator for password in request body.
  * @author Denis Afendikov
  */
 export const PasswordInBodyValidator = bodyValidator({
-    $id: "PasswordInBodyValidator",
-    type: "object",
-    required: ["password"],
-    properties: {
-        password: {
-            type: "string",
-            minLength: 6,
-            maxLength: 50
+        $id: "PasswordInBodyValidator",
+        type: "object",
+        required: ["password"],
+        properties: {
+            password: {
+                type: "string",
+                minLength: 6,
+                maxLength: 50
+            }
         }
-    }
-}, ajvInstance);
+    } as JSONSchemaType<UserRequestValidators.PasswordInBodyData>,
+    ajvInstance);
+
 
 /**
  * IncludeUsernameInQueryValidator - validator for query username field in request.
  * @author Denis Afendikov
  */
 export const IncludeUsernameInQueryValidator = queryValidator({
-    $id: "IncludeUsernameInBodyValidator",
-    type: "object",
-    // required: ["username"],
-    properties: {
-        username: {
-            // TODO: alphanumeric only
-            type: "string",
-            // minLength: 3,
-            maxLength: 50
-        },
-    }
-}, ajvInstance);
+        $id: "IncludeUsernameInBodyValidator",
+        type: "object",
+        // required: ["username"],
+        properties: {
+            username: {
+                // TODO: alphanumeric only
+                type: "string",
+                // minLength: 3,
+                maxLength: 50
+            },
+        }
+    } as JSONSchemaType<UserRequestValidators.IncludeUsernameInQueryData>,
+    ajvInstance);

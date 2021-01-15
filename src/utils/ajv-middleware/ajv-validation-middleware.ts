@@ -6,7 +6,7 @@
  * All rights reserved.
  */
 
-import Ajv from "ajv";
+import Ajv, {JSONSchemaType} from "ajv";
 import RequestError from "../../errors/RequestError";
 
 /**
@@ -16,9 +16,8 @@ import RequestError from "../../errors/RequestError";
  * @param ajvInst - Ajv instance
  * @author Denis Afendikov
  */
-const validatorFactory = (schema: object, ajvInst: Ajv) => {
+const validatorFactory = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv) => {
     if (!ajvInst) {
-        console.error("No Ajv instance provided!");
         throw ReferenceError("No Ajv instance provided!");
     }
 
@@ -44,7 +43,7 @@ const validatorFactory = (schema: object, ajvInst: Ajv) => {
  * @author Denis Afendikov
  *
  */
-const middlewareFactory = (schema: object, context: "body" | "query", ajvInst: Ajv) => {
+const middlewareFactory = <T>(schema: JSONSchemaType<T>, context: "body" | "query", ajvInst: Ajv) => {
     const validator = validatorFactory(schema, ajvInst);
     return async function (ctx, next) {
         try {
@@ -63,7 +62,7 @@ const middlewareFactory = (schema: object, context: "body" | "query", ajvInst: A
  * @param ajvInst - Ajv instance
  * @author Denis Afendikov
  */
-export const bodyValidator = (schema: object, ajvInst: Ajv) => middlewareFactory(schema, "body", ajvInst);
+export const bodyValidator = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv) => middlewareFactory(schema, "body", ajvInst);
 
 /**
  * queryValidator - returns middleware for validating request query.
@@ -72,7 +71,7 @@ export const bodyValidator = (schema: object, ajvInst: Ajv) => middlewareFactory
  * @param ajvInst - Ajv instance
  * @author Denis Afendikov
  */
-export const queryValidator = (schema: object, ajvInst: Ajv) => middlewareFactory(schema, "query", ajvInst);
+export const queryValidator = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv) => middlewareFactory(schema, "query", ajvInst);
 
 /**
  * paramsValidator - returns middleware for validating request params.
@@ -81,7 +80,7 @@ export const queryValidator = (schema: object, ajvInst: Ajv) => middlewareFactor
  * @param ajvInst - Ajv instance
  * @author Denis Afendikov
  */
-export const paramsValidator = (schema: object, ajvInst: Ajv) => {
+export const paramsValidator = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv) => {
     const validator = validatorFactory(schema, ajvInst);
     return async function (ctx, next) {
         try {
