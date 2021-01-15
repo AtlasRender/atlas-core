@@ -112,8 +112,6 @@ class SystemOptions {
                 configEnv[options?.envKeyTranslator ? options.envKeyTranslator(key) : key] = process.env[key];
         }
         _.merge(SystemOptions.config, configEnv);
-
-        console.log(SystemOptions.config);
     }
 
     /**
@@ -132,7 +130,10 @@ class SystemOptions {
                 const tempEnv: JSONObject<string> = dotenv.parse(fs.readFileSync(pathname).toString());
                 _.merge(env, tempEnv);
             } catch (error) {
-                console.error(error);
+                if (error.code === "ENOENT")
+                    console.warn(`Could not find env file "${pathname}", skipping`);
+                else
+                    console.error(error);
             }
         }
 

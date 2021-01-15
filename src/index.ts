@@ -21,7 +21,6 @@ const options: SystemOptions.Options = {
     envKeyTranslator: (value: string) => value.slice(5)
 };
 new SystemOptions(options);
-//TODO: fix incorrect work with compiled project.
 console.log(SystemOptions.config);
 
 import main from "./main";
