@@ -7,7 +7,7 @@
  */
 
 import {ajvInstance} from "../globals";
-import {JSONSchemaType, DefinedError} from "ajv";
+import {JSONSchemaType} from "ajv";
 import {bodyValidator, queryValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 
 
