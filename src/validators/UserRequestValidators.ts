@@ -11,11 +11,28 @@ import {JSONSchemaType} from "ajv";
 import {bodyValidator, queryValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 
 
-export type UserRegisterData = {
-    username: string,
-    email: string,
-    password: string
+namespace UserRequestValidators {
+    export type UserRegisterData = {
+        username: string,
+        email: string,
+        password: string
+    }
+    export type UserLoginData = {
+        username: string,
+        password: string
+    }
+    export type UserEditData = {
+        username?: string,
+        email?: string
+    }
+    export type PasswordInBodyData = {
+        password: string,
+    }
+    export type IncludeUsernameInQueryData = {
+        username?: string,
+    }
 }
+
 
 /**
  * RegisterUserValidator - validator for user registration request.
@@ -42,14 +59,9 @@ export const UserRegisterValidator = bodyValidator({
                 maxLength: 50
             },
         }
-    } as JSONSchemaType<UserRegisterData>,
+    } as JSONSchemaType<UserRequestValidators.UserRegisterData>,
     ajvInstance);
 
-
-export type UserLoginData = {
-    username: string,
-    password: string
-}
 
 /**
  * LoginUserValidator - validator for user login request.
@@ -72,14 +84,9 @@ export const UserLoginValidator = bodyValidator({
                 maxLength: 50
             },
         }
-    } as JSONSchemaType<UserLoginData>,
+    } as JSONSchemaType<UserRequestValidators.UserLoginData>,
     ajvInstance);
 
-
-export type UserEditData = {
-    username?: string,
-    email?: string
-}
 
 /**
  * UserEditValidator - validator for user edit request.
@@ -111,13 +118,9 @@ export const UserEditValidator = bodyValidator({
             //     maxLength: 50
             // }
         }
-    } as JSONSchemaType<UserEditData>,
+    } as JSONSchemaType<UserRequestValidators.UserEditData>,
     ajvInstance);
 
-
-export type PasswordInBodyData = {
-    password: string,
-}
 
 /**
  * PasswordInBodyValidator - validator for password in request body.
@@ -134,13 +137,9 @@ export const PasswordInBodyValidator = bodyValidator({
                 maxLength: 50
             }
         }
-    } as JSONSchemaType<PasswordInBodyData>,
+    } as JSONSchemaType<UserRequestValidators.PasswordInBodyData>,
     ajvInstance);
 
-
-export type IncludeUsernameInQueryData = {
-    username?: string,
-}
 
 /**
  * IncludeUsernameInQueryValidator - validator for query username field in request.
@@ -158,5 +157,5 @@ export const IncludeUsernameInQueryValidator = queryValidator({
                 maxLength: 50
             },
         }
-    } as JSONSchemaType<IncludeUsernameInQueryData>,
+    } as JSONSchemaType<UserRequestValidators.IncludeUsernameInQueryData>,
     ajvInstance);
