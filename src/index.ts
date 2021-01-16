@@ -7,17 +7,18 @@
  */
 
 import "globals";
-import * as dotenv from "dotenv";
-dotenv.config();
+import {config} from "./config";
+import envDispatcher from "./envDispatcher";
+import SystemConfig from "./core/SystemConfig";
 
-
-import SystemOptions from "./core/SystemOptions";
-const options: SystemOptions.Options = {
-    envMask: /ATLAS*/,
+const options: SystemConfig.Options = {
+    envMask: /ATLAS_(.+)/,
+    additionalConfigs: [
+        config
+    ],
+    envDispatcher
 };
-new SystemOptions(options);
-//TODO: fix incorrect work with compiled project.
-console.log(SystemOptions.config);
+new SystemConfig(options);
 
 import main from "./main";
 main().then();
