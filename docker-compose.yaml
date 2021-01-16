@@ -1,0 +1,16 @@
+version: "3.3"
+services:
+  core:
+    image: atlas-core
+    build: .
+    restart: always
+    ports:
+      - "3002:3002"
+      - "3003:3003"
+      - "3004:3004"
+    volumes:
+      - .:/app
+    expose:
+      - "3002"
+      - "3003"
+      - "3004"
