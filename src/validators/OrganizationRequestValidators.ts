@@ -9,6 +9,72 @@
 
 import {bodyValidator, queryValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 import {ajvInstance} from "../globals";
+import {JSONSchemaType} from "ajv";
+
+
+namespace OrganizationRequestValidators {
+    export type IncludeUserIdsInBodyData = {
+        userIds: number[]
+    }
+    export type IncludeUserIdInBodyData = {
+        userId: number
+    }
+    export type RoleAddData = {
+        name: string,
+        description?: string,
+        permissionLevel?: number,
+        color?: string,
+        canManageUsers?: boolean,
+        canCreateJobs?: boolean,
+        canEditJobs?: boolean,
+        canDeleteJobs?: boolean,
+        canManageRoles?: boolean,
+        canManagePlugins?: boolean,
+        canManageTeams?: boolean,
+        canEditAudit?: boolean
+    }
+    export type RoleEditData = {
+        name?: string,
+        description?: string,
+        permissionLevel?: number,
+        color?: string,
+        canManageUsers?: boolean,
+        canCreateJobs?: boolean,
+        canEditJobs?: boolean,
+        canDeleteJobs?: boolean,
+        canManageRoles?: boolean,
+        canManagePlugins?: boolean,
+        canManageTeams?: boolean,
+        canEditAudit?: boolean
+    }
+    export type OrganizationRegisterData = {
+        name: string,
+        description?: string,
+        _: IncludeUserIdsInBodyData,
+        roles?: RoleAddData[],
+        defaultRole?: RoleAddData
+    }
+    export type OrganizationEditData = {
+        name: string,
+        description?: string,
+    }
+}
+
+/**
+ * IncludeUserIdInBodyValidator - validator for body userIds field in request.
+ * @author Denis Afendikov
+ */
+export const IncludeUserIdInBodyValidator = bodyValidator({
+        $id: "IncludeUserIdInBodyValidator",
+        type: "object",
+        required: ["userId"],
+        properties: {
+            userId: {
+                type: "integer"
+            }
+        }
+    } as JSONSchemaType<OrganizationRequestValidators.IncludeUserIdInBodyData>,
+    ajvInstance);
 
 /**
  * IncludeUserIdsInBodyValidator - validator for body userIds field in request.
@@ -25,7 +91,7 @@ export const IncludeUserIdsInBodyValidator = bodyValidator({
                 minItems: 1
             }
         }
-    },
+    } as JSONSchemaType<OrganizationRequestValidators.IncludeUserIdsInBodyData>,
     ajvInstance);
 
 /**
@@ -58,7 +124,7 @@ export const OrganizationRegisterValidator = bodyValidator({
                 $ref: "RoleAddValidator"
             }
         }
-    },
+    } as JSONSchemaType<OrganizationRequestValidators.OrganizationRegisterData>,
     ajvInstance);
 
 /**
@@ -80,140 +146,126 @@ export const OrganizationEditValidator = bodyValidator({
                 maxLength: 255
             }
         }
-    },
+    } as JSONSchemaType<OrganizationRequestValidators.OrganizationEditData>,
     ajvInstance);
 
-
-/**
- * IncludeUserIdInBodyValidator - validator for body userIds field in request.
- * @author Denis Afendikov
- */
-export const IncludeUserIdInBodyValidator = bodyValidator({
-        $id: "IncludeUserIdInBodyValidator",
-        type: "object",
-        required: ["userId"],
-        properties: {
-            userId: {
-                type: "integer"
-            }
-        }
-    },
-    ajvInstance);
 
 /**
  * RoleAddValidator - validator for role creating request.
  * @author Denis Afendikov
  */
 export const RoleAddValidator = bodyValidator({
-    $id: "RoleAddValidator",
-    type: "object",
-    required: ["name"],
-    properties: {
-        name: {
-            // TODO: alphanumeric only
-            type: "string",
-            minLength: 3,
-            maxLength: 50
-        },
-        description: {
-            type: "string",
-            maxLength: 255
-        },
-        permissionLevel: {
-            type: "number",
-            minimum: 0,
-            maximum: 1000
-        },
-        color: {
-            type: "string",
-            maxLength: 255
-        },
-        canManageUsers: {
-            type: "boolean",
-            default: false
-        },
-        canCreateJobs: {
-            type: "boolean",
-            default: false
-        },
-        canEditJobs: {
-            type: "boolean",
-            default: false
-        },
-        canDeleteJobs: {
-            type: "boolean",
-            default: false
-        },
-        canManageRoles: {
-            type: "boolean",
-            default: false
-        },
-        canManagePlugins: {
-            type: "boolean",
-            default: false
-        },
-        canManageTeams: {
-            type: "boolean",
-            default: false
-        },
-        canEditAudit: {
-            type: "boolean",
-            default: false
+        $id: "RoleAddValidator",
+        type: "object",
+        required: ["name"],
+        properties: {
+            name: {
+                // TODO: alphanumeric only
+                type: "string",
+                minLength: 3,
+                maxLength: 50
+            },
+            description: {
+                type: "string",
+                maxLength: 255
+            },
+            permissionLevel: {
+                type: "integer",
+                minimum: 0,
+                maximum: 1000
+            },
+            color: {
+                type: "string",
+                maxLength: 255
+            },
+            canManageUsers: {
+                type: "boolean",
+                default: false
+            },
+            canCreateJobs: {
+                type: "boolean",
+                default: false
+            },
+            canEditJobs: {
+                type: "boolean",
+                default: false
+            },
+            canDeleteJobs: {
+                type: "boolean",
+                default: false
+            },
+            canManageRoles: {
+                type: "boolean",
+                default: false
+            },
+            canManagePlugins: {
+                type: "boolean",
+                default: false
+            },
+            canManageTeams: {
+                type: "boolean",
+                default: false
+            },
+            canEditAudit: {
+                type: "boolean",
+                default: false
+            }
         }
-    }
-}, ajvInstance);
+    } as JSONSchemaType<OrganizationRequestValidators.RoleAddData>,
+    ajvInstance);
 
 /**
  * RoleEditValidator - validator for role editing request.
  * @author Denis Afendikov
  */
 export const RoleEditValidator = bodyValidator({
-    $id: "RoleEditValidator",
-    type: "object",
-    additionalProperties: false,
-    properties: {
-        name: {
-            // TODO: alphanumeric only
-            type: "string",
-            minLength: 3,
-            maxLength: 50
-        },
-        description: {
-            type: "string",
-            maxLength: 255
-        },
-        permissionLevel: {
-            type: "number",
-            minimum: 0,
-            maximum: 1000
-        },
-        color: {
-            type: "string",
-            maxLength: 255
-        },
-        canManageUsers: {
-            type: "boolean"
-        },
-        canCreateJobs: {
-            type: "boolean"
-        },
-        canEditJobs: {
-            type: "boolean"
-        },
-        canDeleteJobs: {
-            type: "boolean"
-        },
-        canManageRoles: {
-            type: "boolean"
-        },
-        canManagePlugins: {
-            type: "boolean"
-        },
-        canManageTeams: {
-            type: "boolean"
-        },
-        canEditAudit: {
-            type: "boolean"
+        $id: "RoleEditValidator",
+        type: "object",
+        additionalProperties: false,
+        properties: {
+            name: {
+                // TODO: alphanumeric only
+                type: "string",
+                minLength: 3,
+                maxLength: 50
+            },
+            description: {
+                type: "string",
+                maxLength: 255
+            },
+            permissionLevel: {
+                type: "integer",
+                minimum: 0,
+                maximum: 1000
+            },
+            color: {
+                type: "string",
+                maxLength: 255
+            },
+            canManageUsers: {
+                type: "boolean"
+            },
+            canCreateJobs: {
+                type: "boolean"
+            },
+            canEditJobs: {
+                type: "boolean"
+            },
+            canDeleteJobs: {
+                type: "boolean"
+            },
+            canManageRoles: {
+                type: "boolean"
+            },
+            canManagePlugins: {
+                type: "boolean"
+            },
+            canManageTeams: {
+                type: "boolean"
+            },
+            canEditAudit: {
+                type: "boolean"
+            }
         }
-    }
-}, ajvInstance);
+    } as JSONSchemaType<OrganizationRequestValidators.RoleEditData>,
+    ajvInstance);
