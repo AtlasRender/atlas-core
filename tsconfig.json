@@ -13,7 +13,8 @@
     "resolveJsonModule": true,
     "removeComments": true,
     "declaration": false,
-    "noEmit": false
+    "noEmit": false,
+    "strictNullChecks": true
   },
   "include": [
     "src/**/*"
