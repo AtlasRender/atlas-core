@@ -50,6 +50,7 @@ namespace SystemOptions {
     }
 }
 
+//TODO create tests!!!
 /**
  * SystemConfig - class, designed for gathering and merging system configuration from several files.
  * ### This mechanism can gather info from:
