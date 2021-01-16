@@ -13,10 +13,9 @@ import * as _ from "lodash";
 import root from "../utils/getProjectRoot";
 import createRef from "../utils/createRef";
 import Ref from "../interfaces/Ref";
-import EnvDispatcher = SystemOptions.EnvDispatcher;
 
 
-namespace SystemOptions {
+namespace SystemConfig {
     /**
      * EnvDispatcher - type for environment dispatcher function.
      * This function should place data from ENV to right place in config.
@@ -120,7 +119,7 @@ class SystemConfig {
         for (const key in process.env) {
             if (!regExp || regExp.test(key)) {
                 const execArray: RegExpExecArray = regExp.exec(key);
-                const envDispatcher: EnvDispatcher = SystemConfig.options?.envDispatcher || SystemConfig.defaultEnvDispatcher;
+                const envDispatcher: SystemConfig.EnvDispatcher = SystemConfig.options?.envDispatcher || SystemConfig.defaultEnvDispatcher;
                 envDispatcher(configRef, process.env[key], execArray, regExp);
             }
         }

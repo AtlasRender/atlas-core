@@ -9,8 +9,8 @@
 import "globals";
 import {config} from "./config";
 import envDispatcher from "./envDispatcher";
-
 import SystemConfig from "./core/SystemConfig";
+
 const options: SystemConfig.Options = {
     envMask: /ATLAS_(.+)/,
     additionalConfigs: [
