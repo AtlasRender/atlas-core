@@ -14,7 +14,7 @@ import {JSONSchemaType} from "ajv";
 namespace UserTokensValidator {
     export type UserTokenCreateBodyData = {
         name: string,
-        description?: string
+        description: string | null
     }
 }
 
@@ -23,7 +23,7 @@ namespace UserTokensValidator {
  * UserTokenCreateBodyValidator - validator for user token creating request.
  * @author Danil Andreev
  */
-export const UserTokenCreateBodyValidator = bodyValidator({
+export const UserTokenCreateBodyValidator = bodyValidator<UserTokensValidator.UserTokenCreateBodyData>({
         $id: "UserTokenCreateBodyValidator",
         type: "object",
         required: ["name"],
@@ -38,6 +38,6 @@ export const UserTokenCreateBodyValidator = bodyValidator({
                 maxLength: 255
             }
         }
-    } as JSONSchemaType<UserTokensValidator.UserTokenCreateBodyData>,
+    },
     ajvInstance
 );
