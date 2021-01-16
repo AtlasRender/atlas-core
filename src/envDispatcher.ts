@@ -8,7 +8,7 @@
 
 import Ref from "./interfaces/Ref";
 import JSONObject from "./interfaces/JSONObject";
-import SystemOptions from "./core/SystemOptions";
+import SystemConfig from "./core/SystemConfig";
 
 //TODO: add interface for system config!!!!;
 /**
@@ -63,7 +63,7 @@ export default function envDispatcher(configRef: Ref<JSONObject>, value: string,
                 configRef.current.port = +value;
                 break;
             default:
-                SystemOptions.defaultEnvDispatcher(configRef, value, execArray, regExp);
+                SystemConfig.defaultEnvDispatcher(configRef, value, execArray, regExp);
         }
     } catch (error) {
         console.error(`Invalid ENV variable "${execArray.input}", skipping.`);

@@ -43,7 +43,7 @@ namespace SystemOptions {
          */
         additionalConfigs?: JSONObject<any>[];
         /**
-         * disableOptionsMerging - if true, options will be merged with default SystemOptions options.
+         * disableOptionsMerging - if true, options will be merged with default SystemConfig options.
          * @default false
          */
         disableOptionsMerging?: boolean;
@@ -51,7 +51,7 @@ namespace SystemOptions {
 }
 
 /**
- * SystemOptions - class, designed for gathering and merging system configuration from several files.
+ * SystemConfig - class, designed for gathering and merging system configuration from several files.
  * ### This mechanism can gather info from:
  * - SYSTEM ENVIRONMENT VARIABLES
  * - .env
@@ -63,12 +63,12 @@ namespace SystemOptions {
  * @class
  * @author Danil Andreev
  */
-class SystemOptions {
+class SystemConfig {
     /**
      * config - full system configuration object.
      */
     public static config: JSONObject<any> = {};
-    protected static options: SystemOptions.Options = {
+    protected static options: SystemConfig.Options = {
         envFiles: [
             root + "\\..\\.env",
             root + "\\..\\.env.production",
@@ -83,18 +83,18 @@ class SystemOptions {
      * @param options - Gathering options.
      * @author Danil Andreev
      */
-    constructor(options?: SystemOptions.Options) {
+    constructor(options?: SystemConfig.Options) {
         if (options) {
             if (options.disableOptionsMerging)
-                SystemOptions.options = options;
+                SystemConfig.options = options;
             else
-                _.merge(SystemOptions.options, options);
+                _.merge(SystemConfig.options, options);
         }
 
         // Merging config.json variables to config
         try {
             const configJson: JSONObject<any> = JSON.parse(fs.readFileSync("./../config.json").toString());
-            _.merge(SystemOptions.config, configJson);
+            _.merge(SystemConfig.config, configJson);
         } catch (error) {
             if (error.code !== "ENOENT")
                 console.error(`Unable to load configuration from "config.json" file.`, error);
@@ -104,26 +104,26 @@ class SystemOptions {
         if (options?.additionalConfigs) {
             for (const config of options.additionalConfigs) {
                 if (typeof config === "object") {
-                    _.merge(SystemOptions.config, config);
+                    _.merge(SystemConfig.config, config);
                 } else {
                     console.error(`Invalid type of 'additionalConfig' item, expected "object", got "${typeof config}"`);
                 }
             }
         }
 
-        SystemOptions.loadEnv();
+        SystemConfig.loadEnv();
 
         // Merging ENV variables to config
         const regExp: RegExp = options?.envMask;
-        const configRef: Ref<JSONObject> = createRef(SystemOptions.config);
+        const configRef: Ref<JSONObject> = createRef(SystemConfig.config);
         for (const key in process.env) {
             if (!regExp || regExp.test(key)) {
                 const execArray: RegExpExecArray = regExp.exec(key);
-                const envDispatcher: EnvDispatcher = SystemOptions.options?.envDispatcher || SystemOptions.defaultEnvDispatcher;
+                const envDispatcher: EnvDispatcher = SystemConfig.options?.envDispatcher || SystemConfig.defaultEnvDispatcher;
                 envDispatcher(configRef, process.env[key], execArray, regExp);
             }
         }
-        _.merge(SystemOptions.config, configRef.current);
+        _.merge(SystemConfig.config, configRef.current);
     }
 
     /**
@@ -134,7 +134,7 @@ class SystemOptions {
     public static loadEnv(): JSONObject<string> {
         const env: JSONObject<string> = {};
 
-        const paths: string[] = SystemOptions.options?.envFiles;
+        const paths: string[] = SystemConfig.options?.envFiles;
         if (!paths) return env;
 
         for (const pathname of paths) {
@@ -161,4 +161,4 @@ class SystemOptions {
     }
 }
 
-export default SystemOptions;
+export default SystemConfig;

@@ -10,16 +10,16 @@ import "globals";
 import {config} from "./config";
 import envDispatcher from "./envDispatcher";
 
-import SystemOptions from "./core/SystemOptions";
-const options: SystemOptions.Options = {
+import SystemConfig from "./core/SystemConfig";
+const options: SystemConfig.Options = {
     envMask: /ATLAS_(.+)/,
     additionalConfigs: [
         config
     ],
     envDispatcher
 };
-new SystemOptions(options);
-console.log(SystemOptions.config);
+new SystemConfig(options);
+console.log(SystemConfig.config);
 
 import main from "./main";
 main().then();
