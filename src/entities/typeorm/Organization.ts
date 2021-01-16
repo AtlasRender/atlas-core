@@ -73,10 +73,7 @@ export default class Organization extends BaseEntity {
     /**
      * slaves - slaves, connected to this organization.
      */
-    @ManyToMany(type => Slave, slave => slave.organizations)
-    @JoinTable({
-        name: "slaves_pool"
-    })
+    @OneToMany(type => Slave, slave => slave.organizations)
     slaves: Slave[];
 
     /**

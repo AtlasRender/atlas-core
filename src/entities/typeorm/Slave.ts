@@ -11,7 +11,7 @@ import {
     Column,
     CreateDateColumn,
     Entity, Index,
-    ManyToMany,
+    ManyToMany, ManyToOne,
     PrimaryGeneratedColumn, Unique,
     UpdateDateColumn
 } from "typeorm";
@@ -52,7 +52,7 @@ export default class Slave extends BaseEntity {
      * organization - organization, this slave belongs to.
      */
     // TODO: change to many to one relation!
-    @ManyToMany(type => Organization, org => org.slaves)
+    @ManyToOne(type => Organization, org => org.slaves)
     organizations: Organization[];
 
     @CreateDateColumn()
