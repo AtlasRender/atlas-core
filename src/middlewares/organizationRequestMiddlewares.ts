@@ -17,10 +17,11 @@ import {FindOneOptions} from "typeorm/find-options/FindOneOptions";
  * __ctx.state.organization__
  * @param options - options to use in _typeorm's_ __findOne__ function.
  * @return Koa.Middleware
+ * @author Denis Afendikov
  */
 export const findOneOrganizationByRequestParams = (options?: FindOneOptions<Organization>): Middleware =>
     async (ctx: Context, next: Next) => {
-        const org: Organization = await Organization.findOne(ctx.params.organization_id, options);
+        const org: Organization | undefined = await Organization.findOne(ctx.params.organization_id, options);
         if (!org) {
             throw new RequestError(404, "Not found.");
         }
