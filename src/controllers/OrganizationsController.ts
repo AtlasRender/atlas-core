@@ -24,6 +24,7 @@ import {findOneOrganizationByRequestParams} from "../middlewares/organizationReq
 import {canManageUsers} from "../middlewares/withRoleAccessMiddleware";
 import Role from "../entities/typeorm/Role";
 import {UserPermissions, UserWithPermissions} from "../interfaces/UserWithPermissions";
+import getUserPermissionLevelById from "../utils/organizations/getUserPermissionLevelById";
 
 
 /**
@@ -35,6 +36,7 @@ import {UserPermissions, UserWithPermissions} from "../interfaces/UserWithPermis
  * @author Denis Afendikov
  */
 const addUsersToOrg = async (userIds: number[], org: Organization, defaultRole = org.defaultRole): Promise<void> => {
+    // TODO: make all in transaction
     let errors = [];
     const users = await User.find({
         where: {
@@ -108,6 +110,11 @@ export default class OrganizationsController extends Controller {
             this.getUserPermissions
         );
 
+        this.get(
+            "/:organization_id/users/:user_id/permissionLevel",
+            this.getUserPermissionLevel
+        );
+
         // connect RolesController
         const rolesController = new RolesController();
         this.use(rolesController.baseRoute, rolesController.routes(), rolesController.allowedMethods());
@@ -153,7 +160,7 @@ export default class OrganizationsController extends Controller {
         const savedOrg = await organization.save();
 
         let defaultRole = new Role();
-        if(ctx.request.body.defaultRole) {
+        if (ctx.request.body.defaultRole) {
             const defaultRoleData = ctx.request.body.defaultRole;
             defaultRole.name = defaultRoleData.name;
             defaultRole.description = defaultRoleData.description || "Default user role.";
@@ -193,7 +200,7 @@ export default class OrganizationsController extends Controller {
         if (ctx.request.body.roles) {
             for (const roleData of ctx.request.body.roles) {
                 const roleNamesSet = new Set(ctx.request.body.roles.map(role => role.name));
-                if(roleData.name === defaultRole.name || roleNamesSet.size !== ctx.request.body.roles.length) {
+                if (roleData.name === defaultRole.name || roleNamesSet.size !== ctx.request.body.roles.length) {
                     throw new RequestError(409, "Conflicting role names.", {errors: {roles: 409}});
                 }
                 let role = new Role();
@@ -352,7 +359,7 @@ export default class OrganizationsController extends Controller {
         let usersToDelete = [];
         for (const deleteUser of users) {
             // TODO: CHECK PERMISSION LEVEL OF USER TO DELETE.
-            // TODO: if ownerUser deleted - set new user by role permissionLevel.
+            // TODO: ownerUser cannot be deleted.
             // if user not in org
             if (!org.users.find(usr => usr.id === deleteUser.id)) {
                 errors.push({missing: deleteUser});
@@ -504,5 +511,20 @@ export default class OrganizationsController extends Controller {
         );
 
         ctx.body = permissions;
+    }
+
+    /**
+     * Route __[GET]__ ___/organizations/:organization_id/users/:user_id/permissionLevel___ - get user permissions in organization.
+     * @method
+     * @author Denis Afendikov
+     */
+    public async getUserPermissionLevel(ctx: Context) {
+        // const user = User.findOne(ctx.params.user_id);
+
+        const permissionLevel = await getUserPermissionLevelById(ctx.params.user_id, ctx.params.organization_id);
+        if (permissionLevel === undefined) {
+            throw new RequestError(404, "User not found in this organization.");
+        }
+        ctx.body = permissionLevel;
     }
 }

@@ -16,11 +16,12 @@ import {FindOneOptions} from "typeorm/find-options/FindOneOptions";
  * findOneOrganizationByRequestParams - middleware for finding organization by org_id params and attaching org entity to
  * __ctx.state.organization__
  * @param options - options to use in _typeorm's_ __findOne__ function.
+ * @param param - parameter in url (default: `"organization_id"`)
  * @return Koa.Middleware
  */
-export const findOneOrganizationByRequestParams = (options?: FindOneOptions<Organization>): Middleware =>
+export const findOneOrganizationByRequestParams = (options?: FindOneOptions<Organization>, param = "organization_id"): Middleware =>
     async (ctx: Context, next: Next) => {
-        const org: Organization = await Organization.findOne(ctx.params.organization_id, options);
+        const org: Organization = await Organization.findOne(ctx.params[param], options);
         if (!org) {
             throw new RequestError(404, "Not found.");
         }
