@@ -13,7 +13,7 @@ env:
 jobs:
   dockerhub:
     runs-on: ubuntu-latest
-    name: Build and deploy docker image to DockerHb
+    name: Build and deploy docker image to DockerHub
     steps:
       - uses: actions/checkout@v2
       - uses: styfle/cancel-workflow-action@0.6.0

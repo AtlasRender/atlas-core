@@ -32,7 +32,8 @@
     "dev": "tsc && node dest/index.js",
     "build": "tsc",
     "watch": "npx nodemon",
-    "exec": "ts-node ./src/index.ts"
+    "exec": "ts-node ./src/index.ts",
+    "bump-version:pre-release": "standard-version release -- --prerelease"
   },
   "dependencies": {
     "@atlasrender/render-plugin": "^0.1.2",
