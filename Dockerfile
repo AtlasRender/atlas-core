@@ -3,11 +3,15 @@ WORKDIR /app
 
 # Install dependencies
 COPY package.json .
-RUN npm install --production
+RUN npm install
 
 # Build project
 COPY . .
 RUN npm run build
+
+# Installing production version of node modules
+RUN rm -rf node_modules
+RUN npm install --production
 
 # Delete all hidden files
 RUN find . -maxdepth 1 -type f -name ".*" -exec rm -f {} \;
