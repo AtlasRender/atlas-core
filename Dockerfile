@@ -1,4 +1,5 @@
 FROM node:12-alpine
+MAINTAINER Atlas Render Farm manager. (C) Danil Andreev
 WORKDIR /app
 
 # Install dependencies

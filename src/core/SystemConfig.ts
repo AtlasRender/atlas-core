@@ -22,6 +22,11 @@ namespace SystemConfig {
      */
     export type EnvDispatcher = (configRef: Ref<JSONObject>, value: string, execArray: RegExpExecArray, regExp: RegExp) => void;
 
+    /**
+     * Options - interface for SystemConfig additional options.
+     * @interface
+     * @author Danil Andreev
+     */
     export interface Options {
         /**
          * envFiles - array of environment file paths. Each of this files will be loaded to config.
@@ -68,6 +73,9 @@ class SystemConfig {
      * config - full system configuration object.
      */
     public static config: JSONObject<any> = {};
+    /**
+     * options - SystemConfig options.
+     */
     protected static options: SystemConfig.Options = {
         envFiles: [
             root + "\\..\\.env",
@@ -156,6 +164,16 @@ class SystemConfig {
         return env;
     }
 
+    /**
+     * defaultEnvDispatcher - default environment variables dispatcher.
+     * By default it will place to config root values with ENV variable name as key.
+     * @method
+     * @param configRef - Reference for config object.
+     * @param value - Value derived from ENV.
+     * @param execArray - RegExp exec array.
+     * @param regExp - regular expression.
+     * @author Danil Andreev
+     */
     public static defaultEnvDispatcher(configRef: Ref<JSONObject>, value: string, execArray: RegExpExecArray, regExp: RegExp): void {
         configRef.current[execArray.input] = value;
     }
