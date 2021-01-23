@@ -22,4 +22,4 @@ spec:
               value: kuku
           imagePullPolicy: Always
       restartPolicy: Always
-  replicas: 1
+  replicas: 2
