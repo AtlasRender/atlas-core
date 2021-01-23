@@ -1,6 +1,6 @@
 FROM node:12-alpine AS build
 MAINTAINER Atlas Render Farm manager. (C) Danil Andreev
-WORKDIR /app
+#WORKDIR /app
 
 # Install dependencies
 COPY package.json .
