@@ -18,7 +18,8 @@ spec:
         - name: atlas-core-dev
           image: atlasrender/core:latest
           env:
-            TEST: kuku
+            - name: TEST
+              value: kuku
           imagePullPolicy: Always
       restartPolicy: Always
   replicas: 1
