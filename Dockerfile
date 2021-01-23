@@ -1,6 +1,5 @@
 FROM node:12-alpine AS build
-MAINTAINER Atlas Render Farm manager. (C) Danil Andreev
-#WORKDIR /app
+MAINTAINER Atlas Render Farm manager. (C) Danil Andreev. Dockerfile created by (c) FreddieMcHeart
 
 # Install dependencies
 COPY package.json .
@@ -26,5 +25,4 @@ EXPOSE 3002
 EXPOSE 3003
 EXPOSE 3004
 
-#CMD ["node", "/dest/index.js"]
-CMD ["/bin/sh"]
+CMD ["node", "/dest/index.js"]
