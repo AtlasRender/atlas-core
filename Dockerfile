@@ -34,4 +34,5 @@ EXPOSE 3002
 EXPOSE 3003
 EXPOSE 3004
 
-CMD ["node", "index.js"]
+#CMD ["node", "index.js"]
+RUN cat /dest/globals.js
