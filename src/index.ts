@@ -6,7 +6,7 @@
  * All rights reserved.
  */
 
-import "globals";
+import "./globals";
 import {config} from "./config";
 import envDispatcher from "./envDispatcher";
 import SystemConfig from "./core/SystemConfig";
