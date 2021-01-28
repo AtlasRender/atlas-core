@@ -77,7 +77,7 @@
     "@types/koa-cors": "^0.0.0",
     "@types/koa-router": "^7.4.1",
     "@types/lodash": "^4.14.168",
-    "@types/node": "^14.14.21",
+    "@types/node": "^14.14.22",
     "@types/redis": "^2.8.28",
     "@types/stream-buffers": "^3.0.3",
     "@types/supertest": "^2.0.10",
