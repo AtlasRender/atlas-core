@@ -9,12 +9,14 @@
 import Controller from "../core/Controller";
 import {Context} from "koa";
 import * as argon2 from "argon2";
-
 import User from "../entities/typeorm/User";
 import {UserLoginValidator} from "../validators/UserRequestValidators";
 import Authenticator from "../core/Authenticator";
 import OutUser from "../interfaces/OutUser";
 import RequestError from "../errors/RequestError";
+import Route from "../decorators/Route";
+import RouteValidation from "../decorators/RouteValidation";
+import HTTPController from "../decorators/HTTPController";
 
 
 /**
@@ -22,10 +24,10 @@ import RequestError from "../errors/RequestError";
  * @class
  * @author Denis Afendikov
  */
+@HTTPController
 export default class LoginController extends Controller {
     constructor() {
         super("/login");
-        this.post("/", UserLoginValidator, this.loginHandler);
     }
 
     /**
@@ -33,6 +35,8 @@ export default class LoginController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("POST", "/")
+    @RouteValidation(UserLoginValidator)
     public async loginHandler(ctx: Context): Promise<void> {
         const user = await User.findOne({username: ctx.request.body.username}, {relations: ["privateData"]});
         if (!user) {
@@ -53,6 +57,5 @@ export default class LoginController extends Controller {
             bearer: await Authenticator.createJwt({id: user.id, username: user.username})
         };
         ctx.body = result;
-
     }
 }

@@ -7,15 +7,37 @@
  */
 
 import Controller from "../core/Controller";
+import {Middleware} from "koa";
 
 
 namespace Route {
+    /**
+     * Meta - interface for Route metadata.
+     * @interface
+     * @author Danil Andreev
+     */
     export interface Meta {
-        method: string;
+        /**
+         * method - HTTP method.
+         */
+        method: "GET" | "POST" | "PUT" | "DELETE";
+        /**
+         * route - target route.
+         */
         route: string;
+        /**
+         * validation - validation middleware.
+         */
+        validation?: Middleware<any>
     }
 }
 
+/**
+ * Route - decorator for HTTP controller route.
+ * @param method - HTTP method.
+ * @param route - target route.
+ * @author Danil Andreev
+ */
 function Route(method: "GET" | "POST" | "PUT" | "DELETE", route: string) {
     return (
         target: Controller,
@@ -24,7 +46,7 @@ function Route(method: "GET" | "POST" | "PUT" | "DELETE", route: string) {
     ) => {
         if (!target.meta) target.meta = {};
         if (!target.meta.routes) target.meta.routes = {};
-        target.meta.routes[propertyKey] = {method, route};
+        target.meta.routes[propertyKey] = {...target.meta.routes[propertyKey], method, route};
     }
 }
 

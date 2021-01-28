@@ -12,7 +12,15 @@ import Route from "../decorators/Route";
 
 
 namespace Controller {
+    /**
+     * Meta - interface for controller metadata.
+     * @interface
+     * @author Danil Andreev
+     */
     export interface Meta extends JSONObject<any> {
+        /**
+         * routes - registered controller routes with methods.
+         */
         routes?: JSONObject<Route.Meta>;
     }
 }

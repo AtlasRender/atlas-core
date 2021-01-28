@@ -9,7 +9,12 @@
 import Controller from "../core/Controller";
 
 
-function HTTPController <T extends {new (...args: any[]): {}}>(constructor: T) {
+/**
+ * HTTPController - decorator for HTTP controllers.
+ * @param constructor
+ * @author Danil Andreev
+ */
+function HTTPController<T extends { new(...args: any[]): {} }>(constructor: T) {
     return class WrappedController extends constructor {
         constructor(...args: any[]) {
             super(args);
@@ -20,16 +25,28 @@ function HTTPController <T extends {new (...args: any[]): {}}>(constructor: T) {
                         const callback = this[key];
                         switch (route.method) {
                             case "GET":
-                                this.get(route.route, callback);
+                                if (route.validation)
+                                    this.get(route.route, route.validation, callback);
+                                else
+                                    this.get(route.route, callback);
                                 break;
                             case "POST":
-                                this.post(route.route, callback);
+                                if (route.validation)
+                                    this.post(route.route, route.validation, callback);
+                                else
+                                    this.post(route.route, callback);
                                 break;
                             case "PUT":
-                                this.put(route.route, callback);
+                                if (route.validation)
+                                    this.put(route.route, route.validation, callback);
+                                else
+                                    this.put(route.route, callback);
                                 break;
                             case "DELETE":
-                                this.put(route.route, callback);
+                                if (route.validation)
+                                    this.put(route.route, route.validation, callback);
+                                else
+                                    this.put(route.route, callback);
                                 break;
                             default:
                                 throw new TypeError(`Incorrect value of 'method', expected "'GET' | 'POST' | 'PUT' | 'DELETE'", got ${route.method}`);
@@ -41,7 +58,7 @@ function HTTPController <T extends {new (...args: any[]): {}}>(constructor: T) {
                 throw new TypeError(`Invalid target class, expected Controller.`);
             }
         }
-    }
+    };
 }
 
 export default HTTPController;
