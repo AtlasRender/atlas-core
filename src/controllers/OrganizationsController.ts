@@ -25,6 +25,8 @@ import {canManageUsers} from "../middlewares/withRoleAccessMiddleware";
 import Role from "../entities/typeorm/Role";
 import {UserPermissions, UserWithPermissions} from "../interfaces/UserWithPermissions";
 import getUserPermissionLevelById from "../utils/organizations/getUserPermissionLevelById";
+import HTTPController from "../decorators/HTTPController";
+import NestedController from "../decorators/NestedController";
 
 
 /**
@@ -72,6 +74,8 @@ const addUsersToOrg = async (userIds: number[], org: Organization, defaultRole =
  * @class
  * @author Denis Afendikov
  */
+@HTTPController("/organizations")
+@NestedController(RolesController)
 export default class OrganizationsController extends Controller {
     constructor() {
         super("/organizations");
@@ -115,9 +119,9 @@ export default class OrganizationsController extends Controller {
             this.getUserPermissionLevel
         );
 
-        // connect RolesController
-        const rolesController = new RolesController();
-        this.use(rolesController.baseRoute, rolesController.routes(), rolesController.allowedMethods());
+        // // connect RolesController
+        // const rolesController = new RolesController();
+        // this.use(rolesController.baseRoute, rolesController.routes(), rolesController.allowedMethods());
     }
 
     /**

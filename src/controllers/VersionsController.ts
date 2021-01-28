@@ -23,7 +23,7 @@ import HTTPController from "../decorators/HTTPController";
 @HTTPController("/version")
 export default class VersionsController extends Controller {
     /**
-     * Route __[GET]__ ___/version - Handler for current version.
+     * Route __[GET]__ ___/version___ - Handler for current version.
      * @method
      * @author Denis Afendikov
      */
