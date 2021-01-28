@@ -23,7 +23,7 @@ const findLoggedUser = async (ctx: Context): Promise<User> => {
         .where({id: ctx.state.user.id})
         .leftJoinAndSelect("user.organizations", "userOrg", "userOrg.id = :orgId",
             {orgId: ctx.state.organization.id})
-        .leftJoinAndSelect("user.roles", "userRole", "userRole.id = userOrg.id")
+        .leftJoinAndSelect("user.roles", "userRole", "userRole.organization.id = userOrg.id")
         .getOne();
 
     // check if user is part of this organization
@@ -38,7 +38,7 @@ const findLoggedUser = async (ctx: Context): Promise<User> => {
  * @param rolePredicate - predicate used in __roles.some()__. Specifies the field on which checking will be based.
  */
 const withRoleAccessOrOwner = (
-    rolePredicate: (value: Role, index: number, array: Role[]) => unknown
+    rolePredicate: (value: Role, index: number, array: Role[]) => boolean
 ): Middleware =>
     async (ctx: Context, next: Next): Promise<void> => {
         const user = await findLoggedUser(ctx);
