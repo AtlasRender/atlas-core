@@ -14,51 +14,53 @@ import Controller from "../core/Controller";
  * @param constructor
  * @author Danil Andreev
  */
-function HTTPController<T extends { new(...args: any[]): {} }>(constructor: T) {
-    return class WrappedController extends constructor {
-        constructor(...args: any[]) {
-            super(args);
-            if (this instanceof Controller) {
-                if (this.meta.routes) {
-                    for (const key in this.meta.routes) {
-                        const route = this.meta.routes[key];
-                        const callback = this[key];
-                        switch (route.method) {
-                            case "GET":
-                                if (route.validation)
-                                    this.get(route.route, route.validation, callback);
-                                else
-                                    this.get(route.route, callback);
-                                break;
-                            case "POST":
-                                if (route.validation)
-                                    this.post(route.route, route.validation, callback);
-                                else
-                                    this.post(route.route, callback);
-                                break;
-                            case "PUT":
-                                if (route.validation)
-                                    this.put(route.route, route.validation, callback);
-                                else
-                                    this.put(route.route, callback);
-                                break;
-                            case "DELETE":
-                                if (route.validation)
-                                    this.put(route.route, route.validation, callback);
-                                else
-                                    this.put(route.route, callback);
-                                break;
-                            default:
-                                throw new TypeError(`Incorrect value of 'method', expected "'GET' | 'POST' | 'PUT' | 'DELETE'", got ${route.method}`);
+function HTTPController(baseRoute: string = "") {
+    return function HTTPControllerWrapper<T extends { new(...args: any[]): {} }>(constructor: T) {
+        return class WrappedController extends constructor {
+            constructor(...args: any[]) {
+                super(args);
+                if (this instanceof Controller) {
+                    this.baseRoute = baseRoute;
+                    if (this.meta.routes) {
+                        for (const key in this.meta.routes) {
+                            const route = this.meta.routes[key];
+                            const callback = this[key];
+                            switch (route.method) {
+                                case "GET":
+                                    if (route.validation)
+                                        this.get(route.route, route.validation, callback);
+                                    else
+                                        this.get(route.route, callback);
+                                    break;
+                                case "POST":
+                                    if (route.validation)
+                                        this.post(route.route, route.validation, callback);
+                                    else
+                                        this.post(route.route, callback);
+                                    break;
+                                case "PUT":
+                                    if (route.validation)
+                                        this.put(route.route, route.validation, callback);
+                                    else
+                                        this.put(route.route, callback);
+                                    break;
+                                case "DELETE":
+                                    if (route.validation)
+                                        this.put(route.route, route.validation, callback);
+                                    else
+                                        this.put(route.route, callback);
+                                    break;
+                                default:
+                                    throw new TypeError(`Incorrect value of 'method', expected "'GET' | 'POST' | 'PUT' | 'DELETE'", got ${route.method}`);
+                            }
                         }
-                        console.log(`Registered route [${route.method}] ${route.route}`);
                     }
+                } else {
+                    throw new TypeError(`Invalid target class, expected Controller.`);
                 }
-            } else {
-                throw new TypeError(`Invalid target class, expected Controller.`);
             }
         }
-    };
+    }
 }
 
 export default HTTPController;

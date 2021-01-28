@@ -20,13 +20,8 @@ import HTTPController from "../decorators/HTTPController";
  * @class
  * @author Denis Afendikov
  */
-@HTTPController
+@HTTPController("/version")
 export default class VersionsController extends Controller {
-    constructor() {
-        super("/version");
-        // this.get("/", this.getCurrentVersion);
-    }
-
     /**
      * Route __[GET]__ ___/version - Handler for current version.
      * @method

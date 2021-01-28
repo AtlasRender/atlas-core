@@ -48,7 +48,7 @@ class Controller extends Router {
     /**
      * baseRoute - prefix route for controller.
      */
-    public readonly baseRoute: string;
+    public baseRoute: string;
 
     public meta: Controller.Meta;
 
@@ -60,7 +60,7 @@ class Controller extends Router {
      */
     constructor(route: string = "") {
         super();
-        this.baseRoute = route;
+        if (!this.baseRoute) this.baseRoute = route;
         if (!this.meta) this.meta = {};
     }
 }

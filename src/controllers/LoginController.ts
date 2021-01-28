@@ -24,12 +24,8 @@ import HTTPController from "../decorators/HTTPController";
  * @class
  * @author Denis Afendikov
  */
-@HTTPController
+@HTTPController("/login")
 export default class LoginController extends Controller {
-    constructor() {
-        super("/login");
-    }
-
     /**
      * Route __[POST]__ ___/login___ - handler for user login.
      * @method
