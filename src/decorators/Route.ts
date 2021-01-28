@@ -29,6 +29,10 @@ namespace Route {
          * validation - validation middleware.
          */
         validation?: Middleware<any>
+        /**
+         * middlewares - an array of request middlewares.
+         */
+        middlewares?: Middleware<any>[];
     }
 }
 

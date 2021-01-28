@@ -7,11 +7,12 @@
  */
 
 import Controller from "../core/Controller";
+import {Middleware} from "koa";
 
 
 /**
  * HTTPController - decorator for HTTP controllers.
- * @param constructor
+ * @param baseRoute - Base route for controller.
  * @author Danil Andreev
  */
 function HTTPController(baseRoute: string = "") {
@@ -25,30 +26,21 @@ function HTTPController(baseRoute: string = "") {
                         for (const key in this.meta.routes) {
                             const route = this.meta.routes[key];
                             const callback = this[key];
+                            const middlewares: Middleware<any>[] = [];
+                            if (route.validation) middlewares.push(route.validation);
+                            if (route.middlewares) middlewares.push(...route.middlewares);
                             switch (route.method) {
                                 case "GET":
-                                    if (route.validation)
-                                        this.get(route.route, route.validation, callback);
-                                    else
-                                        this.get(route.route, callback);
+                                    this.get(route.route, ...middlewares, callback);
                                     break;
                                 case "POST":
-                                    if (route.validation)
-                                        this.post(route.route, route.validation, callback);
-                                    else
-                                        this.post(route.route, callback);
+                                    this.post(route.route, ...middlewares, callback);
                                     break;
                                 case "PUT":
-                                    if (route.validation)
-                                        this.put(route.route, route.validation, callback);
-                                    else
-                                        this.put(route.route, callback);
+                                    this.put(route.route, ...middlewares, callback);
                                     break;
                                 case "DELETE":
-                                    if (route.validation)
-                                        this.put(route.route, route.validation, callback);
-                                    else
-                                        this.put(route.route, callback);
+                                    this.put(route.route, ...middlewares, callback);
                                     break;
                                 default:
                                     throw new TypeError(`Incorrect value of 'method', expected "'GET' | 'POST' | 'PUT' | 'DELETE'", got ${route.method}`);
@@ -59,8 +51,8 @@ function HTTPController(baseRoute: string = "") {
                     throw new TypeError(`Invalid target class, expected Controller.`);
                 }
             }
-        }
-    }
+        };
+    };
 }
 
 export default HTTPController;
