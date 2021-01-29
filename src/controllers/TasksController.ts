@@ -13,6 +13,8 @@ import RenderTask from "../entities/typeorm/RenderTask";
 import JobController from "./JobController";
 import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
 import Authenticator from "../core/Authenticator";
+import HTTPController from "../decorators/HTTPController";
+import Route from "../decorators/Route";
 
 
 /**
@@ -20,6 +22,7 @@ import Authenticator from "../core/Authenticator";
  * @class
  * @author Danil Andreev
  */
+@HTTPController("/tasks")
 export default class TasksController extends Controller {
     constructor() {
         super("/tasks");
@@ -34,6 +37,7 @@ export default class TasksController extends Controller {
      * @method
      * @author Danil Andreev
      */
+    @Route("GET", "/:taskId")
     public async getTask(ctx: Context): Promise<void> {
         const user = ctx.state.user;
         const {taskId} = ctx.params;
@@ -67,6 +71,7 @@ export default class TasksController extends Controller {
      * @method
      * @author Danil Andreev
      */
+    @Route("GET", "/:taskId/attempts")
     public async getAttempts(ctx: Context): Promise<void> {
         const userJwt: Authenticator.UserJwt = ctx.state.user;
         const {taskId} = ctx.params;

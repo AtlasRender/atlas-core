@@ -14,16 +14,17 @@ import RequestError from "../errors/RequestError";
 import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
 import RenderTaskAttemptLog from "../entities/typeorm/RenderTaskAttemptLog";
 import Authenticator from "../core/Authenticator";
+import HTTPController from "../decorators/HTTPController";
+import Route from "../decorators/Route";
 
 
+/**
+ * RenderTaskAttemptController - controller for /attempts route.
+ * @class
+ * @author Danil Andreev
+ */
+@HTTPController("/attempts")
 export default class RenderTaskAttemptController extends Controller {
-    constructor() {
-        super("/attempts");
-        this.get("/:attemptId", this.getAttempt);
-        this.get("/:attemptId/log", this.getAttemptLogs);
-        this.get("/:attemptId/log/:logId", this.getAttemptLog);
-    }
-
     /**
      * Route __[GET]__ ___attempts/:attemptId___ - returns render task attempt detailed information.
      * @code 200, 404, 403
@@ -31,6 +32,7 @@ export default class RenderTaskAttemptController extends Controller {
      * @method
      * @author Danil Andreev
      */
+    @Route("GET", ":attemptId")
     public async getAttempt(ctx: Context): Promise<void> {
         const userJwt: Authenticator.UserJwt = ctx.state.user;
         const {attemptId} = ctx.params;
@@ -58,6 +60,7 @@ export default class RenderTaskAttemptController extends Controller {
      * @method
      * @author Danil Andreev
      */
+    @Route("GET", "/:attemptId/log")
     public async getAttemptLogs(ctx: Context): Promise<void> {
         const userJwt: Authenticator.UserJwt = ctx.state.user;
         const {attemptId} = ctx.params;
@@ -84,6 +87,7 @@ export default class RenderTaskAttemptController extends Controller {
      * @method
      * @author Danil Andreev
      */
+    @Route("GET", "/:attemptId/log/:logId")
     public async getAttemptLog(ctx: Context): Promise<void> {
         const userJwt: Authenticator.UserJwt = ctx.state.user;
         const {attemptId, logId} = ctx.params;

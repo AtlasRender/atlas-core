@@ -43,7 +43,7 @@ const withRoleAccessOrOwner = (
     async (ctx: Context, next: Next): Promise<void> => {
         const user = await findLoggedUser(ctx);
         const hasAccess = user.roles.some(rolePredicate);
-        // check if user has permission for this
+        // only user with access or owner proceed
         if (!hasAccess && user.id !== ctx.state.organization.ownerUser.id) {
             throw new RequestError(403, "Forbidden.");
         }

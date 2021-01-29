@@ -15,22 +15,26 @@ import RequestError from "../errors/RequestError";
 import {getRepository} from "typeorm";
 import {UserTokenCreateBodyValidator} from "../validators/UserTokensValidators";
 import Authenticator from "../core/Authenticator";
+import HTTPController from "../decorators/HTTPController";
+import Route from "../decorators/Route";
+import RouteValidation from "../decorators/RouteValidation";
 
 
+/**
+ * UserTokensController - controller for /tokens routes.
+ * @class
+ * @author Danil Andreev
+ */
+@HTTPController("/tokens")
 export default class UserTokensController extends Controller {
-    constructor() {
-        super("/tokens");
-        this.get("/", this.getAllTokens);
-        this.post("/", UserTokenCreateBodyValidator, this.createUserToken)
-        this.delete("/:id", this.deleteToken);
-    }
-
     /**
      * Route __[POST]__ ___/tokens___ - creates new token.
      * @method
      * @param ctx - HTTP Context
      * @author Danil Andreev
      */
+    @Route("POST", "/")
+    @RouteValidation(UserTokenCreateBodyValidator)
     public async createUserToken(ctx: Context): Promise<void> {
         const user: Authenticator.UserJwt = ctx.state.user;
         const input = ctx.request.body;
@@ -53,11 +57,12 @@ export default class UserTokensController extends Controller {
     }
 
     /**
-     * Route __[DELETE]__ ___/tokens___ - get array of all tokens.
+     * Route __[DELETE]__ ___/tokens/:id___ - delete selected token.
      * @method
      * @param ctx - HTTP Context
      * @author Danil Andreev
      */
+    @Route("DELETE", "/:id")
     public async deleteToken(ctx: Context): Promise<void> {
         const user: Authenticator.UserJwt = ctx.state.user;
         const id: number = +ctx.params.id;
@@ -77,6 +82,7 @@ export default class UserTokensController extends Controller {
      * @param ctx - HTTP Context
      * @author Danil Andreev
      */
+    @Route("GET", "/")
     public async getAllTokens(ctx: Context): Promise<void> {
         const user: Authenticator.UserJwt = ctx.state.user;
         const tokens = await getRepository<UserToken>(UserToken)

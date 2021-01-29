@@ -17,6 +17,9 @@ import Plugin from "../entities/typeorm/Plugin";
 import Organization from "../entities/typeorm/Organization";
 import {PluginCreateBodyValidator} from "../validators/PluginRequestValidators";
 import {PluginSettingsSpec, ValidationError} from "@atlasrender/render-plugin";
+import HTTPController from "../decorators/HTTPController";
+import Route from "../decorators/Route";
+import RouteValidation from "../decorators/RouteValidation";
 
 
 /**
@@ -24,23 +27,16 @@ import {PluginSettingsSpec, ValidationError} from "@atlasrender/render-plugin";
  * @class
  * @author Danil Andreev
  */
+@HTTPController("/plugins")
 export default class PluginController extends Controller {
-    constructor() {
-        super("/plugins");
-        this.post("/", PluginCreateBodyValidator, this.addPlugin);
-        //TODO: add validation
-        this.get("/", this.getPlugins);
-        this.get("/:id/preview", this.getPluginPreview);
-        this.get("/:id", this.getPlugin);
-    }
-
-
     /**
      * Route __[POST]__ ___/plugins___ - Adds new plugin.
      * @code 200, 404, 409, 400
      * @method
      * @author DanilAndreev
      */
+    @Route("POST", "/")
+    @RouteValidation(PluginCreateBodyValidator)
     public async addPlugin(ctx: Context): Promise<void> {
         // TODO: Add file meta checks
         // TODO: Add name and version checks.
@@ -175,6 +171,7 @@ export default class PluginController extends Controller {
      * @method
      * @author DanilAndreev
      */
+    @Route("GET", "/")
     public async getPlugins(ctx: Context): Promise<void> {
         const {organization: organizationId} = ctx.request.query;
 
@@ -192,6 +189,13 @@ export default class PluginController extends Controller {
         ctx.body = plugins;
     }
 
+    /**
+     * Route __[GET]__ ___/plugins/:id/preview___ - Get plugin short info.
+     * @code 200,404
+     * @method
+     * @author DanilAndreev
+     */
+    @Route("GET", "/:id/preview")
     public async getPluginPreview(ctx: Context): Promise<void> {
         const {id} = ctx.params;
 
@@ -215,6 +219,13 @@ export default class PluginController extends Controller {
         ctx.body = plugin;
     }
 
+    /**
+     * Route __[GET]__ ___/plugins/:id___ - Get plugin full info.
+     * @code 200,404
+     * @method
+     * @author DanilAndreev
+     */
+    @Route("GET", "/:id")
     public async getPlugin(ctx: Context): Promise<void> {
         const {id} = ctx.params;
 

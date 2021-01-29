@@ -23,6 +23,9 @@ import OutUser from "../interfaces/OutUser";
 import {getRepository} from "typeorm";
 import RequestError from "../errors/RequestError";
 import UserPrivateData from "../entities/typeorm/UserPrivateData";
+import HTTPController from "../decorators/HTTPController";
+import Route from "../decorators/Route";
+import RouteValidation from "../decorators/RouteValidation";
 
 
 /**
@@ -30,25 +33,15 @@ import UserPrivateData from "../entities/typeorm/UserPrivateData";
  * @class
  * @author Denis Afendikov
  */
+@HTTPController("/users")
 export default class UsersController extends Controller {
-    constructor() {
-        super("/users");
-
-        this.get("/", IncludeUsernameInQueryValidator, this.getAllUsers);
-        this.post("/", UserRegisterValidator, this.registerUser);
-
-        this.get("/:user_id", this.getUserById);
-        this.post("/:user_id", UserEditValidator, this.editUser);
-        this.delete("/:user_id", PasswordInBodyValidator, this.deleteUser);
-
-        this.get("/:user_id/organizations", this.getUserOrganizations);
-    }
-
     /**
      * Route __[GET]__ ___/users___ - get information about all users in the system.
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/")
+    @RouteValidation(IncludeUsernameInQueryValidator)
     public async getAllUsers(ctx: Context): Promise<void> {
         ctx.body = await getRepository(User)
             .createQueryBuilder("user")
@@ -65,6 +58,8 @@ export default class UsersController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("POST", "/")
+    @RouteValidation(UserRegisterValidator)
     public async registerUser(ctx: Context): Promise<void> {
 
         if (await User.findOne({username: ctx.request.body.username})) {
@@ -104,6 +99,7 @@ export default class UsersController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/:user_id")
     public async getUserById(ctx: Context): Promise<void> {
         // TODO: check params for injections
         const user = await getRepository(User)
@@ -130,6 +126,8 @@ export default class UsersController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("POST", "/:user_id")
+    @RouteValidation(UserEditValidator)
     public async editUser(ctx: Context): Promise<void> {
         let user = await User.findOne(ctx.params.user_id, {relations: ["privateData"]});
         if (!user) {
@@ -178,6 +176,8 @@ export default class UsersController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("DELETE", "/:user_id")
+    @RouteValidation(PasswordInBodyValidator)
     public async deleteUser(ctx: Context): Promise<void> {
         let user = await User.findOne(ctx.params.user_id, {relations: ["privateData"]});
         if (!user) {
@@ -202,6 +202,7 @@ export default class UsersController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/:user_id/organizations")
     public async getUserOrganizations(ctx: Context): Promise<void> {
         const user = await getRepository(User)
             .createQueryBuilder("user")
