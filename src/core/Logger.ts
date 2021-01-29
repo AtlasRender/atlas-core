@@ -7,6 +7,7 @@
  */
 
 import SystemLog from "../entities/typeorm/SystemLog";
+import SystemConfig from "./SystemConfig";
 
 
 /**
@@ -29,6 +30,9 @@ export default class Logger {
         options: Logger.Options = {}
     ): Promise<SystemLog> {
         const {verbosity = 1, disableDB = false} = options;
+
+        const systemVerbosity = SystemConfig.config.verbosity || 1;
+        if (systemVerbosity < verbosity) return;
 
         let message: string = "";
         if (Array.isArray(payload))
