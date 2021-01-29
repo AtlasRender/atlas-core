@@ -27,6 +27,9 @@ import {UserPermissions, UserWithPermissions} from "../interfaces/UserWithPermis
 import getUserPermissionLevelById from "../utils/organizations/getUserPermissionLevelById";
 import HTTPController from "../decorators/HTTPController";
 import NestedController from "../decorators/NestedController";
+import Route from "../decorators/Route";
+import RouteValidation from "../decorators/RouteValidation";
+import RouteMiddleware from "../decorators/RouteMiddleware";
 
 
 /**
@@ -77,58 +80,59 @@ const addUsersToOrg = async (userIds: number[], org: Organization, defaultRole =
 @HTTPController("/organizations")
 @NestedController(RolesController)
 export default class OrganizationsController extends Controller {
-    constructor() {
-        super("/organizations");
-
-        this.get("/", this.getOrganizations);
-        this.post("/", OrganizationRegisterValidator, this.addOrganization);
-
-        this.get("/:organization_id", this.getOrganizationById);
-        this.post("/:organization_id", OrganizationEditValidator, this.editOrganizationById);
-        this.delete("/:organization_id", this.deleteOrganizationById);
-
-        this.get("/:organization_id/users", this.getOrganizationUsers);
-        // body == {userIds: [ids]}
-        this.post(
-            "/:organization_id/users",
-            IncludeUserIdsInBodyValidator,
-            findOneOrganizationByRequestParams({relations: ["users", "ownerUser", "defaultRole"]}),
-            canManageUsers,
-            this.addOrganizationUsers
-        );
-        this.delete(
-            "/:organization_id/users",
-            IncludeUserIdsInBodyValidator,
-            findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}),
-            canManageUsers,
-            this.deleteOrganizationUsers
-        );
-
-        this.get("/:organization_id/availableUsers", IncludeUsernameInQueryValidator, this.getAvailableUsers);
-
-        this.get("/:organization_id/users/:user_id", this.getOrgUserById);
-
-        this.get(
-            "/:organization_id/users/:user_id/permissions",
-            findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}),
-            this.getUserPermissions
-        );
-
-        this.get(
-            "/:organization_id/users/:user_id/permissionLevel",
-            this.getUserPermissionLevel
-        );
-
-        // // connect RolesController
-        // const rolesController = new RolesController();
-        // this.use(rolesController.baseRoute, rolesController.routes(), rolesController.allowedMethods());
-    }
+    // constructor() {
+    //     super("/organizations");
+    //
+    //     this.get("/", this.getOrganizations);
+    //     this.post("/", OrganizationRegisterValidator, this.addOrganization);
+    //
+    //     this.get("/:organization_id", this.getOrganizationById);
+    //     this.post("/:organization_id", OrganizationEditValidator, this.editOrganizationById);
+    //     this.delete("/:organization_id", this.deleteOrganizationById);
+    //
+    //     this.get("/:organization_id/users", this.getOrganizationUsers);
+    //     // body == {userIds: [ids]}
+    //     this.post(
+    //         "/:organization_id/users",
+    //         IncludeUserIdsInBodyValidator,
+    //         findOneOrganizationByRequestParams({relations: ["users", "ownerUser", "defaultRole"]}),
+    //         canManageUsers,
+    //         this.addOrganizationUsers
+    //     );
+    //     this.delete(
+    //         "/:organization_id/users",
+    //         IncludeUserIdsInBodyValidator,
+    //         findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}),
+    //         canManageUsers,
+    //         this.deleteOrganizationUsers
+    //     );
+    //
+    //     this.get("/:organization_id/availableUsers", IncludeUsernameInQueryValidator, this.getAvailableUsers);
+    //
+    //     this.get("/:organization_id/users/:user_id", this.getOrgUserById);
+    //
+    //     this.get(
+    //         "/:organization_id/users/:user_id/permissions",
+    //         findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}),
+    //         this.getUserPermissions
+    //     );
+    //
+    //     this.get(
+    //         "/:organization_id/users/:user_id/permissionLevel",
+    //         this.getUserPermissionLevel
+    //     );
+    //
+    //     // // connect RolesController
+    //     // const rolesController = new RolesController();
+    //     // this.use(rolesController.baseRoute, rolesController.routes(), rolesController.allowedMethods());
+    // }
 
     /**
      * Route __[GET]__ ___/organizations___ - get information about all organizations in the system.
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/")
     public async getOrganizations(ctx: Context): Promise<void> {
         const orgs = await getRepository(Organization)
             .createQueryBuilder("org")
@@ -143,6 +147,8 @@ export default class OrganizationsController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("POST", "/")
+    @RouteValidation(OrganizationRegisterValidator)
     public async addOrganization(ctx: Context): Promise<void> {
         // TODO: re-edit all with transactions.
 
@@ -241,6 +247,7 @@ export default class OrganizationsController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/:organization_id")
     public async getOrganizationById(ctx: Context): Promise<void> {
         const org = await getRepository(Organization)
             .createQueryBuilder("org")
@@ -268,6 +275,8 @@ export default class OrganizationsController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("POST", "/:organization_id")
+    @RouteValidation(OrganizationEditValidator)
     public async editOrganizationById(ctx: Context): Promise<void> {
         let org = await Organization.findOne(ctx.params.organization_id);
         if (!org) {
@@ -294,6 +303,7 @@ export default class OrganizationsController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("DELETE", "/:organization_id")
     public async deleteOrganizationById(ctx: Context): Promise<void> {
         const org = await Organization.findOne(ctx.params.organization_id, {relations: ["ownerUser"]});
         if (!org) {
@@ -311,6 +321,7 @@ export default class OrganizationsController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/:organization_id/users")
     public async getOrganizationUsers(ctx: Context): Promise<void> {
 
         const org = await getRepository(Organization)
@@ -334,6 +345,10 @@ export default class OrganizationsController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("POST", "/:organization_id/users")
+    @RouteValidation(IncludeUserIdsInBodyValidator)
+    @RouteMiddleware(findOneOrganizationByRequestParams({relations: ["users", "ownerUser", "defaultRole"]}))
+    @RouteMiddleware(canManageUsers)
     public async addOrganizationUsers(ctx: Context) {
         const org = ctx.state.organization;
         await addUsersToOrg(ctx.request.body.userIds, org);
@@ -345,6 +360,10 @@ export default class OrganizationsController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("DELETE", "/:organization_id/users")
+    @RouteValidation(IncludeUserIdsInBodyValidator)
+    @RouteMiddleware(findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}))
+    @RouteMiddleware(canManageUsers)
     public async deleteOrganizationUsers(ctx: Context) {
         const org = ctx.state.organization;
         let errors = [];
@@ -392,6 +411,8 @@ export default class OrganizationsController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/:organization_id/availableUsers")
+    @RouteValidation(IncludeUsernameInQueryValidator)
     public async getAvailableUsers(ctx: Context) {
         const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users", "ownerUser"]});
         if (!org) {
@@ -418,6 +439,7 @@ export default class OrganizationsController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/:organization_id/users/:user_id")
     public async getOrgUserById(ctx: Context) {
         const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users", "ownerUser"]});
         if (!org) {
@@ -471,6 +493,8 @@ export default class OrganizationsController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/:organization_id/users/:user_id/permissions")
+    @RouteMiddleware(findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}))
     public async getUserPermissions(ctx: Context) {
         const org = ctx.state.organization;
         const user = await getRepository(User)
@@ -522,6 +546,7 @@ export default class OrganizationsController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/:organization_id/users/:user_id/permissionLevel")
     public async getUserPermissionLevel(ctx: Context) {
         // const user = User.findOne(ctx.params.user_id);
 
