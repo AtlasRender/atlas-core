@@ -20,16 +20,39 @@ export default class Logger {
      * @method
      * @param level - Level of the log message.
      * @param payload - Payload of the message.
-     * @param verbosity - Verbosity level of message.
+     * @param options - Log options.
      * @author Danil Andreev
      */
     public static async log(
-        level: Logger.LOG_LEVELS, payload: string,
-        {verbosity = 1, disableDB = false}: Logger.Options
+        level: Logger.LOG_LEVELS,
+        payload: Logger.LOG_PAYLOAD,
+        options: Logger.Options = {}
     ): Promise<SystemLog> {
+        const {verbosity = 1, disableDB = false} = options;
+
+        let message: string = "";
+        if (Array.isArray(payload))
+            message = payload.map(item => String(item)).join(" ");
+        else
+            message = String(payload);
+
+        switch (level) {
+            case "info":
+                console.log(message);
+                break;
+            case "warning":
+                console.warn(message);
+                break;
+            case "error":
+                console.error(message);
+                break;
+        }
+
+        if (disableDB) return;
+
         const record = new SystemLog();
         record.level = level;
-        record.payload = payload;
+        record.payload = message;
         return await record.save();
     }
 
@@ -37,10 +60,11 @@ export default class Logger {
      * info - logs message with "info" level.
      * @method
      * @param payload - Payload of the message.
+     * @param options - Log options.
      * @author Danil Andreev
      */
-    public static async info(payload: string): Promise<SystemLog> {
-        const result = await Logger.log("info", payload);
+    public static async info(payload: Logger.LOG_PAYLOAD, options?: Logger.Options): Promise<SystemLog> {
+        const result = await Logger.log("info", payload, options);
         return result;
     }
 
@@ -48,10 +72,11 @@ export default class Logger {
      * warn - logs message with "warning" level.
      * @method
      * @param payload - Payload of the message.
+     * @param options - Log options.
      * @author Danil Andreev
      */
-    public static async warn(payload: string): Promise<SystemLog> {
-        const result = await Logger.log("warning", payload);
+    public static async warn(payload: Logger.LOG_PAYLOAD, options?: Logger.Options): Promise<SystemLog> {
+        const result = await Logger.log("warning", payload, options);
         return result;
     }
 
@@ -59,18 +84,28 @@ export default class Logger {
      * error - logs message with "error" level.
      * @method
      * @param payload - Payload of the message.
+     * @param options - Log options.
      * @author Danil Andreev
      */
-    public static async error(payload: string): Promise<SystemLog> {
-        const result = await Logger.log("error", payload);
+    public static async error(payload: Logger.LOG_PAYLOAD, options?: Logger.Options): Promise<SystemLog> {
+        const result = await Logger.log("error", payload, options);
         return result;
     }
 }
 
 export namespace Logger {
+    /**
+     * LOG_LEVELS - type for logging levels, such as errors, warnings and info.
+     */
     export type LOG_LEVELS = "info" | "warning" | "error";
+    /**
+     * LOG_VERBOSITY - type for log verbosity levels.
+     */
     export type LOG_VERBOSITY = 1 | 2 | 3 | 4;
-
+    /**
+     * LOG_PAYLOAD - log payload type.
+     */
+    export type LOG_PAYLOAD = any | any[];
     export interface Options {
         /**
          * verbosity - verbosity level of the message.
