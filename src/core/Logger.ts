@@ -20,13 +20,16 @@ export default class Logger {
      * @method
      * @param level - Level of the log message.
      * @param payload - Payload of the message.
+     * @param verbosity - Verbosity level of message.
      * @author Danil Andreev
      */
-    public static async log(level: Logger.LOG_LEVELS, payload: Logger.LogPayload): Promise<SystemLog> {
-        const payloadFinal = typeof payload === "string" ? {message: payload} : payload;
+    public static async log(
+        level: Logger.LOG_LEVELS, payload: string,
+        {verbosity = 1, disableDB = false}: Logger.Options
+    ): Promise<SystemLog> {
         const record = new SystemLog();
         record.level = level;
-        record.payload = payloadFinal;
+        record.payload = payload;
         return await record.save();
     }
 
@@ -36,7 +39,7 @@ export default class Logger {
      * @param payload - Payload of the message.
      * @author Danil Andreev
      */
-    public static async info(payload: Logger.LogPayload): Promise<SystemLog> {
+    public static async info(payload: string): Promise<SystemLog> {
         const result = await Logger.log("info", payload);
         return result;
     }
@@ -47,7 +50,7 @@ export default class Logger {
      * @param payload - Payload of the message.
      * @author Danil Andreev
      */
-    public static async warn(payload: Logger.LogPayload): Promise<SystemLog> {
+    public static async warn(payload: string): Promise<SystemLog> {
         const result = await Logger.log("warning", payload);
         return result;
     }
@@ -58,7 +61,7 @@ export default class Logger {
      * @param payload - Payload of the message.
      * @author Danil Andreev
      */
-    public static async error(payload: Logger.LogPayload): Promise<SystemLog> {
+    public static async error(payload: string): Promise<SystemLog> {
         const result = await Logger.log("error", payload);
         return result;
     }
@@ -66,5 +69,18 @@ export default class Logger {
 
 export namespace Logger {
     export type LOG_LEVELS = "info" | "warning" | "error";
-    export type LogPayload = object | string;
+    export type LOG_VERBOSITY = 1 | 2 | 3 | 4;
+
+    export interface Options {
+        /**
+         * verbosity - verbosity level of the message.
+         * @default 1
+         */
+        verbosity?: number;
+        /**
+         * disableDB - if true, database record with log message will not be created.
+         * @default false
+         */
+        disableDB?: boolean;
+    }
 }
