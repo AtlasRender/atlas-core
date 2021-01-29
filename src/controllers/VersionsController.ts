@@ -11,6 +11,8 @@ import {Context} from "koa";
 import root from "../utils/getProjectRoot";
 import * as fs from "fs";
 import RequestError from "../errors/RequestError";
+import Route from "../decorators/Route";
+import HTTPController from "../decorators/HTTPController";
 
 
 /**
@@ -18,17 +20,14 @@ import RequestError from "../errors/RequestError";
  * @class
  * @author Denis Afendikov
  */
+@HTTPController("/version")
 export default class VersionsController extends Controller {
-    constructor() {
-        super("/version");
-        this.get("/", this.getCurrentVersion);
-    }
-
     /**
-     * Route __[GET]__ ___/version - Handler for current version.
+     * Route __[GET]__ ___/version___ - Handler for current version.
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/")
     public async getCurrentVersion(ctx: Context): Promise<void> {
         try {
             const version: string = JSON.parse(fs.readFileSync(root + "./../package.json").toString()).version;

@@ -22,6 +22,10 @@ import {getConnection, getRepository} from "typeorm";
 import User from "../entities/typeorm/User";
 import {findOneOrganizationByRequestParams} from "../middlewares/organizationRequestMiddlewares";
 import {canManageRoles, canManageUsers} from "../middlewares/withRoleAccessMiddleware";
+import HTTPController from "../decorators/HTTPController";
+import Route from "../decorators/Route";
+import RouteValidation from "../decorators/RouteValidation";
+import RouteMiddleware from "../decorators/RouteMiddleware";
 
 
 /**
@@ -29,60 +33,62 @@ import {canManageRoles, canManageUsers} from "../middlewares/withRoleAccessMiddl
  * @class
  * @author Denis Afendikov
  */
+@HTTPController("/:organization_id/roles")
 export default class RolesController extends Controller {
-    constructor() {
-        super("/:organization_id/roles");
-
-        this.get("/", this.getRoles);
-        this.post(
-            "/",
-            RoleAddValidator,
-            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
-            canManageRoles,
-            this.addRole
-        );
-
-        this.get("/:role_id", this.getRole);
-        this.post(
-            "/:role_id",
-            RoleEditValidator,
-            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
-            canManageRoles,
-            this.editRole
-        );
-        this.delete(
-            "/:role_id",
-            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
-            canManageRoles,
-            this.deleteRole
-        );
-
-        // users
-        this.get("/:role_id/users", this.getRoleUsers);
-        this.post(
-            "/:role_id/users",
-            IncludeUserIdInBodyValidator,
-            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
-            canManageUsers,
-            this.addRoleUser
-        );
-
-        // this.post("/:org_id/roles/:user_id", this.addRolesToUser);
-
-        this.delete(
-            "/:role_id/users",
-            IncludeUserIdInBodyValidator,
-            findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
-            canManageUsers,
-            this.deleteRoleUser
-        );
-    }
+    // constructor() {
+    //     super("/:organization_id/roles");
+    //
+    //     this.get("/", this.getRoles);
+    //     this.post(
+    //         "/",
+    //         RoleAddValidator,
+    //         findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+    //         canManageRoles,
+    //         this.addRole
+    //     );
+    //
+    //     this.get("/:role_id", this.getRole);
+    //     this.post(
+    //         "/:role_id",
+    //         RoleEditValidator,
+    //         findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+    //         canManageRoles,
+    //         this.editRole
+    //     );
+    //     this.delete(
+    //         "/:role_id",
+    //         findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+    //         canManageRoles,
+    //         this.deleteRole
+    //     );
+    //
+    //     // users
+    //     this.get("/:role_id/users", this.getRoleUsers);
+    //     this.post(
+    //         "/:role_id/users",
+    //         IncludeUserIdInBodyValidator,
+    //         findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+    //         canManageUsers,
+    //         this.addRoleUser
+    //     );
+    //
+    //     // this.post("/:org_id/roles/:user_id", this.addRolesToUser);
+    //
+    //     this.delete(
+    //         "/:role_id/users",
+    //         IncludeUserIdInBodyValidator,
+    //         findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
+    //         canManageUsers,
+    //         this.deleteRoleUser
+    //     );
+    // }
 
     /**
-     * Route __[GET]__ ___/:org_id/roles___ - get information about all organization's roles.
+     * Route __[GET]__ ___/:organization_id/roles___ - get information about all organization's roles.
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/")
     public async getRoles(ctx: Context): Promise<void> {
         console.log("Route __[GET]__ ___/:org_id/roles - get information about all organization's roles.");
         console.log("ctx.params: \n", ctx.params);
@@ -108,6 +114,10 @@ export default class RolesController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("POST", "/")
+    @RouteValidation(RoleAddValidator)
+    @RouteMiddleware(findOneOrganizationByRequestParams({relations: ["ownerUser"]}))
+    @RouteMiddleware(canManageRoles)
     public async addRole(ctx: Context): Promise<void> {
         const org = ctx.state.organization;
 
@@ -140,6 +150,7 @@ export default class RolesController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/:role_id")
     public async getRole(ctx: Context): Promise<void> {
         const org: Organization = await Organization.findOne(ctx.params.organization_id, {relations: ["ownerUser"]});
         if (!org) {
@@ -163,6 +174,10 @@ export default class RolesController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("POST", "/:role_id")
+    @RouteValidation(RoleEditValidator)
+    @RouteMiddleware(findOneOrganizationByRequestParams({relations: ["ownerUser"]}))
+    @RouteMiddleware(canManageRoles)
     public async editRole(ctx: Context): Promise<void> {
         const org: Organization = ctx.state.organization;
 
@@ -207,6 +222,9 @@ export default class RolesController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("DELETE", "/:role_id")
+    @RouteMiddleware(findOneOrganizationByRequestParams({relations: ["ownerUser"]}))
+    @RouteMiddleware(canManageRoles)
     public async deleteRole(ctx: Context): Promise<void> {
         const role: Role = await Role.findOne(ctx.params.role_id);
         if (!role) {
@@ -221,6 +239,7 @@ export default class RolesController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/:role_id/users")
     public async getRoleUsers(ctx: Context): Promise<void> {
         const org: Organization = await Organization.findOne(ctx.params.organization_id);
         if (!org) {
@@ -247,6 +266,10 @@ export default class RolesController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("POST", "/:role_id/users")
+    @RouteValidation(IncludeUserIdInBodyValidator)
+    @RouteMiddleware(findOneOrganizationByRequestParams({relations: ["ownerUser"]}))
+    @RouteMiddleware(canManageUsers)
     public async addRoleUser(ctx: Context): Promise<void> {
         const role: Role = await Role.findOne(ctx.params.role_id, {relations: ["users"]});
         if (!role) {
@@ -302,6 +325,10 @@ export default class RolesController extends Controller {
      * @method
      * @author Denis Afendikov
      */
+    @Route("GET", "/:role_id/users")
+    @RouteValidation(IncludeUserIdInBodyValidator)
+    @RouteMiddleware(findOneOrganizationByRequestParams({relations: ["ownerUser"]}))
+    @RouteMiddleware(canManageUsers)
     public async deleteRoleUser(ctx: Context): Promise<void> {
         const role: Role = await Role.findOne(ctx.params.role_id, {relations: ["users"]});
         if (!role) {

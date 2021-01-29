@@ -7,6 +7,23 @@
  */
 
 import * as Router from "koa-router";
+import JSONObject from "../interfaces/JSONObject";
+import Route from "../decorators/Route";
+
+
+namespace Controller {
+    /**
+     * Meta - interface for controller metadata.
+     * @interface
+     * @author Danil Andreev
+     */
+    export interface Meta extends JSONObject<any> {
+        /**
+         * routes - registered controller routes with methods.
+         */
+        routes?: JSONObject<Route.Meta>;
+    }
+}
 
 /**
  * Controller - basic controller class for Server.
@@ -30,9 +47,10 @@ import * as Router from "koa-router";
 class Controller extends Router {
     /**
      * baseRoute - prefix route for controller.
-     * @author Danil Andreev
      */
-    public readonly baseRoute: string;
+    public baseRoute: string;
+
+    public meta: Controller.Meta;
 
     /**
      * Creates Controller instance.
@@ -42,7 +60,8 @@ class Controller extends Router {
      */
     constructor(route: string = "") {
         super();
-        this.baseRoute = route;
+        if (!this.baseRoute) this.baseRoute = route;
+        if (!this.meta) this.meta = {};
     }
 }
 

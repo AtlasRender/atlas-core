@@ -25,6 +25,9 @@ import RenderTask from "../entities/typeorm/RenderTask";
 import {SelectQueryBuilder} from "typeorm";
 import RenderTaskAttempt from "../entities/typeorm/RenderTaskAttempt";
 import Authenticator from "../core/Authenticator";
+import HTTPController from "../decorators/HTTPController";
+import Route from "../decorators/Route";
+import RouteValidation from "../decorators/RouteValidation";
 
 
 /**
@@ -32,20 +35,8 @@ import Authenticator from "../core/Authenticator";
  * @class
  * @author Danil Andreev
  */
+@HTTPController("/jobs")
 export default class JobController extends Controller {
-    constructor() {
-        super("/jobs");
-        this.post("/", JobSubmitValidator, this.createJob);
-        this.get("/", this.getJobs);
-        this.get("/:jobId", this.getJob);
-        this.get("/:jobId/tasks", this.getTasks);
-        this.delete("/:jobId", this.deleteJob);
-        this.delete("/:jobId/fail", this.failJob);
-
-        // const taskController = new TasksController();
-        // this.use("/:jobId" + taskController.baseRoute, taskController.routes(), taskController.allowedMethods());
-    }
-
     /**
      * checkUserHaveAccessToJob - function, designed check is job available to user.
      * @param userId - User id
@@ -77,6 +68,7 @@ export default class JobController extends Controller {
      * @method
      * @author Danil Andreev
      */
+    @Route("DELETE", "/:jobId/fail")
     public async failJob(ctx: Context): Promise<void> {
         const user = ctx.state.user;
         const {jobId} = ctx.params;
@@ -100,6 +92,7 @@ export default class JobController extends Controller {
      * @method
      * @author Danil Andreev
      */
+    @Route("DELETE", "/:jobId")
     public async deleteJob(ctx: Context): Promise<void> {
         const user = ctx.state.user;
         const {jobId} = ctx.params;
@@ -130,6 +123,8 @@ export default class JobController extends Controller {
      * @method
      * @author Danil Andreev
      */
+    @Route("POST", "/")
+    @RouteValidation(JobSubmitValidator)
     public async createJob(ctx: Context): Promise<void> {
         let renderJob: RenderJob = null;
         const jwtUser: Authenticator.UserJwt = ctx.state.user;
@@ -235,6 +230,7 @@ export default class JobController extends Controller {
      * @method
      * @author Danil Andreev
      */
+    @Route("GET", "/")
     public async getJobs(ctx: Context): Promise<void> {
         //TODO: add query validator
         //TODO: send not every field.
@@ -272,6 +268,7 @@ export default class JobController extends Controller {
      * @method
      * @author Danil Andreev
      */
+    @Route("GET", "/:jobId")
     public async getJob(ctx: Context): Promise<void> {
         const user = ctx.state.user;
         const {jobId} = ctx.params;
@@ -294,6 +291,7 @@ export default class JobController extends Controller {
      * @method
      * @author Danil Andreev
      */
+    @Route("GET", "/:taskId/tasks")
     public async getTasks(ctx: Context): Promise<void> {
         const user = ctx.state.user;
         const {jobId} = ctx.params;

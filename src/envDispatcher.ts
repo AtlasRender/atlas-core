@@ -24,6 +24,7 @@ export default function envDispatcher(configRef: Ref<JSONObject>, value: string,
                 configRef.current.db.host = value;
                 break;
             case "db_port":
+                if (isNaN(+value)) throw new Error(`Incorrect type of ENV value 'db_port', expected "number", got "${value}"`);
                 configRef.current.db.port = +value;
                 break;
             case "db_username":
@@ -37,6 +38,7 @@ export default function envDispatcher(configRef: Ref<JSONObject>, value: string,
                 break;
 
             case "redis_port":
+                if (isNaN(+value)) throw new Error(`Incorrect type of ENV value 'redis_port', expected "number", got "${value}"`);
                 configRef.current.redis.port = +value;
                 break;
             case "redis_host":
@@ -50,6 +52,7 @@ export default function envDispatcher(configRef: Ref<JSONObject>, value: string,
                 configRef.current.rabbit.hostname = value;
                 break;
             case "rabbit_port":
+                if (isNaN(+value)) throw new Error(`Incorrect type of ENV value 'rabbit_port', expected "number", got "${value}"`);
                 configRef.current.rabbit.port = +value;
                 break;
             case "rabbit_username":
@@ -60,12 +63,18 @@ export default function envDispatcher(configRef: Ref<JSONObject>, value: string,
                 break;
 
             case "port":
+                if (isNaN(+value)) throw new Error(`Incorrect type of ENV value 'port', expected "number", got "${value}"`);
                 configRef.current.port = +value;
+                break;
+
+            case "verbosity":
+                if (isNaN(+value)) throw new Error(`Incorrect type of ENV value 'verbosity', expected "number", got "${value}"`);
+                configRef.current.verbosity = +value;
                 break;
             default:
                 SystemConfig.defaultEnvDispatcher(configRef, value, execArray, regExp);
         }
     } catch (error) {
-        console.error(`Invalid ENV variable "${execArray.input}", skipping.`);
+        console.error(`Invalid ENV variable "${execArray.input}", skipping. Details:\n`, error.message);
     }
 }
