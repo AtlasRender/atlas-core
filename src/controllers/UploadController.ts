@@ -15,6 +15,8 @@ import Temp from "../entities/typeorm/Temp";
 import RequestError from "../errors/RequestError";
 import streamToBuffer from "./../utils/streamToBuffer";
 import User from "../entities/typeorm/User";
+import HTTPController from "../decorators/HTTPController";
+import Route from "../decorators/Route";
 
 
 /**
@@ -22,6 +24,7 @@ import User from "../entities/typeorm/User";
  * @class
  * @author Danil Andreev
  */
+@HTTPController("/file")
 export default class UploadController extends Controller {
     constructor() {
         super("/file");
@@ -36,6 +39,7 @@ export default class UploadController extends Controller {
      * @method
      * @author DanilAndreev
      */
+    @Route("POST", "/")
     public async uploadFile(ctx: Context): Promise<void> {
         const user = ctx.state.user;
         const files: File[] = _.values((ctx.request as any).files);
@@ -95,6 +99,7 @@ export default class UploadController extends Controller {
      * @method
      * @author DanilAndreev
      */
+    @Route("GET", "/:id")
     public async downloadFile(ctx: Context): Promise<void> {
         const user = ctx.state.user;
         const {remove} = ctx.request.query;
@@ -120,6 +125,7 @@ export default class UploadController extends Controller {
      * @method
      * @author DanilAndreev
      */
+    @Route("DELETE", "/:id")
     public async removeFile(ctx: Context): Promise<void> {
         const user = ctx.state.user;
         const {id} = ctx.params;
