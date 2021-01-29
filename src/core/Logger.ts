@@ -15,7 +15,7 @@ import SystemConfig from "./SystemConfig";
  * @class
  * @author Danil Andreev
  */
-export default class Logger {
+class Logger {
     /**
      * log - creates log record with selected level.
      * @method
@@ -29,7 +29,7 @@ export default class Logger {
         payload: Logger.LOG_PAYLOAD,
         options: Logger.Options = {}
     ): Promise<SystemLog> {
-        const {verbosity = 1, disableDB = false} = options;
+        const {verbosity = 4, disableDB = false} = options;
 
         const systemVerbosity = SystemConfig.config.verbosity || 1;
         if (systemVerbosity < verbosity) return;
@@ -97,7 +97,7 @@ export default class Logger {
     }
 }
 
-export namespace Logger {
+namespace Logger {
     /**
      * LOG_LEVELS - type for logging levels, such as errors, warnings and info.
      */
@@ -113,7 +113,7 @@ export namespace Logger {
     export interface Options {
         /**
          * verbosity - verbosity level of the message.
-         * @default 1
+         * @default 4
          */
         verbosity?: number;
         /**
@@ -123,3 +123,5 @@ export namespace Logger {
         disableDB?: boolean;
     }
 }
+
+export default Logger;

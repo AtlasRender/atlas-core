@@ -22,6 +22,7 @@ import * as Amqp from "amqplib";
 import {AMQP_CONNECTION_QUEUE} from "../globals";
 import * as TempDirectory from "temp-dir";
 import ResponseBody from "../interfaces/ResponseBody";
+import Logger from "./Logger";
 
 
 namespace Server {
@@ -224,8 +225,10 @@ class Server extends Koa {
 
         // Creating additional functional for routing.
         Server.current.use(async (ctx: Context, next: Next) => {
-            console.log(`Server [${moment().format("l")} ${moment()
-                .format("LTS")}]: request from (${ctx.hostname}) to route "${ctx.url}".`);
+            Logger.info(
+                `Server [${moment().format("l")} ${moment()
+                    .format("LTS")}]: request from (${ctx.hostname}) to route "${ctx.url}".`
+            ).then();
             // Calling next middleware and handling errors
             await next().catch(error => {
                 // 401 Unauthorized
@@ -254,14 +257,15 @@ class Server extends Koa {
             try {
                 await next();
             } catch (err) {
+                //Logger.error()
                 console.error(`Server [${moment().format("l")} ${moment().format("LTS")}]:`, err);
                 ctx.status = err.code || err.status || 500;
                 let body: ResponseBody = {
                     success: false,
                     message: err.message,
                     response: err.response
-                }
-                if(config.appDebug){
+                };
+                if (config.appDebug) {
                     body.stack = err.stack;
                 }
                 ctx.body = body;
@@ -272,7 +276,7 @@ class Server extends Koa {
 
         // Getting controllers from directory in config.
         if (Server.current.config.controllersDir) {
-            const found: any[] = importClassesFromDirectories(new Logger(), [Server.current.config.controllersDir]);
+            const found: any[] = importClassesFromDirectories(new MLogger(), [Server.current.config.controllersDir]);
             const controllers: any[] = [];
             for (const item of found) {
                 if (item.prototype instanceof Controller)
@@ -406,11 +410,11 @@ class Server extends Koa {
 export default Server;
 
 /**
- * Logger - empty logger for Server importClassesFromDirectories() function.
+ * MLogger - empty logger for Server importClassesFromDirectories() function.
  * @class
  * @author Danil Andreev
  */
-class Logger implements TypeOrmLogger {
+class MLogger implements TypeOrmLogger {
     log(level: "log" | "info" | "warn", message: any, queryRunner?: QueryRunner): any {
     }
 
