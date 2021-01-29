@@ -24,7 +24,7 @@ function RouteMiddleware(...middlewares: Middleware<any>[]) {
         if (!target.meta.routes) target.meta.routes = {};
         const route = target.meta.routes[propertyKey];
         //TODO: think about next line correctness!
-        if (!target.meta.routes[propertyKey]) target.meta.routes[propertyKey] = {route: "", method: "GET"};
+        if (!target.meta.routes[propertyKey]) target.meta.routes[propertyKey] = {...target.meta.routes[propertyKey]};
         if (route?.middlewares)
             target.meta.routes[propertyKey].middlewares.push(...middlewares);
         else
