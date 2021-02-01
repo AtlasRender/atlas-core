@@ -22,6 +22,8 @@ import * as Amqp from "amqplib";
 import {AMQP_CONNECTION_QUEUE} from "../globals";
 import * as TempDirectory from "temp-dir";
 import ResponseBody from "../interfaces/ResponseBody";
+import Logger from "./Logger";
+const convert = require("koa-convert");
 
 
 namespace Server {
@@ -185,10 +187,10 @@ class Server extends Koa {
         // Initializing the Server
         Server.hasInstance = true;
         Server.current = new Server(config, options);
-        console.log(`Server: initializing.`);
+        Logger.info({disableDB: true, verbosity: 1})("Server: Start initialization.")
 
         // TODO: fix koa middleware deprecation!
-        Server.current.use(cors({
+        Server.current.use(convert(cors({
             origin: "http://monitor.atlasrender.com",
             credentials: true,
             headers: [
@@ -205,7 +207,7 @@ class Server extends Koa {
                 "Content-Length",
                 "Referer",
             ]
-        }));
+        })));
 
         // bodyParser middleware
         Server.current.use(bodyParser({
@@ -216,7 +218,7 @@ class Server extends Koa {
 
         // Creating typeorm connection
         await Server.current.setupDbConnection(config.db);
-        console.log("TypeORM: connected to DB");
+        Logger.info({disableDB: true, verbosity: 2})("TypeORM: connected to DataBase")
 
         Server.current.setupRedisConnection(config.redis);
         await Server.current.setupRabbitMQConnection(config.rabbit);
@@ -224,8 +226,7 @@ class Server extends Koa {
 
         // Creating additional functional for routing.
         Server.current.use(async (ctx: Context, next: Next) => {
-            console.log(`Server [${moment().format("l")} ${moment()
-                .format("LTS")}]: request from (${ctx.hostname}) to route "${ctx.url}".`);
+            Logger.info({verbosity: 3})(`Server: request from (${ctx.hostname}) to route "${ctx.url}".`).then();
             // Calling next middleware and handling errors
             await next().catch(error => {
                 // 401 Unauthorized
@@ -253,16 +254,16 @@ class Server extends Koa {
         Server.current.use(async (ctx, next) => {
             try {
                 await next();
-            } catch (err) {
-                console.error(`Server [${moment().format("l")} ${moment().format("LTS")}]:`, err);
-                ctx.status = err.code || err.status || 500;
+            } catch (error) {
+                Logger.error({verbosity: 2})(error.message, error.stack)
+                ctx.status = error.code || error.status || 500;
                 let body: ResponseBody = {
                     success: false,
-                    message: err.message,
-                    response: err.response
-                }
-                if(config.appDebug){
-                    body.stack = err.stack;
+                    message: error.message,
+                    response: error.response
+                };
+                if (config.appDebug) {
+                    body.stack = error.stack;
                 }
                 ctx.body = body;
                 // TODO: ctx.app.emit('error', err, ctx);
@@ -272,19 +273,19 @@ class Server extends Koa {
 
         // Getting controllers from directory in config.
         if (Server.current.config.controllersDir) {
-            const found: any[] = importClassesFromDirectories(new Logger(), [Server.current.config.controllersDir]);
+            const found: any[] = importClassesFromDirectories(new MLogger(), [Server.current.config.controllersDir]);
             const controllers: any[] = [];
             for (const item of found) {
                 if (item.prototype instanceof Controller)
                     controllers.push(item);
             }
-            console.log(`Server: found controllers: [ ${controllers.map(item => item.name).join(", ")} ]`);
+            Logger.info({disableDB: true, verbosity: 3})("Server: found controllers: [", ...controllers.map(item => item.name), "]");
             Server.current.controllers = controllers.map(controller => new controller());
 
             for (const controller of Server.current.controllers)
                 Server.current.router.use(controller.baseRoute, controller.routes(), controller.allowedMethods());
         } else {
-            console.warn(`Server: Warning: "config.controllersDir" is not defined, controllers will not be loaded.`);
+            Logger.warn({disableDB: true, verbosity: 3})(`Server: Warning: "config.controllersDir" is not defined, controllers will not be loaded.`);
         }
 
         // Applying router routes.
@@ -300,8 +301,7 @@ class Server extends Koa {
      * @author Danil Andreev
      */
     private async setupDbConnection(dbOptions: ConnectionOptions): Promise<void> {
-        console.log("TypeORM: Setting up database connection...");
-        // console.log(dbOptions);
+        Logger.info({disableDB: true, verbosity: 2})("TypeORM: Setting up database connection...")
         this.DbConnection = await createConnection(dbOptions);
         await this.DbConnection.synchronize();
     }
@@ -313,7 +313,7 @@ class Server extends Koa {
      * @author Danil Andreev
      */
     private setupRedisConnection(redisOptions: Redis.ClientOpts): Server {
-        console.log("Redis: Setting up Redis connection...");
+        Logger.info({disableDB: true, verbosity: 2})("Redis: Setting up Redis connection...");
         this.RedisConnection = Redis.createClient(redisOptions);
         this.RedisConnection.on("error", (error: Error) => {
             throw error;
@@ -328,7 +328,7 @@ class Server extends Koa {
      * @author Danil Andreev
      */
     private async setupRabbitMQConnection(rabbitMQOptions: Amqp.Options.Connect) {
-        console.log("Redis: Setting up RabbitMQ connection...");
+        Logger.info({disableDB: true, verbosity: 2})("Redis: Setting up RabbitMQ connection...");
         this.RabbitMQConnection = await Amqp.connect(rabbitMQOptions, (error, connection) => {
             if (error) throw error;
         });
@@ -352,7 +352,7 @@ class Server extends Koa {
      */
     public start(port?: string | number): void {
         const targetPort = port || this.config.port || 3002;
-        console.log(`Server: server is listening on port ${targetPort}.`);
+        Logger.info({disableDB: true, verbosity: 1})(`Server: server is listening on port ${targetPort}.`);
         this.server = this.listen(targetPort);
     }
 
@@ -365,25 +365,24 @@ class Server extends Koa {
         if (!this.server) {
             throw new ReferenceError("Cannot close server. Server was not started.");
         }
-        console.log("Server closing connection.");
+        Logger.info({disableDB: true, verbosity: 2})("Server closing connection.");
         this.DbConnection.close().then(() => {
-            console.log("Closed DbConnection.");
+            Logger.info({disableDB: true, verbosity: 2})("Closed DbConnection.");
         });
         this.RabbitMQConnection.close()
             .then(() => {
-                console.log("Closed RabbitMQConnection.");
+                Logger.info({disableDB: true, verbosity: 2})("Closed RabbitMQConnection.");
             })
             .catch(console.error);
         this.RedisConnection.quit(() => {
-            console.log("Closed RedisConnection.");
+            Logger.info({disableDB: true, verbosity: 2})("Closed RedisConnection.");
         });
 
-        this.server.close((err: Error | undefined) => {
-            if (err) {
-                console.error("Server error while closing: ");
-                console.error(err);
+        this.server.close((error: Error | undefined) => {
+            if (error) {
+                Logger.error({disableDB: true, verbosity: 1})("Server: Error while closing.", error.message, error.stack);
             }
-            console.log("Server closed connection");
+            Logger.info({disableDB: true, verbosity: 1})("Server closed connection")
         });
     }
 
@@ -394,7 +393,8 @@ class Server extends Koa {
      * @author Denis Afendikov
      */
     public useController(controller: Controller): void {
-        console.log(`Connecting controller: ${controller.constructor.name}`);
+        //TODO: add controller name to decorator.
+        Logger.info({disableDB: true, verbosity: 3})(`Connecting controller: ${controller.constructor.name}`);
         this.controllers.push(controller);
         this.router.use(controller.baseRoute, controller.routes(), controller.allowedMethods());
 
@@ -406,11 +406,11 @@ class Server extends Koa {
 export default Server;
 
 /**
- * Logger - empty logger for Server importClassesFromDirectories() function.
+ * MLogger - empty logger for Server importClassesFromDirectories() function.
  * @class
  * @author Danil Andreev
  */
-class Logger implements TypeOrmLogger {
+class MLogger implements TypeOrmLogger {
     log(level: "log" | "info" | "warn", message: any, queryRunner?: QueryRunner): any {
     }
 

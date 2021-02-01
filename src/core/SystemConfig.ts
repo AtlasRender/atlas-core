@@ -13,6 +13,7 @@ import * as _ from "lodash";
 import root from "../utils/getProjectRoot";
 import createRef from "../utils/createRef";
 import Ref from "../interfaces/Ref";
+import Logger from "./Logger";
 
 
 namespace SystemConfig {
@@ -105,7 +106,7 @@ class SystemConfig {
             _.merge(SystemConfig.config, configJson);
         } catch (error) {
             if (error.code !== "ENOENT")
-                console.error(`Unable to load configuration from "config.json" file.`, error);
+                Logger.error({disableDB: true, verbosity: 1})(`Unable to load configuration from "config.json" file.`, error.method, error.stack);
         }
 
         // Merging additional configs to common config
@@ -114,7 +115,7 @@ class SystemConfig {
                 if (typeof config === "object") {
                     _.merge(SystemConfig.config, config);
                 } else {
-                    console.error(`Invalid type of 'additionalConfig' item, expected "object", got "${typeof config}"`);
+                    Logger.error({disableDB: true, verbosity: 1})(`Invalid type of 'additionalConfig' item, expected "object", got "${typeof config}"`);
                 }
             }
         }
@@ -151,9 +152,9 @@ class SystemConfig {
                 _.merge(env, tempEnv);
             } catch (error) {
                 if (error.code === "ENOENT")
-                    console.warn(`Could not find env file "${pathname}", skipping`);
+                    Logger.warn({disableDB: true, verbosity: 4})(`Could not find env file "${pathname}", skipping`);
                 else
-                    console.error(error);
+                    Logger.error({disableDB: true, verbosity: 1})(error.message, error.stack);
             }
         }
 

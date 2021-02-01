@@ -38,8 +38,8 @@ export default class SystemLog extends BaseEntity {
     /**
      * payload - log payload.
      */
-    @Column({type: "json"})
-    payload: any;
+    @Column()
+    payload: string;
 
     @CreateDateColumn()
     createdAt: Moment;

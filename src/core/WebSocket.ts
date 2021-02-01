@@ -12,6 +12,7 @@ import {IncomingMessage} from "http";
 import RequestError from "../errors/RequestError";
 import {URL} from "url";
 import JSONObject from "../interfaces/JSONObject";
+import Logger from "./Logger";
 
 
 namespace WebSocket {
@@ -92,7 +93,7 @@ abstract class WebSocket extends WS.Server {
             port: options?.port || 3003,
         });
         this.on("connection", this.onConnection);
-        console.log("WebSocket server is listening on port 3003");
+        Logger.info({disableDB: true, verbosity: 1})("WebSocket server is listening on port 3003");
     }
 
     /**

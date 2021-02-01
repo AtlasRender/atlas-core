@@ -7,6 +7,9 @@
  */
 
 import SystemLog from "../entities/typeorm/SystemLog";
+import SystemConfig from "./SystemConfig";
+import * as moment from "moment";
+import {getManager} from "typeorm";
 
 
 /**
@@ -14,57 +17,128 @@ import SystemLog from "../entities/typeorm/SystemLog";
  * @class
  * @author Danil Andreev
  */
-export default class Logger {
+class Logger {
     /**
-     * log - creates log record with selected level.
+     * log - preparing payload for logging.
      * @method
      * @param level - Level of the log message.
-     * @param payload - Payload of the message.
+     * @param options - Log options.
      * @author Danil Andreev
      */
-    public static async log(level: Logger.LOG_LEVELS, payload: Logger.LogPayload): Promise<SystemLog> {
-        const payloadFinal = typeof payload === "string" ? {message: payload} : payload;
-        const record = new SystemLog();
-        record.level = level;
-        record.payload = payloadFinal;
-        return await record.save();
+    public static log(level: Logger.LOG_LEVELS, options: Logger.Options = {}): Function {
+        /**
+         * Doing logging task.
+         * @function
+         * @author Danil Andreev
+         */
+        return async (...params: any[]): Promise<void> => {
+            const {verbosity = 4, disableDB = false} = options;
+
+            const systemVerbosity = SystemConfig.config.verbosity || 1;
+            if (systemVerbosity < verbosity) return;
+
+            //TODO: add timestamp flag.
+            if (true)
+                params.unshift(`[${moment().format("l")} ${moment().format("LTS")}]`);
+
+
+            switch (level) {
+                case "info":
+                    console.log(...params);
+                    break;
+                case "warning":
+                    console.warn(...params);
+                    break;
+                case "error":
+                    console.error(...params);
+                    break;
+            }
+
+            if (disableDB) return;
+            const message = params.map(item => String(item)).join(" ");
+
+            const record = new SystemLog();
+            record.level = level;
+            record.payload = message;
+
+            getManager().transaction(async transaction => {
+                await transaction.save(record);
+                await transaction
+                    .createQueryBuilder()
+                    .delete()
+                    .from(SystemLog)
+                    .where(
+                        "createdAt < :date",
+                        {date: moment().subtract(2, "days").toISOString()}
+                    )
+                    .execute();
+            }).then().catch(error => Logger.error({verbosity: 4})(error.message, error.stack).then());
+        };
     }
 
     /**
      * info - logs message with "info" level.
      * @method
      * @param payload - Payload of the message.
+     * @param options - Log options.
      * @author Danil Andreev
      */
-    public static async info(payload: Logger.LogPayload): Promise<SystemLog> {
-        const result = await Logger.log("info", payload);
-        return result;
+    public static info(options?: Logger.Options): Function {
+        const callback = Logger.log("info", options);
+        return callback;
     }
 
     /**
      * warn - logs message with "warning" level.
      * @method
      * @param payload - Payload of the message.
+     * @param options - Log options.
      * @author Danil Andreev
      */
-    public static async warn(payload: Logger.LogPayload): Promise<SystemLog> {
-        const result = await Logger.log("warning", payload);
-        return result;
+    public static warn(options?: Logger.Options): Function {
+        const callback = Logger.log("warning", options);
+        return callback;
     }
 
     /**
      * error - logs message with "error" level.
      * @method
      * @param payload - Payload of the message.
+     * @param options - Log options.
      * @author Danil Andreev
      */
-    public static async error(payload: Logger.LogPayload): Promise<SystemLog> {
-        const result = await Logger.log("error", payload);
-        return result;
+    public static error(options?: Logger.Options): Function {
+        const callback = Logger.log("error", options);
+        return callback;
     }
 }
 
-export namespace Logger {
+namespace Logger {
+    /**
+     * LOG_LEVELS - type for logging levels, such as errors, warnings and info.
+     */
     export type LOG_LEVELS = "info" | "warning" | "error";
-    export type LogPayload = object | string;
+    /**
+     * LOG_VERBOSITY - type for log verbosity levels.
+     */
+    export type LOG_VERBOSITY = 1 | 2 | 3 | 4;
+    /**
+     * LOG_PAYLOAD - log payload type.
+     */
+    export type LOG_PAYLOAD = any | any[];
+
+    export interface Options {
+        /**
+         * verbosity - verbosity level of the message.
+         * @default 4
+         */
+        verbosity?: number;
+        /**
+         * disableDB - if true, database record with log message will not be created.
+         * @default false
+         */
+        disableDB?: boolean;
+    }
 }
+
+export default Logger;

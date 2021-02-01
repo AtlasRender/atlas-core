@@ -37,8 +37,7 @@ export class RenderTaskSubscriber implements EntitySubscriberInterface<RenderTas
             }
         } catch (error) {
             //TODO: handle error
-            console.error(error);
-            Logger.error(error.message + " " + error.stack).then();
+            Logger.error({verbosity: 4})(error.message, error.stack).then();
         }
 
         if (event.updatedColumns.some(column => column.propertyName === "status")) {
