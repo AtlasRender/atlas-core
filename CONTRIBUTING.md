@@ -10,13 +10,13 @@ We have some rules to follow when writing code. Here they are:
 * Describe all functions, components, classes, variables, etc. using typescript and JSDocs.
 * Description in JSDocs must contain a detailed description, type decorators, for example, @function or @interface. Also write authorship after the @author decorator. We encourage writing examples after the @example decorator.
 * Add copyright to the beginning of the file and indicate your authorship. Here is the copyright pattern:
-```
-Copyright (c) $today.year. This code created and belongs to Pathfinder render manager project. 
-Owner and project architect: Danil Andreev | danssg08@gmail.com |  https://github.com/DanilAndreev
-Project: $project.name
-File last modified: $file.lastModified
-All rights reserved.
-```
+    ```
+    Copyright (c) $today.year. This code created and belongs to Pathfinder render manager project. 
+    Owner and project architect: Danil Andreev | danssg08@gmail.com |  https://github.com/DanilAndreev
+    Project: $project.name
+    File last modified: $file.lastModified
+    All rights reserved.
+    ```
 * Name variables, functions and everything that you write as intuitively as possible so that there is no confusion and misunderstanding.
 * Use CamelStyle in your code. 
     ```typescript
