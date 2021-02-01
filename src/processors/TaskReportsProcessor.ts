@@ -147,9 +147,7 @@ export default async function TaskReportsProcessor(): Promise<void> {
             // else
             //     channel.nack(message);
 
-            await Logger.error({
-                message: error.message
-            });
+            Logger.error()(error.message, error.stack).then();
         }
     }
 

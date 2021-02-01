@@ -34,8 +34,7 @@ export default class RenderTaskAttemptSubscriber implements EntitySubscriberInte
             }
         } catch (error) {
             //TODO: handle
-            console.error(error);
-            Logger.error(error.message + " " + error.stack).then();
+            Logger.error()(error.message, error.stack).then();
         }
     }
 }

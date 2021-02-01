@@ -225,10 +225,7 @@ class Server extends Koa {
 
         // Creating additional functional for routing.
         Server.current.use(async (ctx: Context, next: Next) => {
-            Logger.info(
-                `Server [${moment().format("l")} ${moment()
-                    .format("LTS")}]: request from (${ctx.hostname}) to route "${ctx.url}".`
-            ).then();
+            Logger.info()(`Server: request from (${ctx.hostname}) to route "${ctx.url}".`).then();
             // Calling next middleware and handling errors
             await next().catch(error => {
                 // 401 Unauthorized

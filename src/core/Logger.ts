@@ -8,6 +8,7 @@
 
 import SystemLog from "../entities/typeorm/SystemLog";
 import SystemConfig from "./SystemConfig";
+import * as moment from "moment";
 
 
 /**
@@ -17,47 +18,50 @@ import SystemConfig from "./SystemConfig";
  */
 class Logger {
     /**
-     * log - creates log record with selected level.
+     * log - preparing payload for logging.
      * @method
      * @param level - Level of the log message.
-     * @param payload - Payload of the message.
      * @param options - Log options.
      * @author Danil Andreev
      */
-    public static async log(
-        level: Logger.LOG_LEVELS,
-        payload: Logger.LOG_PAYLOAD,
-        options: Logger.Options = {}
-    ): Promise<SystemLog> {
-        const {verbosity = 4, disableDB = false} = options;
+    public static log(level: Logger.LOG_LEVELS, options: Logger.Options = {}): Function {
+        /**
+         * Doing logging task.
+         * @function
+         * @author Danil Andreev
+         */
+        return async (...params: any[]): Promise<SystemLog | undefined> => {
+            const {verbosity = 4, disableDB = false} = options;
 
-        const systemVerbosity = SystemConfig.config.verbosity || 1;
-        if (systemVerbosity < verbosity) return;
+            const systemVerbosity = SystemConfig.config.verbosity || 1;
+            if (systemVerbosity < verbosity) return;
 
-        let message: string = "";
-        if (Array.isArray(payload))
-            message = payload.map(item => String(item)).join(" ");
-        else
-            message = String(payload);
+            //TODO: add timestamp flag.
+            if (true)
+                params.unshift(`[${moment().format("l")} ${moment().format("LTS")}]`);
 
-        switch (level) {
-            case "info":
-                console.log(message);
-                break;
-            case "warning":
-                console.warn(message);
-                break;
-            case "error":
-                console.error(message);
-                break;
-        }
 
-        if (disableDB) return;
+            switch (level) {
+                case "info":
+                    console.log(...params);
+                    break;
+                case "warning":
+                    console.warn(...params);
+                    break;
+                case "error":
+                    console.error(...params);
+                    break;
+            }
 
-        const record = new SystemLog();
-        record.level = level;
-        record.payload = message;
-        return await record.save();
+            if (disableDB) return;
+
+            const message = params.map(item => String(item)).join(" ");
+
+            const record = new SystemLog();
+            record.level = level;
+            record.payload = message;
+            return await record.save();
+        };
     }
 
     /**
@@ -67,9 +71,9 @@ class Logger {
      * @param options - Log options.
      * @author Danil Andreev
      */
-    public static async info(payload: Logger.LOG_PAYLOAD, options?: Logger.Options): Promise<SystemLog> {
-        const result = await Logger.log("info", payload, options);
-        return result;
+    public static info(options?: Logger.Options): Function {
+        const callback = Logger.log("info", options);
+        return callback;
     }
 
     /**
@@ -79,9 +83,9 @@ class Logger {
      * @param options - Log options.
      * @author Danil Andreev
      */
-    public static async warn(payload: Logger.LOG_PAYLOAD, options?: Logger.Options): Promise<SystemLog> {
-        const result = await Logger.log("warning", payload, options);
-        return result;
+    public static warn(options?: Logger.Options): Function {
+        const callback = Logger.log("warning", options);
+        return callback;
     }
 
     /**
@@ -91,9 +95,9 @@ class Logger {
      * @param options - Log options.
      * @author Danil Andreev
      */
-    public static async error(payload: Logger.LOG_PAYLOAD, options?: Logger.Options): Promise<SystemLog> {
-        const result = await Logger.log("error", payload, options);
-        return result;
+    public static error(options?: Logger.Options): Function {
+        const callback = Logger.log("error", options);
+        return callback;
     }
 }
 
@@ -110,6 +114,7 @@ namespace Logger {
      * LOG_PAYLOAD - log payload type.
      */
     export type LOG_PAYLOAD = any | any[];
+
     export interface Options {
         /**
          * verbosity - verbosity level of the message.

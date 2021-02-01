@@ -38,7 +38,7 @@ export default async function UserNotificationProcessor(): Promise<void> {
                     throw new TypeError(`Incorrect type of message field 'userId', expected "number", got "${typeof payload.userId}"`);
             } catch (error) {
                 channel.ack(message);
-                Logger.error(error).then().catch(error => console.error(error));
+                Logger.error()(error.message, error.stack).then()
                 return;
             }
             ClientWS.sendToUser(payload.userId, payload.message);

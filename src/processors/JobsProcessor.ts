@@ -83,7 +83,7 @@ export default async function JobsProcessor(): Promise<void> {
             else
                 channel.nack(message);
 
-            await Logger.error(error.message + " " + error.trace);
+            Logger.error()(error.message, error.trace).then();
             //TODO: handle error
         }
     }

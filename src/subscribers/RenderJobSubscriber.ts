@@ -70,8 +70,7 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
             }
         } catch(error) {
             //TODO: handle.
-            console.error(error);
-            Logger.error(error.message + " " + error.stack).then();
+            Logger.error()(error.message, error.stack).then();
 
         }
     }
