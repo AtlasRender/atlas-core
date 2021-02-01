@@ -9,6 +9,7 @@
 import SystemLog from "../entities/typeorm/SystemLog";
 import SystemConfig from "./SystemConfig";
 import * as moment from "moment";
+import {getManager} from "typeorm";
 
 
 /**
@@ -30,7 +31,7 @@ class Logger {
          * @function
          * @author Danil Andreev
          */
-        return async (...params: any[]): Promise<SystemLog | undefined> => {
+        return async (...params: any[]): Promise<void> => {
             const {verbosity = 4, disableDB = false} = options;
 
             const systemVerbosity = SystemConfig.config.verbosity || 1;
@@ -54,13 +55,24 @@ class Logger {
             }
 
             if (disableDB) return;
-
             const message = params.map(item => String(item)).join(" ");
 
             const record = new SystemLog();
             record.level = level;
             record.payload = message;
-            return await record.save();
+
+            getManager().transaction(async transaction => {
+                await transaction.save(record);
+                await transaction
+                    .createQueryBuilder()
+                    .delete()
+                    .from(SystemLog)
+                    .where(
+                        "createdAt < :date",
+                        {date: moment().subtract(2, "days").toISOString()}
+                    )
+                    .execute();
+            }).then().catch(error => Logger.error({verbosity: 4})(error.message, error.stack).then());
         };
     }
 
