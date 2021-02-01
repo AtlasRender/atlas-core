@@ -83,7 +83,7 @@ export default async function JobsProcessor(): Promise<void> {
             else
                 channel.nack(message);
 
-            Logger.error()(error.message, error.trace).then();
+            Logger.error({verbosity: 3})(error.message, error.trace).then();
             //TODO: handle error
         }
     }

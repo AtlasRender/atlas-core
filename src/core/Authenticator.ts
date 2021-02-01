@@ -15,6 +15,7 @@ import * as moment from "moment";
 import {Moment} from "moment";
 import Server from "./Server";
 import {REDIS_USER_JWT_PRIVATE_KEY} from "../globals";
+import Logger from "./Logger";
 
 
 
@@ -105,7 +106,7 @@ class Authenticator {
                 });
             });
         } catch (error) {
-            console.log("Authenticator: JWT Key is missing on Redis. Generating new one.");
+            Logger.info({verbosity: 1})("Authenticator: JWT Key is missing on Redis. Generating new one.");
             const key: string = CryptoRandomString({length: 30, type: "base64"});
             Server.getCurrent().getRedis().set(REDIS_USER_JWT_PRIVATE_KEY, key);
         }

@@ -141,13 +141,12 @@ export default async function TaskReportsProcessor(): Promise<void> {
             channel.ack(message);
         } catch (error) {
             //TODO: provide another logic
-            console.error(error);
             // if (error instanceof ReferenceError)
                 channel.ack(message);
             // else
             //     channel.nack(message);
 
-            Logger.error()(error.message, error.stack).then();
+            Logger.error({verbosity: 3})(error.message, error.stack).then();
         }
     }
 

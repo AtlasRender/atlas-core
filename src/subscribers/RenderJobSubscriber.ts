@@ -35,7 +35,7 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
             }
         } catch (error) {
             //TODO: handle
-            console.error(error);
+            Logger.error({verbosity: 4})(error.message, error.stack).then();
         }
     }
 
@@ -53,7 +53,7 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
             }
         } catch(error) {
             //TODO: handle.
-            console.error(error);
+            Logger.error({verbosity: 4})(error.message, error.stack).then();
         }
     }
 
@@ -70,8 +70,7 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
             }
         } catch(error) {
             //TODO: handle.
-            Logger.error()(error.message, error.stack).then();
-
+            Logger.error({verbosity: 4})(error.message, error.stack).then();
         }
     }
 }

@@ -9,6 +9,7 @@
 import Authenticator from "./Authenticator";
 import WebSocket from "./WebSocket";
 import JSONObject from "../interfaces/JSONObject";
+import Logger from "./Logger";
 
 
 /**
@@ -74,7 +75,7 @@ export default class ClientWS extends WebSocket {
                     affected++;
                 } catch (error) {
                     //TODO: add error handling;
-                    console.log(error);
+                    Logger.error({verbosity: 4})(error.method, error.stack);
                 }
             }
         }
@@ -108,7 +109,7 @@ export default class ClientWS extends WebSocket {
                     candidate.ws.close(code, payload);
                 } catch (error) {
                     //TODO: add error handling;
-                    console.log(error);
+                    Logger.error({verbosity: 4})(error.message, error.stack);
                 } finally {
                     affected++;
                     delete ClientWS.sessions[key];

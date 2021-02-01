@@ -49,8 +49,14 @@ class Controller extends Router {
      * baseRoute - prefix route for controller.
      */
     public baseRoute: string;
-
+    /**
+     * meta - controller metadata.
+     */
     public meta: Controller.Meta;
+    /**
+     * name - controller name.
+     */
+    public name: string;
 
     /**
      * Creates Controller instance.

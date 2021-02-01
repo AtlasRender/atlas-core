@@ -50,7 +50,7 @@ export default class RenderTaskAttemptLogSubscriber implements EntitySubscriberI
             }
         } catch (error) {
             //TODO: handle
-            Logger.error()(error.message, error.stack).then();
+            Logger.error({verbosity: 4})(error.message, error.stack).then();
         }
     }
 }
