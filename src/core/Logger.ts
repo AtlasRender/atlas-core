@@ -132,7 +132,7 @@ namespace Logger {
          * verbosity - verbosity level of the message.
          * @default 4
          */
-        verbosity?: number;
+        verbosity?: LOG_VERBOSITY;
         /**
          * disableDB - if true, database record with log message will not be created.
          * @default false

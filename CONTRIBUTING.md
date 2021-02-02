@@ -148,7 +148,7 @@ We have some rules to follow when writing code. Here they are:
     // Instead of console.error()
     Logger.error({verbosity: 1})("My log payload", "I am an error", 123).then();
     ```
-    > By default, log messages are saved in the database. You can disable this feature by passing options with flag ```disableDB: true```.
+    > For more info see [Logger wiki](https://github.com/AtlasRender/atlas-core/wiki/Logger).
 * If you need to throw error about type incorrectness - use this pattern:
     ```typescript
     throw new TypeError(`Incorrect type of field 'FIELD NAME', expected "EXPECTED TYPE" got "GOT TYPE/VALUE".`);

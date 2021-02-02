@@ -192,7 +192,8 @@ abstract class WebSocket extends WS.Server {
      *
      * __WARNING__
      *
-     * _If you want to extend this method - you must **override** it and **call super method**_     * @param uid - Session unique id.
+     * _If you want to extend this method - you must **override** it and **call super method**_
+     * @param uid - Session unique id.
      * @param ws - Web socket connection session instance.
      * @protected
      * @author Danil Andreev
