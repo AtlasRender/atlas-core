@@ -149,6 +149,10 @@ We have some rules to follow when writing code. Here they are:
     Logger.error({verbosity: 1})("My log payload", "I am an error", 123).then();
     ```
     > By default, log messages are saved in the database. You can disable this feature by passing options with flag ```disableDB: true```.
+* If you need to throw error about type incorrectness - use this pattern:
+```typescript
+throw new TypeError(`Incorrect type of field 'FIELD NAME', expected "EXPECTED TYPE" got "GOT TYPE/VALUE".`);
+```
 * Name your commits this way: 
   ```
     [module_name] (issue #issue_tag) Commit description.
