@@ -44,13 +44,13 @@ class Logger {
 
             switch (level) {
                 case "info":
-                    console.log(...params);
+                    console.log("", ...params);
                     break;
                 case "warning":
-                    console.warn(...params);
+                    console.warn("\x1b[33m", ...params);
                     break;
                 case "error":
-                    console.error(...params);
+                    console.error("", ...params);
                     break;
             }
 
