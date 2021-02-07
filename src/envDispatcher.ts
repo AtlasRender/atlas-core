@@ -76,6 +76,9 @@ export default function envDispatcher(configRef: Ref<JSONObject>, value: string,
                 SystemConfig.defaultEnvDispatcher(configRef, value, execArray, regExp);
         }
     } catch (error) {
-        Logger.error({verbosity: 3, disableDB: true})(`Invalid ENV variable "${execArray.input}", skipping. Details:\n`, error.message);
+        Logger.error({
+            verbosity: 3,
+            disableDB: true
+        })(`Invalid ENV variable "${execArray.input}", skipping. Details:\n`, error.message);
     }
 }
