@@ -16,7 +16,7 @@ import Controller from "../core/Controller";
  * @author Danil Andreev
  */
 function NestedController(controller: typeof Controller, baseRoute?: string) {
-    return function HTTPControllerWrapper<T extends { new(...args: any[]): {} }>(constructor: T) {
+    return function HTTPControllerWrapper<T extends new(...args: any[]) => {}>(constructor: T) {
         return class WrappedController extends constructor {
             constructor(...args: any[]) {
                 super(args);

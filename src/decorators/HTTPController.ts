@@ -16,7 +16,7 @@ import {Middleware} from "koa";
  * @author Danil Andreev
  */
 function HTTPController(baseRoute: string = "") {
-    return function HTTPControllerWrapper<T extends { new(...args: any[]): {} }>(constructor: T) {
+    return function HTTPControllerWrapper<T extends new(...args: any[]) => {}>(constructor: T) {
         return class WrappedController extends constructor {
             constructor(...args: any[]) {
                 super(args);

@@ -18,7 +18,7 @@ const options: SystemConfig.Options = {
     ],
     envDispatcher
 };
-new SystemConfig(options);
+const sysConfig = new SystemConfig(options);
 
 import main from "./main";
 main().then();

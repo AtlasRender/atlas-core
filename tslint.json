@@ -10,7 +10,17 @@
         "quotemark": [
             true,
             "double"    // enforces double quotes
-        ]
+        ],
+        "forin": false,  // TODO: check if there is a way to change this
+        "object-literal-shorthand": {
+            "severity": "warning"
+        },
+        "no-console": {
+            "severity": "warning"
+        },
+        "no-shadowed-variable": {
+            "severity": "warning"
+        }
     },
     "rulesDirectory": [
         "./src",

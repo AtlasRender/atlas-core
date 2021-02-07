@@ -11,6 +11,39 @@ import SystemConfig from "./SystemConfig";
 import * as moment from "moment";
 import {getManager} from "typeorm";
 
+// tslint:disable:no-console
+
+
+namespace Logger {
+    /**
+     * LOG_LEVELS - type for logging levels, such as errors, warnings and info.
+     */
+    export type LOG_LEVELS = "info" | "warning" | "error";
+    /**
+     * LOG_VERBOSITY - type for log verbosity levels.
+     */
+    export type LOG_VERBOSITY = 1 | 2 | 3 | 4;
+    /**
+     * LOG_PAYLOAD - log payload type.
+     */
+    export type LOG_PAYLOAD = any | any[];
+
+    export interface Options {
+        /**
+         * verbosity - verbosity level of the message.
+         * @default 4
+         */
+        verbosity?: LOG_VERBOSITY;
+        /**
+         * disableDB - if true, database record with log message will not be created.
+         * @default false
+         */
+        disableDB?: boolean;
+    }
+
+    export type LogFunction = (...params: any[]) => Promise<void>;
+}
+
 
 /**
  * Logger - System logger. Creates records in database.
@@ -25,7 +58,7 @@ class Logger {
      * @param options - Log options.
      * @author Danil Andreev
      */
-    public static log(level: Logger.LOG_LEVELS, options: Logger.Options = {}): Function {
+    public static log(level: Logger.LOG_LEVELS, options: Logger.Options = {}): Logger.LogFunction {
         /**
          * Doing logging task.
          * @function
@@ -37,7 +70,7 @@ class Logger {
             const systemVerbosity = SystemConfig.config.verbosity || 1;
             if (systemVerbosity < verbosity) return;
 
-            //TODO: add timestamp flag.
+            // TODO: add timestamp flag.
             if (true)
                 params.unshift(`[${moment().format("l")} ${moment().format("LTS")}]`);
 
@@ -79,11 +112,10 @@ class Logger {
     /**
      * info - logs message with "info" level.
      * @method
-     * @param payload - Payload of the message.
      * @param options - Log options.
      * @author Danil Andreev
      */
-    public static info(options?: Logger.Options): Function {
+    public static info(options?: Logger.Options): Logger.LogFunction {
         const callback = Logger.log("info", options);
         return callback;
     }
@@ -91,11 +123,10 @@ class Logger {
     /**
      * warn - logs message with "warning" level.
      * @method
-     * @param payload - Payload of the message.
      * @param options - Log options.
      * @author Danil Andreev
      */
-    public static warn(options?: Logger.Options): Function {
+    public static warn(options?: Logger.Options): Logger.LogFunction {
         const callback = Logger.log("warning", options);
         return callback;
     }
@@ -103,41 +134,12 @@ class Logger {
     /**
      * error - logs message with "error" level.
      * @method
-     * @param payload - Payload of the message.
      * @param options - Log options.
      * @author Danil Andreev
      */
-    public static error(options?: Logger.Options): Function {
+    public static error(options?: Logger.Options): Logger.LogFunction {
         const callback = Logger.log("error", options);
         return callback;
-    }
-}
-
-namespace Logger {
-    /**
-     * LOG_LEVELS - type for logging levels, such as errors, warnings and info.
-     */
-    export type LOG_LEVELS = "info" | "warning" | "error";
-    /**
-     * LOG_VERBOSITY - type for log verbosity levels.
-     */
-    export type LOG_VERBOSITY = 1 | 2 | 3 | 4;
-    /**
-     * LOG_PAYLOAD - log payload type.
-     */
-    export type LOG_PAYLOAD = any | any[];
-
-    export interface Options {
-        /**
-         * verbosity - verbosity level of the message.
-         * @default 4
-         */
-        verbosity?: LOG_VERBOSITY;
-        /**
-         * disableDB - if true, database record with log message will not be created.
-         * @default false
-         */
-        disableDB?: boolean;
     }
 }
 

@@ -8,6 +8,8 @@
 
 import Ajv, {JSONSchemaType} from "ajv";
 import RequestError from "../../errors/RequestError";
+import {Middleware} from "koa";
+
 
 /**
  * validatorFactory - returns validator based on schema.
@@ -43,7 +45,7 @@ const validatorFactory = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv) => {
  * @author Denis Afendikov
  *
  */
-const middlewareFactory = <T>(schema: JSONSchemaType<T>, context: "body" | "query", ajvInst: Ajv) => {
+const middlewareFactory = <T>(schema: JSONSchemaType<T>, context: "body" | "query", ajvInst: Ajv): Middleware => {
     const validator = validatorFactory(schema, ajvInst);
     return async function (ctx, next) {
         try {
@@ -62,7 +64,7 @@ const middlewareFactory = <T>(schema: JSONSchemaType<T>, context: "body" | "quer
  * @param ajvInst - Ajv instance
  * @author Denis Afendikov
  */
-export const bodyValidator = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv) => middlewareFactory(schema, "body", ajvInst);
+export const bodyValidator = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv): Middleware => middlewareFactory(schema, "body", ajvInst);
 
 /**
  * queryValidator - returns middleware for validating request query.
@@ -71,7 +73,7 @@ export const bodyValidator = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv) => mid
  * @param ajvInst - Ajv instance
  * @author Denis Afendikov
  */
-export const queryValidator = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv) => middlewareFactory(schema, "query", ajvInst);
+export const queryValidator = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv): Middleware => middlewareFactory(schema, "query", ajvInst);
 
 /**
  * paramsValidator - returns middleware for validating request params.
@@ -80,7 +82,7 @@ export const queryValidator = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv) => mi
  * @param ajvInst - Ajv instance
  * @author Denis Afendikov
  */
-export const paramsValidator = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv) => {
+export const paramsValidator = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv): Middleware => {
     const validator = validatorFactory(schema, ajvInst);
     return async function (ctx, next) {
         try {
@@ -90,4 +92,4 @@ export const paramsValidator = <T>(schema: JSONSchemaType<T>, ajvInst: Ajv) => {
         }
         await next();
     };
-}
+};

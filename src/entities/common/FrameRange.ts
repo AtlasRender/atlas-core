@@ -53,6 +53,8 @@ export default class FrameRange extends Array<FrameRangePair>{
             throw new TypeError(`Incorrect type of 'input', expected "FrameRangeItem | string", got "${typeof FrameRangeItem}"`);
         }
 
+        // TODO: check if replaceable with for-of
+        // tslint:disable-next-line:prefer-for-of
         for (let i = 0; i < range.length; i++) {
             const selfIndex = this.findIndex((candidate: FrameRangePair) => candidate.renumbered === range[i].renumbered);
             if (selfIndex >= 0) {

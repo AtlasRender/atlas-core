@@ -74,7 +74,7 @@ export default class ClientWS extends WebSocket {
                     candidate.ws.send(payload);
                     affected++;
                 } catch (error) {
-                    //TODO: add error handling;
+                    // TODO: add error handling;
                     Logger.error({verbosity: 4})(error.method, error.stack);
                 }
             }
@@ -108,7 +108,7 @@ export default class ClientWS extends WebSocket {
                     candidate.ws.send(payload);
                     candidate.ws.close(code, payload);
                 } catch (error) {
-                    //TODO: add error handling;
+                    // TODO: add error handling;
                     Logger.error({verbosity: 4})(error.message, error.stack);
                 } finally {
                     affected++;

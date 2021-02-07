@@ -40,7 +40,7 @@ namespace SystemConfig {
         /**
          * envKeyTranslator - function for converting keys from ENV variable name to key inside config object.
          * @callback
-            * @param value - Input value
+         * @param value - Input value
          */
         envDispatcher?: EnvDispatcher;
         /**
@@ -55,7 +55,7 @@ namespace SystemConfig {
     }
 }
 
-//TODO create tests!!!
+// TODO create tests!!!
 /**
  * SystemConfig - class, designed for gathering and merging system configuration from several files.
  * ### This mechanism can gather info from:

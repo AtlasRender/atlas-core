@@ -19,8 +19,7 @@ import Logger from "./Logger";
 
 
 
-
-namespace Authenticator {
+declare namespace Authenticator {
     export interface JwtOptions {
         /**
          * expires - expiration timestamp of the token.
@@ -107,7 +106,7 @@ class Authenticator {
             });
         } catch (error) {
             Logger.info({verbosity: 1})("Authenticator: JWT Key is missing on Redis. Generating new one.");
-            const key: string = CryptoRandomString({length: 30, type: "base64"});
+            key = CryptoRandomString({length: 30, type: "base64"});
             Server.getCurrent().getRedis().set(REDIS_USER_JWT_PRIVATE_KEY, key);
         }
         return key;
