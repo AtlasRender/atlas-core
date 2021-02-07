@@ -11,7 +11,6 @@ import {Context, Next} from "koa";
 import * as http from "http";
 import * as Router from "koa-router";
 import * as bodyParser from "koa-body";
-import * as moment from "moment";
 import {importClassesFromDirectories} from "typeorm/util/DirectoryExportedClassesLoader";
 import {Connection, ConnectionOptions, createConnection, Logger as TypeOrmLogger, QueryRunner} from "typeorm";
 import Controller from "./Controller";
@@ -23,18 +22,11 @@ import {AMQP_CONNECTION_QUEUE} from "../globals";
 import * as TempDirectory from "temp-dir";
 import ResponseBody from "../interfaces/ResponseBody";
 import Logger from "./Logger";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const convert = require("koa-convert");
 
 
 namespace Server {
-    /**
-     * ServerOptions - additional options for Server setup.
-     * @interface
-     * @author Danil Andreev
-     */
-    export interface Options {
-    }
-
     /**
      * ServerConfig - configuration file for server.
      * @interface
@@ -115,11 +107,6 @@ class Server extends Koa {
     protected RabbitMQConnection: Amqp.Connection;
 
     /**
-     * options - additional options for server;
-     */
-    public readonly options: Server.Options;
-
-    /**
      * hasInstance - flag, designed restrict several servers creation.
      * @default false
      */
@@ -146,13 +133,12 @@ class Server extends Koa {
         return this.current;
     }
 
-    private constructor(config: Server.Config, options?: Server.Options) {
+    private constructor(config: Server.Config) {
         super();
 
         this.config = config;
         this.router = new Router();
         this.controllers = [];
-        this.options = options;
     }
 
     /**
@@ -180,14 +166,14 @@ class Server extends Koa {
      * @param options - Additional option for web server.
      * @author Danil Andreev
      */
-    public static async createServer(config: Server.Config, options?: Server.Options): Promise<Server> {
+    public static async createServer(config: Server.Config): Promise<Server> {
         if (Server.hasInstance)
             throw new ReferenceError(`Server: Server instance already exists. Can not create multiple instances of Server.`);
 
         // Initializing the Server
         Server.hasInstance = true;
-        Server.current = new Server(config, options);
-        Logger.info({disableDB: true, verbosity: 1})("Server: Start initialization.")
+        Server.current = new Server(config);
+        Logger.info({disableDB: true, verbosity: 1})("Server: Start initialization.").then();
 
         // TODO: fix koa middleware deprecation!
         Server.current.use(convert(cors({
@@ -218,7 +204,7 @@ class Server extends Koa {
 
         // Creating typeorm connection
         await Server.current.setupDbConnection(config.db);
-        Logger.info({disableDB: true, verbosity: 2})("TypeORM: connected to DataBase")
+        Logger.info({disableDB: true, verbosity: 2})("TypeORM: connected to DataBase").then();
 
         Server.current.setupRedisConnection(config.redis);
         await Server.current.setupRabbitMQConnection(config.rabbit);
@@ -255,9 +241,9 @@ class Server extends Koa {
             try {
                 await next();
             } catch (error) {
-                Logger.error({verbosity: 2})(error.message, error.stack)
+                Logger.error({verbosity: 2})(error.message, error.stack).then();
                 ctx.status = error.code || error.status || 500;
-                let body: ResponseBody = {
+                const body: ResponseBody = {
                     success: false,
                     message: error.message,
                     response: error.response
@@ -279,13 +265,19 @@ class Server extends Koa {
                 if (item.prototype instanceof Controller)
                     controllers.push(item);
             }
-            Logger.info({disableDB: true, verbosity: 3})("Server: found controllers: [", ...controllers.map(item => item.name), "]");
+            Logger.info({
+                disableDB: true,
+                verbosity: 3
+            })("Server: found controllers: [", ...controllers.map(item => item.name), "]").then();
             Server.current.controllers = controllers.map(controller => new controller());
 
             for (const controller of Server.current.controllers)
                 Server.current.router.use(controller.baseRoute, controller.routes(), controller.allowedMethods());
         } else {
-            Logger.warn({disableDB: true, verbosity: 3})(`Server: Warning: "config.controllersDir" is not defined, controllers will not be loaded.`);
+            Logger.warn({
+                disableDB: true,
+                verbosity: 3
+            })(`Server: Warning: "config.controllersDir" is not defined, controllers will not be loaded.`).then();
         }
 
         // Applying router routes.
@@ -301,7 +293,7 @@ class Server extends Koa {
      * @author Danil Andreev
      */
     private async setupDbConnection(dbOptions: ConnectionOptions): Promise<void> {
-        Logger.info({disableDB: true, verbosity: 2})("TypeORM: Setting up database connection...")
+        Logger.info({disableDB: true, verbosity: 2})("TypeORM: Setting up database connection...").then();
         this.DbConnection = await createConnection(dbOptions);
         await this.DbConnection.synchronize();
     }
@@ -328,12 +320,12 @@ class Server extends Koa {
      * @author Danil Andreev
      */
     private async setupRabbitMQConnection(rabbitMQOptions: Amqp.Options.Connect) {
-        Logger.info({disableDB: true, verbosity: 2})("Redis: Setting up RabbitMQ connection...");
+        Logger.info({disableDB: true, verbosity: 2})("Redis: Setting up RabbitMQ connection...").then();
         this.RabbitMQConnection = await Amqp.connect(rabbitMQOptions, (error, connection) => {
             if (error) throw error;
         });
 
-        let channel: Amqp.Channel = await this.RabbitMQConnection.createChannel();
+        const channel: Amqp.Channel = await this.RabbitMQConnection.createChannel();
 
         await channel.assertQueue(AMQP_CONNECTION_QUEUE);
         await channel.prefetch(1);
@@ -380,9 +372,12 @@ class Server extends Koa {
 
         this.server.close((error: Error | undefined) => {
             if (error) {
-                Logger.error({disableDB: true, verbosity: 1})("Server: Error while closing.", error.message, error.stack);
+                Logger.error({
+                    disableDB: true,
+                    verbosity: 1
+                })("Server: Error while closing.", error.message, error.stack);
             }
-            Logger.info({disableDB: true, verbosity: 1})("Server closed connection")
+            Logger.info({disableDB: true, verbosity: 1})("Server closed connection");
         });
     }
 
@@ -411,6 +406,8 @@ export default Server;
  * @author Danil Andreev
  */
 class MLogger implements TypeOrmLogger {
+    // TODO: add loggers
+    // TODO: we need this for printSql!!!
     log(level: "log" | "info" | "warn", message: any, queryRunner?: QueryRunner): any {
     }
 

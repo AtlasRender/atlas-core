@@ -17,7 +17,7 @@ import Logger from "./core/Logger";
  * @function
  * @author Danil Andreev
  */
-export default function envDispatcher(configRef: Ref<JSONObject>, value: string, execArray: RegExpExecArray, regExp: RegExp) {
+export default function envDispatcher(configRef: Ref<JSONObject>, value: string, execArray: RegExpExecArray, regExp: RegExp): void {
     try {
         const name: string = execArray[1].toLowerCase();
         switch (name) {

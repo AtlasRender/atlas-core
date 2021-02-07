@@ -71,11 +71,11 @@ export default class UsersController extends Controller {
                 {errors: {exists: "email"}});
         }
 
-        let user = new User();
+        const user = new User();
         user.username = ctx.request.body.username;
         user.email = ctx.request.body.email;
 
-        let userPrivateData = new UserPrivateData();
+        const userPrivateData = new UserPrivateData();
         userPrivateData.password = await argon2.hash(ctx.request.body.password);
         await userPrivateData.save();
 
@@ -129,7 +129,7 @@ export default class UsersController extends Controller {
     @Route("POST", "/:user_id")
     @RouteValidation(UserEditValidator)
     public async editUser(ctx: Context): Promise<void> {
-        let user = await User.findOne(ctx.params.user_id, {relations: ["privateData"]});
+        const user = await User.findOne(ctx.params.user_id, {relations: ["privateData"]});
         if (!user) {
             throw new RequestError(404, "User not found.");
         }
@@ -141,7 +141,7 @@ export default class UsersController extends Controller {
         //     throw new RequestError(403, "Forbidden.", {errors: {password: "incorrect"}});
         // }
 
-        let errors = {};
+        const errors = {};
         // if email changed
         if (ctx.request.body.email && ctx.request.body.email !== user.email) {
             if (await User.findOne({email: ctx.request.body.email})) {
@@ -179,7 +179,7 @@ export default class UsersController extends Controller {
     @Route("DELETE", "/:user_id")
     @RouteValidation(PasswordInBodyValidator)
     public async deleteUser(ctx: Context): Promise<void> {
-        let user = await User.findOne(ctx.params.user_id, {relations: ["privateData"]});
+        const user = await User.findOne(ctx.params.user_id, {relations: ["privateData"]});
         if (!user) {
             throw new RequestError(404, "User not found.");
         }

@@ -10,11 +10,14 @@ import {
     BaseEntity,
     Column,
     CreateDateColumn,
-    Entity, JoinColumn,
+    Entity,
+    JoinColumn,
     JoinTable,
     ManyToMany,
-    OneToMany, OneToOne,
-    PrimaryGeneratedColumn, UpdateDateColumn
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
 } from "typeorm";
 import Role from "./Role";
 import Organization from "./Organization";

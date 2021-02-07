@@ -16,7 +16,7 @@ import * as _ from "lodash";
  * @class
  * @author Danil Andreev
  */
-export default class FrameRange extends Array<FrameRangePair>{
+export default class FrameRange extends Array<FrameRangePair> {
     /**
      * Creates an instance of FrameRange.
      * @constructor
@@ -54,7 +54,6 @@ export default class FrameRange extends Array<FrameRangePair>{
         }
 
         // TODO: check if replaceable with for-of
-        // tslint:disable-next-line:prefer-for-of
         for (let i = 0; i < range.length; i++) {
             const selfIndex = this.findIndex((candidate: FrameRangePair) => candidate.renumbered === range[i].renumbered);
             if (selfIndex >= 0) {
@@ -106,7 +105,7 @@ export default class FrameRange extends Array<FrameRangePair>{
 
             if (target.renumbered > this[middle].renumbered) {
                 start = middle;
-            } else if (target.renumbered < this[middle].renumbered){
+            } else if (target.renumbered < this[middle].renumbered) {
                 end = middle;
             } else {
                 return middle;

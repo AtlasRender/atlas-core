@@ -9,12 +9,14 @@ module.exports = {
         "plugin:@typescript-eslint/recommended"
     ],
     rules: {
-        "only-arrow-functions": "off",
-        "no-namespace": "off",
-        "quotes": ["error", "double"],
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/no-inferrable-types": "off",
+        "@typescript-eslint/ban-types": "off",
+        "only-arrow-functions": ["off"],
+        "quotes": ["error", "double", {"allowTemplateLiterals": true}],
         // "forin": false,  // TODO: check if there is a way to change this
-        "object-literal-shorthand": "warn",
+        "object-shorthand": "warn",
         "no-console": "warn",
-        "no-shadowed-variable": "warn"
+        "no-shadow": ["error", {builtinGlobals: true}]
     }
 };

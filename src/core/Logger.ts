@@ -11,7 +11,7 @@ import SystemConfig from "./SystemConfig";
 import * as moment from "moment";
 import {getManager} from "typeorm";
 
-// tslint:disable:no-console
+/* eslint no-console: 0 */
 
 
 namespace Logger {

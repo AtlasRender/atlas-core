@@ -9,6 +9,7 @@
 import {Entity} from "typeorm";
 import BasicPlugin from "./BasicPlugin";
 
+
 /**
  * GlobalPlugin - typeorm entity for global plugins data.
  * @class

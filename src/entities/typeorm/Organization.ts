@@ -8,14 +8,17 @@
 
 import {
     BaseEntity,
-    Column, CreateDateColumn,
+    Column,
+    CreateDateColumn,
     Entity,
     JoinColumn,
     JoinTable,
-    ManyToMany, ManyToOne,
+    ManyToMany,
+    ManyToOne,
     OneToMany,
     OneToOne,
-    PrimaryGeneratedColumn, UpdateDateColumn
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
 } from "typeorm";
 import User from "./User";
 import RenderJob from "./RenderJob";

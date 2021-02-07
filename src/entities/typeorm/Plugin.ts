@@ -6,11 +6,10 @@
  * All rights reserved.
  */
 
-import {Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Entity, ManyToOne} from "typeorm";
 import Organization from "./Organization";
 import BasicPlugin from "./BasicPlugin";
 import RenderJob from "./RenderJob";
-import {Moment} from "moment";
 
 
 /**

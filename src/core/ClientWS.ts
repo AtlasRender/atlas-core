@@ -120,7 +120,7 @@ export default class ClientWS extends WebSocket {
     }
 
     protected async validateAuthorization(authorization: string): Promise<JSONObject> {
-        const userJwt: Authenticator.UserJwt = await Authenticator.validateToken(authorization)
+        const userJwt: Authenticator.UserJwt = await Authenticator.validateToken(authorization);
         return {userId: userJwt.id};
     }
 }

@@ -40,7 +40,7 @@ namespace SystemConfig {
         /**
          * envKeyTranslator - function for converting keys from ENV variable name to key inside config object.
          * @callback
-         * @param value - Input value
+            * @param value - Input value
          */
         envDispatcher?: EnvDispatcher;
         /**
@@ -106,7 +106,10 @@ class SystemConfig {
             _.merge(SystemConfig.config, configJson);
         } catch (error) {
             if (error.code !== "ENOENT")
-                Logger.error({disableDB: true, verbosity: 1})(`Unable to load configuration from "config.json" file.`, error.method, error.stack);
+                Logger.error({
+                    disableDB: true,
+                    verbosity: 1
+                })(`Unable to load configuration from "config.json" file.`, error.method, error.stack);
         }
 
         // Merging additional configs to common config
@@ -115,7 +118,10 @@ class SystemConfig {
                 if (typeof config === "object") {
                     _.merge(SystemConfig.config, config);
                 } else {
-                    Logger.error({disableDB: true, verbosity: 1})(`Invalid type of 'additionalConfig' item, expected "object", got "${typeof config}"`);
+                    Logger.error({
+                        disableDB: true,
+                        verbosity: 1
+                    })(`Invalid type of 'additionalConfig' item, expected "object", got "${typeof config}"`);
                 }
             }
         }
