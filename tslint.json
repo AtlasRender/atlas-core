@@ -1,0 +1,19 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "only-arrow-functions": false,
+        "no-namespace": false,
+        "quotemark": [
+            true,
+            "double"    // enforces double quotes
+        ]
+    },
+    "rulesDirectory": [
+        "./src",
+        "./tests"
+    ]
+}
