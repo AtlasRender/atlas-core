@@ -105,7 +105,7 @@ class Authenticator {
                 });
             });
         } catch (error) {
-            Logger.info({verbosity: 1})("Authenticator: JWT Key is missing on Redis. Generating new one.");
+            Logger.info({verbosity: 1})("Authenticator: JWT Key is missing on Redis. Generating new one.").then();
             key = CryptoRandomString({length: 30, type: "base64"});
             Server.getCurrent().getRedis().set(REDIS_USER_JWT_PRIVATE_KEY, key);
         }
