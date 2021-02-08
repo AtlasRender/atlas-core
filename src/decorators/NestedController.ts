@@ -16,8 +16,8 @@ import Controller from "../core/Controller";
  * @author Danil Andreev
  */
 function NestedController(controller: typeof Controller, baseRoute?: string) {
-    return function HTTPControllerWrapper<T extends { new(...args: any[]): {} }>(constructor: T) {
-        return class WrappedController extends constructor {
+    return function HTTPControllerWrapper<T extends new(...args: any[]) => {}>(objectConstructor: T): T {
+        return class WrappedController extends objectConstructor {
             constructor(...args: any[]) {
                 super(args);
                 if (this instanceof Controller) {
@@ -27,8 +27,8 @@ function NestedController(controller: typeof Controller, baseRoute?: string) {
                     throw new TypeError(`Invalid target class, expected Controller.`);
                 }
             }
-        }
-    }
+        };
+    };
 }
 
 export default NestedController;

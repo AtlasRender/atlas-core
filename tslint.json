@@ -1,0 +1,29 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "only-arrow-functions": false,
+        "no-namespace": false,
+        "quotemark": [
+            true,
+            "double"    // enforces double quotes
+        ],
+        "forin": false,  // TODO: check if there is a way to change this
+        "object-literal-shorthand": {
+            "severity": "warning"
+        },
+        "no-console": {
+            "severity": "warning"
+        },
+        "no-shadowed-variable": {
+            "severity": "warning"
+        }
+    },
+    "rulesDirectory": [
+        "./src",
+        "./tests"
+    ]
+}

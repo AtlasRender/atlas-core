@@ -20,6 +20,7 @@ import RenderTask from "./RenderTask";
 import RenderTaskAttemptLog from "./RenderTaskAttemptLog";
 import {Moment} from "moment";
 
+
 /**
  * RenderTaskAttempt - typeorm entity for task attempt data.
  * @class

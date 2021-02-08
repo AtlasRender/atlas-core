@@ -92,7 +92,7 @@ export default class FrameRangeItem implements FrameRangeItemOptions {
         for (let frame = this.start; frame <= this.end; frame += this.step) {
             result.push(new FrameRangePair(frame, renumbered || frame));
             if (renumbered)
-                renumbered+=this.renumberStep;
+                renumbered += this.renumberStep;
         }
         return result;
     }

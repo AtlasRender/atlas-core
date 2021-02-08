@@ -11,7 +11,6 @@ import Server from "../core/Server";
 import {AMQP_JOBS_QUEUE, AMQP_TASKS_QUEUE} from "../globals";
 import JobEvent from "../core/JobEvent";
 import RenderTask from "../entities/typeorm/RenderTask";
-import getFramesFromRange from "../utils/getFramesFromRange";
 import RenderJob from "../entities/typeorm/RenderJob";
 import Logger from "../core/Logger";
 import FrameRange from "../entities/common/FrameRange";
@@ -29,7 +28,7 @@ export default async function JobsProcessor(): Promise<void> {
     /**
      * handler - AMQP messages handler.
      * @param message - AMQP message.
-     * @param channel
+     * @param channel - AMQP channel.
      * @throws ReferenceError
      * @author Danil Andreev
      */
@@ -37,7 +36,7 @@ export default async function JobsProcessor(): Promise<void> {
         try {
             const event: JobEvent = new JobEvent(JSON.parse(message.content.toString()));
             const inputJob: RenderJob = event.data;
-            //const frames: number[] = getFramesFromRange(inputJob.frameRange);
+            // const frames: number[] = getFramesFromRange(inputJob.frameRange);
             const range: FrameRange = new FrameRange();
 
             for (const item of inputJob.frameRange) {
@@ -84,15 +83,15 @@ export default async function JobsProcessor(): Promise<void> {
                 channel.nack(message);
 
             Logger.error({verbosity: 3})(error.message, error.trace).then();
-            //TODO: handle error
+            // TODO: handle error
         }
     }
 
-    const channel: Channel = await Server.getCurrent().getRabbit().createChannel();
-    await channel.assertQueue(AMQP_JOBS_QUEUE);
-    await channel.prefetch(1);
-    await channel.consume(AMQP_JOBS_QUEUE, async (message: Message) => {
-        console.log("Processing job");
-        await handler(message, channel);
+    const AMQPChannel: Channel = await Server.getCurrent().getRabbit().createChannel();
+    await AMQPChannel.assertQueue(AMQP_JOBS_QUEUE);
+    await AMQPChannel.prefetch(1);
+    await AMQPChannel.consume(AMQP_JOBS_QUEUE, async (message: Message) => {
+        // console.log("Processing job");
+        await handler(message, AMQPChannel);
     });
 }

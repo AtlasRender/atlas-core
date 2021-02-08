@@ -28,7 +28,7 @@ function RouteMiddleware(...middlewares: Middleware<any>[]) {
             target.meta.routes[propertyKey].middlewares = [...middlewares, ...route.middlewares];
         else
             target.meta.routes[propertyKey].middlewares = [...middlewares];
-    }
+    };
 }
 
 export default RouteMiddleware;

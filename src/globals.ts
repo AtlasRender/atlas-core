@@ -7,7 +7,8 @@
  */
 
 import Ajv from "ajv";
-import addFormats from "ajv-formats"
+import addFormats from "ajv-formats";
+
 
 export const ajvInstance = new Ajv({
     allErrors: true,
@@ -22,15 +23,15 @@ addFormats(ajvInstance);
 /**
  * AMQP_CONNECTION_QUEUE - queue name for slaves connection reports.
  */
-export const AMQP_CONNECTION_QUEUE = "slave_connection"
+export const AMQP_CONNECTION_QUEUE = "slave_connection";
 /**
  * AMQP_TASKS_QUEUE - queue name for render tasks.
  */
-export const AMQP_TASKS_QUEUE = "render_tasks"
+export const AMQP_TASKS_QUEUE = "render_tasks";
 /**
  * AMQP_REPORTS_QUEUE - queue name for slaves runtime reports.
  */
-export const AMQP_TASK_REPORTS_QUEUE = "slave_reports"
+export const AMQP_TASK_REPORTS_QUEUE = "slave_reports";
 /**
  * AMQP_JOBS_QUEUE - queue name for jobs management.
  */

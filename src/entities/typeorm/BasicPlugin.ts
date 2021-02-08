@@ -9,6 +9,7 @@
 import {BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
 import {Moment} from "moment";
 
+
 /**
  * BasicPlugin - Base class for plugin entities.
  * @class
@@ -37,6 +38,7 @@ export default class BasicPlugin extends BaseEntity {
     @Column({type: "text", nullable: true})
     description: string;
 
+    // TODO: change type to PluginSettingsSpec
     /**
      * rules - rules for plugin additional settings. Validated by PluginSettingsSpec class.
      * The rules gives structure of plugin additional settings. Rules describes fields layout and type.

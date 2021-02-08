@@ -11,9 +11,8 @@ import Controller from "../core/Controller";
 import {Context} from "koa";
 import {
     IncludeUserIdInBodyValidator,
-    IncludeUserIdsInBodyValidator,
-    OrganizationRegisterValidator,
-    RoleAddValidator, RoleEditValidator
+    RoleAddValidator,
+    RoleEditValidator
 } from "../validators/OrganizationRequestValidators";
 import Role from "../entities/typeorm/Role";
 import Organization from "../entities/typeorm/Organization";
@@ -127,7 +126,7 @@ export default class RolesController extends Controller {
                 {errors: {name: "exists"}});
         }
 
-        let role = new Role();
+        const role = new Role();
         role.name = ctx.request.body.name;
         role.description = ctx.request.body.description;
         role.color = ctx.request.body.color || "black"; // TODO random color
@@ -182,7 +181,7 @@ export default class RolesController extends Controller {
         const org: Organization = ctx.state.organization;
 
         // find role that will be edited
-        let role = await Role.findOne(ctx.params.role_id);
+        const role = await Role.findOne(ctx.params.role_id);
         if (!role) {
             throw new RequestError(404, "Role not found.");
         }

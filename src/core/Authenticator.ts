@@ -18,8 +18,6 @@ import {REDIS_USER_JWT_PRIVATE_KEY} from "../globals";
 import Logger from "./Logger";
 
 
-
-
 namespace Authenticator {
     export interface JwtOptions {
         /**
@@ -64,7 +62,7 @@ class Authenticator {
      * @method
      * @author Danil Andreev
      */
-    public static init() {
+    public static init(): void {
         Authenticator.jwtMiddleware = Jwt({
             secret: Authenticator.secretLoader,
             isRevoked: Authenticator.checkTokenRevoked,
@@ -78,7 +76,7 @@ class Authenticator {
      * @param payload - Request payload
      * @author Danil Andreev
      */
-    protected static async secretLoader(header: any, payload: any): Promise<string> {
+    protected static async secretLoader(header: never, payload: never): Promise<string> {
         return await Authenticator.getKey();
     }
 
@@ -88,7 +86,7 @@ class Authenticator {
      * @method
      * @author Danil Andreev
      */
-    public static async getKey() {
+    public static async getKey(): Promise<string> {
         let key: string = "";
         try {
             key = await new Promise<string>((resolve, reject) => {
@@ -106,8 +104,8 @@ class Authenticator {
                 });
             });
         } catch (error) {
-            Logger.info({verbosity: 1})("Authenticator: JWT Key is missing on Redis. Generating new one.");
-            const key: string = CryptoRandomString({length: 30, type: "base64"});
+            Logger.info({verbosity: 1})("Authenticator: JWT Key is missing on Redis. Generating new one.").then();
+            key = CryptoRandomString({length: 30, type: "base64"});
             Server.getCurrent().getRedis().set(REDIS_USER_JWT_PRIVATE_KEY, key);
         }
         return key;
@@ -121,9 +119,7 @@ class Authenticator {
      * @param token - Raw jwt token
      */
     protected static async checkTokenRevoked(ctx: Context, decodedToken: Authenticator.UserJwt, token: string): Promise<boolean> {
-        if (new Date(decodedToken.expires) < new Date())
-            return true;
-        return false;
+        return new Date(decodedToken.expires) < new Date();
     }
 
     /**
@@ -162,20 +158,16 @@ class Authenticator {
      * @author Danil Andreev
      */
     public static async validateToken(token: string): Promise<Authenticator.UserJwt> {
-        try {
-            const decoded: any = jsonwebtoken.decode(token);
-            if (typeof decoded !== "object")
-                throw new TypeError(`Incorrect token.`);
-            if (typeof decoded.id !== "number")
-                throw new TypeError(`Incorrect token.`);
-            if (typeof decoded.expires !== "string")
-                throw new TypeError(`Incorrect token.`);
-            if (new Date(decoded.expires) < new Date())
-                throw new TypeError(`Incorrect token.`);
-            return decoded;
-        } catch (error) {
+        const decoded: any = jsonwebtoken.decode(token);
+        if (
+            typeof decoded !== "object" ||
+            typeof decoded.id !== "number" ||
+            typeof decoded.expires !== "string" ||
+            new Date(decoded.expires) < new Date()
+        )
             throw new TypeError(`Incorrect token.`);
-        }
+        return decoded;
+
     }
 }
 

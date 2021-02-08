@@ -18,6 +18,7 @@ import {
 import Organization from "./Organization";
 import {Moment} from "moment";
 
+
 /**
  * OrganizationLog - typeorm entity for organization log data.
  * @class

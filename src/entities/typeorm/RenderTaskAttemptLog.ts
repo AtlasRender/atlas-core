@@ -7,17 +7,10 @@
  */
 
 
-import {
-    BaseEntity,
-    Column,
-    CreateDateColumn,
-    Entity,
-    ManyToOne,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn
-} from "typeorm";
+import {BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import RenderTaskAttempt from "./RenderTaskAttempt";
 import {Moment} from "moment";
+
 
 /**
  * RenderTaskAttemptLog - typeorm entity for task attempt log data.
