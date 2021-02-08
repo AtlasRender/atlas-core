@@ -9,14 +9,15 @@
 import Ref from "./interfaces/Ref";
 import JSONObject from "./interfaces/JSONObject";
 import SystemConfig from "./core/SystemConfig";
+import Logger from "./core/Logger";
 
-//TODO: add interface for system config!!!!;
+// TODO: add interface for system config!!!!;
 /**
  * envDispatcher - function, designed to place variables from env to right places in config.
  * @function
  * @author Danil Andreev
  */
-export default function envDispatcher(configRef: Ref<JSONObject>, value: string, execArray: RegExpExecArray, regExp: RegExp) {
+export default function envDispatcher(configRef: Ref<JSONObject>, value: string, execArray: RegExpExecArray, regExp: RegExp): void {
     try {
         const name: string = execArray[1].toLowerCase();
         switch (name) {
@@ -75,6 +76,9 @@ export default function envDispatcher(configRef: Ref<JSONObject>, value: string,
                 SystemConfig.defaultEnvDispatcher(configRef, value, execArray, regExp);
         }
     } catch (error) {
-        console.error(`Invalid ENV variable "${execArray.input}", skipping. Details:\n`, error.message);
+        Logger.error({
+            verbosity: 3,
+            disableDB: true
+        })(`Invalid ENV variable "${execArray.input}", skipping. Details:\n`, error.message);
     }
 }

@@ -51,7 +51,7 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
             for (const user of users) {
                 ClientWS.sendToUser(user.id, {type: CWS_RENDER_JOB_UPDATE, payload: {id: job.id}});
             }
-        } catch(error) {
+        } catch (error) {
             //TODO: handle.
             Logger.error({verbosity: 4})(error.message, error.stack).then();
         }
@@ -68,7 +68,7 @@ export class RenderJobSubscriber implements EntitySubscriberInterface<RenderJob>
             for (const user of users) {
                 ClientWS.sendToUser(user.id, {type: CWS_RENDER_JOB_DELETE, payload: {id: job.id}});
             }
-        } catch(error) {
+        } catch (error) {
             //TODO: handle.
             Logger.error({verbosity: 4})(error.message, error.stack).then();
         }

@@ -8,6 +8,7 @@
 
 import {Moment} from "moment";
 
+
 /**
  * OutUser - user data that will be returned from endpoints.
  * @interface

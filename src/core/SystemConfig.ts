@@ -55,7 +55,7 @@ namespace SystemConfig {
     }
 }
 
-//TODO create tests!!!
+// TODO create tests!!!
 /**
  * SystemConfig - class, designed for gathering and merging system configuration from several files.
  * ### This mechanism can gather info from:
@@ -106,7 +106,10 @@ class SystemConfig {
             _.merge(SystemConfig.config, configJson);
         } catch (error) {
             if (error.code !== "ENOENT")
-                Logger.error({disableDB: true, verbosity: 1})(`Unable to load configuration from "config.json" file.`, error.method, error.stack);
+                Logger.error({
+                    disableDB: true,
+                    verbosity: 1
+                })(`Unable to load configuration from "config.json" file.`, error.method, error.stack);
         }
 
         // Merging additional configs to common config
@@ -115,7 +118,10 @@ class SystemConfig {
                 if (typeof config === "object") {
                     _.merge(SystemConfig.config, config);
                 } else {
-                    Logger.error({disableDB: true, verbosity: 1})(`Invalid type of 'additionalConfig' item, expected "object", got "${typeof config}"`);
+                    Logger.error({
+                        disableDB: true,
+                        verbosity: 1
+                    })(`Invalid type of 'additionalConfig' item, expected "object", got "${typeof config}"`);
                 }
             }
         }

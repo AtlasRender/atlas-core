@@ -42,7 +42,7 @@ import RouteMiddleware from "../decorators/RouteMiddleware";
  */
 const addUsersToOrg = async (userIds: number[], org: Organization, defaultRole = org.defaultRole): Promise<void> => {
     // TODO: make all in transaction
-    let errors = [];
+    const errors = [];
     const users = await User.find({
         where: {
             id: In(userIds)
@@ -161,7 +161,7 @@ export default class OrganizationsController extends Controller {
             throw new RequestError(401, "Unauthorized.");
         }
 
-        let organization = new Organization();
+        const organization = new Organization();
         organization.ownerUser = authUser;
         organization.name = ctx.request.body.name;
         organization.description = ctx.request.body.description;
@@ -169,7 +169,7 @@ export default class OrganizationsController extends Controller {
 
         const savedOrg = await organization.save();
 
-        let defaultRole = new Role();
+        const defaultRole = new Role();
         if (ctx.request.body.defaultRole) {
             const defaultRoleData = ctx.request.body.defaultRole;
             defaultRole.name = defaultRoleData.name;
@@ -213,7 +213,7 @@ export default class OrganizationsController extends Controller {
                 if (roleData.name === defaultRole.name || roleNamesSet.size !== ctx.request.body.roles.length) {
                     throw new RequestError(409, "Conflicting role names.", {errors: {roles: 409}});
                 }
-                let role = new Role();
+                const role = new Role();
                 role.name = roleData.name;
                 role.description = roleData.description;
                 role.color = roleData.color || "black"; // TODO random color
@@ -278,7 +278,7 @@ export default class OrganizationsController extends Controller {
     @Route("POST", "/:organization_id")
     @RouteValidation(OrganizationEditValidator)
     public async editOrganizationById(ctx: Context): Promise<void> {
-        let org = await Organization.findOne(ctx.params.organization_id);
+        const org = await Organization.findOne(ctx.params.organization_id);
         if (!org) {
             throw new RequestError(404, "Organization not found.");
         }
@@ -349,7 +349,7 @@ export default class OrganizationsController extends Controller {
     @RouteValidation(IncludeUserIdsInBodyValidator)
     @RouteMiddleware(findOneOrganizationByRequestParams({relations: ["users", "ownerUser", "defaultRole"]}))
     @RouteMiddleware(canManageUsers)
-    public async addOrganizationUsers(ctx: Context) {
+    public async addOrganizationUsers(ctx: Context): Promise<void> {
         const org = ctx.state.organization;
         await addUsersToOrg(ctx.request.body.userIds, org);
         ctx.body = {success: true};
@@ -364,9 +364,9 @@ export default class OrganizationsController extends Controller {
     @RouteValidation(IncludeUserIdsInBodyValidator)
     @RouteMiddleware(findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}))
     @RouteMiddleware(canManageUsers)
-    public async deleteOrganizationUsers(ctx: Context) {
+    public async deleteOrganizationUsers(ctx: Context): Promise<void> {
         const org = ctx.state.organization;
-        let errors = [];
+        const errors = [];
         const users = await User.find({
             where: {
                 id: In(ctx.request.body.userIds)
@@ -379,7 +379,7 @@ export default class OrganizationsController extends Controller {
             }
         });
 
-        let usersToDelete = [];
+        const usersToDelete = [];
         for (const deleteUser of users) {
             // TODO: CHECK PERMISSION LEVEL OF USER TO DELETE.
             // TODO: ownerUser cannot be deleted.
@@ -413,7 +413,7 @@ export default class OrganizationsController extends Controller {
      */
     @Route("GET", "/:organization_id/availableUsers")
     @RouteValidation(IncludeUsernameInQueryValidator)
-    public async getAvailableUsers(ctx: Context) {
+    public async getAvailableUsers(ctx: Context): Promise<void> {
         const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users", "ownerUser"]});
         if (!org) {
             throw new RequestError(404, "Organization not found.");
@@ -440,7 +440,7 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     @Route("GET", "/:organization_id/users/:user_id")
-    public async getOrgUserById(ctx: Context) {
+    public async getOrgUserById(ctx: Context): Promise<void> {
         const org = await Organization.findOne(ctx.params.organization_id, {relations: ["users", "ownerUser"]});
         if (!org) {
             throw new RequestError(404, "Organization not found.");
@@ -495,7 +495,7 @@ export default class OrganizationsController extends Controller {
      */
     @Route("GET", "/:organization_id/users/:user_id/permissions")
     @RouteMiddleware(findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}))
-    public async getUserPermissions(ctx: Context) {
+    public async getUserPermissions(ctx: Context): Promise<void> {
         const org = ctx.state.organization;
         const user = await getRepository(User)
             .createQueryBuilder("user")
@@ -547,7 +547,7 @@ export default class OrganizationsController extends Controller {
      * @author Denis Afendikov
      */
     @Route("GET", "/:organization_id/users/:user_id/permissionLevel")
-    public async getUserPermissionLevel(ctx: Context) {
+    public async getUserPermissionLevel(ctx: Context): Promise<void> {
         // const user = User.findOne(ctx.params.user_id);
 
         const permissionLevel = await getUserPermissionLevelById(ctx.params.user_id, ctx.params.organization_id);

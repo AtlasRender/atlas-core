@@ -18,6 +18,7 @@ import {
 import RenderJob from "./RenderJob";
 import {Moment} from "moment";
 
+
 /**
  * RenderJobLog - typeorm entity for job log data.
  * @class

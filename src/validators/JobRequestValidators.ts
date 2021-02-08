@@ -7,7 +7,7 @@
  */
 
 
-import {bodyValidator, queryValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
+import {bodyValidator} from "../utils/ajv-middleware/ajv-validation-middleware";
 import {ajvInstance} from "../globals";
 import {JSONSchemaType} from "ajv";
 

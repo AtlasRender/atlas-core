@@ -8,6 +8,6 @@
 
 export default class SlaveWSMessage {
     public constructor(input: any) {
-        
+
     }
 }

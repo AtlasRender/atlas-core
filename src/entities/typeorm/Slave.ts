@@ -10,13 +10,16 @@ import {
     BaseEntity,
     Column,
     CreateDateColumn,
-    Entity, Index,
-    ManyToMany, ManyToOne,
-    PrimaryGeneratedColumn, Unique,
+    Entity,
+    Index,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    Unique,
     UpdateDateColumn
 } from "typeorm";
 import Organization from "./Organization";
 import {Moment} from "moment";
+
 
 /**
  * Slave - typeorm entity for slave data.
@@ -51,7 +54,7 @@ export default class Slave extends BaseEntity {
     /**
      * organization - organization, this slave belongs to.
      */
-    // TODO: change to many to one relation!
+        // TODO: change to many to one relation!
     @ManyToOne(type => Organization, org => org.slaves)
     organizations: Organization[];
 

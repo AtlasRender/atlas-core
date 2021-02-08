@@ -53,7 +53,7 @@ export class RenderTaskSubscriber implements EntitySubscriberInterface<RenderTas
                 processing: "processingTasks",
                 done: "doneTasks",
                 failed: "failedTasks"
-            }
+            };
 
             --job[mapping[task.status]];
             ++job[mapping[updatedEntity.status]];

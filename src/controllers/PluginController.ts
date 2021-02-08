@@ -150,7 +150,7 @@ export default class PluginController extends Controller {
                     })
                     .promise()
                     .catch(error => {
-                        throw error
+                        throw error;
                     });
             } catch (error) {
                 if (error instanceof RequestError)

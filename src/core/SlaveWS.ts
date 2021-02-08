@@ -128,7 +128,7 @@ class SlaveWS extends WebSocket {
 
         switch (data.type) {
             case "report":
-                //TODO: add report handler.
+            //TODO: add report handler.
         }
 
     }

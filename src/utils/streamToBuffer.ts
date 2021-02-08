@@ -17,7 +17,7 @@ import {ReadStream} from "fs";
  */
 export default function streamToBuffer(stream: ReadStream): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-        let buffers = [];
+        const buffers = [];
         stream.on("error", reject);
         stream.on("data", (data) => buffers.push(data));
         stream.on("end", () => resolve(Buffer.concat(buffers)));

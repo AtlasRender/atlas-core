@@ -142,7 +142,7 @@ export default async function TaskReportsProcessor(): Promise<void> {
         } catch (error) {
             //TODO: provide another logic
             // if (error instanceof ReferenceError)
-                channel.ack(message);
+            channel.ack(message);
             // else
             //     channel.nack(message);
 

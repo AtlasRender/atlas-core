@@ -135,7 +135,7 @@ export default class JobController extends Controller {
 
             const organization: Organization = await Organization.findOne({where: {id: inputJob.organization}});
             if (!organization) throw new RequestError(404, `Organization does not exist`);
-            //TODO: check user can create job.
+            // TODO: check user can create job.
 
 
             // Create new render job
@@ -210,7 +210,7 @@ export default class JobController extends Controller {
             });
             await channel.assertQueue(AMQP_JOBS_QUEUE, {});
             if (channel.sendToQueue(AMQP_JOBS_QUEUE, Buffer.from(JSON.stringify(jobEvent)))) {
-                console.log("Sent job to queue");
+                // console.log("Sent job to queue");
                 ctx.status = 200;
             } else {
                 throw new RequestError(409, "Unavailable to queue job");
@@ -232,8 +232,8 @@ export default class JobController extends Controller {
      */
     @Route("GET", "/")
     public async getJobs(ctx: Context): Promise<void> {
-        //TODO: add query validator
-        //TODO: send not every field.
+        // TODO: add query validator
+        // TODO: send not every field.
         const {id, organization: organizationId} = ctx.request.query;
         const jwtUser: Authenticator.UserJwt = ctx.state.user;
         let jobs: RenderJob[] | RenderJob = null;
