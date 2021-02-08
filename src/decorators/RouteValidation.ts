@@ -24,7 +24,7 @@ function RouteValidation(validation: Middleware<any>) {
         if (!target.meta) target.meta = {};
         if (!target.meta.routes) target.meta.routes = {};
         target.meta.routes[propertyKey] = {...target.meta.routes[propertyKey], validation};
-    }
+    };
 }
 
 export default RouteValidation;

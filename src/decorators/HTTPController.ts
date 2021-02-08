@@ -16,8 +16,8 @@ import {Middleware} from "koa";
  * @author Danil Andreev
  */
 function HTTPController(baseRoute: string = "") {
-    return function HTTPControllerWrapper<T extends { new(...args: any[]): {} }>(constructor: T) {
-        return class WrappedController extends constructor {
+    return function HTTPControllerWrapper<T extends new(...args: any[]) => {}>(objectConstructor: T): T {
+        return class WrappedController extends objectConstructor {
             constructor(...args: any[]) {
                 super(args);
                 if (this instanceof Controller) {
@@ -40,7 +40,7 @@ function HTTPController(baseRoute: string = "") {
                                     this.put(route.route, ...middlewares, callback);
                                     break;
                                 case "DELETE":
-                                    this.put(route.route, ...middlewares, callback);
+                                    this.delete(route.route, ...middlewares, callback);
                                     break;
                                 default:
                                     throw new TypeError(`Incorrect value of 'method', expected "'GET' | 'POST' | 'PUT' | 'DELETE'", got ${route.method}`);

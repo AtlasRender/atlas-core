@@ -76,7 +76,10 @@ export default class TasksController extends Controller {
         const userJwt: Authenticator.UserJwt = ctx.state.user;
         const {taskId} = ctx.params;
 
-        const task: RenderTask = await RenderTask.findOne({where: {id: taskId}, relations: ["renderTaskAttempts", "job"]})
+        const task: RenderTask = await RenderTask.findOne({
+            where: {id: taskId},
+            relations: ["renderTaskAttempts", "job"]
+        });
         if (!task)
             throw new RequestError(404, "Task not found");
         if (!await JobController.checkUserHaveAccessToJob(userJwt.id, task.job.id))

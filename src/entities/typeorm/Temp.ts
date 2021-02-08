@@ -7,7 +7,6 @@
  */
 
 import {BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import BasicPlugin from "./BasicPlugin";
 import {Moment} from "moment";
 import User from "./User";
 

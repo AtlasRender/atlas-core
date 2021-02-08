@@ -17,7 +17,7 @@ import moment = require("moment");
  */
 export const JobEventType = {
     CREATE_JOB: "create",
-}
+};
 
 /**
  * JobEvent - class for render job events.

@@ -51,7 +51,7 @@ function Route(method: "GET" | "POST" | "PUT" | "DELETE", route: string) {
         if (!target.meta) target.meta = {};
         if (!target.meta.routes) target.meta.routes = {};
         target.meta.routes[propertyKey] = {...target.meta.routes[propertyKey], method, route};
-    }
+    };
 }
 
 export default Route;
