@@ -21,6 +21,12 @@
     </div>   
 </a>
 
+
+<div align="center">
+    <img src="https://lh3.googleusercontent.com/proxy/5kBIJT8_v78dKJN4JpP_ChoC__KfFLGDOFJpAwoRH7Fth0UCrYAoC4GUfoVsKMixSmgYBBhn4fVcjkQBxtguiSg-ez-nkce9gHpLRYdRgMTDVKMXpiKX3S0-cLV8JH8KiL3u_jza" height="100px"/>
+</div>
+
+
 ### Management and control unit.
 Atlas Core is a part of Atlas Render Manager, which process:
 * Render jobs and their distribution by render nodes.
