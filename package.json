@@ -63,7 +63,7 @@
     "ws": "^7.4.3"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.12.13",
+    "@babel/preset-typescript": "^7.12.16",
     "@types/amqplib": "^0.5.17",
     "@types/argon2": "^0.15.0",
     "@types/crypto-random-string": "^2.0.0",
