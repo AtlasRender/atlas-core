@@ -8,9 +8,6 @@
 
 import Controller from "../../src/core/Controller";
 import LoginController from "../../src/controllers/LoginController";
-import * as request from 'supertest'
-import Server from "../../src/core/Server";
-import {config} from "../../src/config";
 // import {server} from "../index";
 
 describe("controllers -> LoginController", () => {
