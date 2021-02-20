@@ -11,9 +11,12 @@
     - mock RabbitMQ
     - mock typeORM
     - test routing
-
 */
 
-describe("core -> Server", () => {
 
+describe("core -> Server", async () => {
+
+    test("Routing Test", async () => {
+        // TODO
+    });
 });
