@@ -24,6 +24,7 @@ describe("controllers -> LoginController", () => {
 
     beforeEach(() => {
         mocked(User).mockClear();
+        mocked(Authenticator).mockClear();
     });
 
     test("Test if controller is instance of Controller", () => {

@@ -94,8 +94,6 @@
     "typescript": "^4.1.3"
   },
   "jest": {
-    "globalSetup": "./tests/mocks/runtime.ts",
-    "globalTeardown": "./tests/mocks/teardown.ts",
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
