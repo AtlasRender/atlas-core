@@ -69,7 +69,7 @@
     "@types/crypto-random-string": "^2.0.0",
     "@types/jest": "^26.0.20",
     "@types/jsonwebtoken": "^8.5.0",
-    "@types/koa": "^2.11.7",
+    "@types/koa": "^2.13.0",
     "@types/koa-convert": "^1.2.3",
     "@types/koa-cors": "^0.0.0",
     "@types/koa-router": "^7.4.1",
