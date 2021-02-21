@@ -49,17 +49,19 @@ describe("processors -> JobsProcessor", () => {
             insert: () => createQueryBuilder,
             values: (vals) => ({
                 execute: async () => {
-                    console.log("Inserting values in RenderTask");
-                    renderTasks.push(vals);
+                    renderTasks.push(...vals);
                     return {} as InsertResult;
                 }
             })
         };
         jest.spyOn(RenderTask, "createQueryBuilder")
             .mockImplementation(() => createQueryBuilder);
-        mocked(RenderTask).mockReturnValue({
-
-        } as unknown as RenderTask);
+        mocked(RenderTask).mockImplementation(() => ({
+            frame: 0,
+            renumbered: 0,
+            status: "",
+            job: null,
+        } as unknown as RenderTask));
 
         const renderJob = {
             id: 0,
@@ -104,6 +106,7 @@ describe("processors -> JobsProcessor", () => {
          **/
         channel.sendToQueue(AMQP_JOBS_QUEUE, Buffer.from(JSON.stringify(jobEvent)));
 
+        // need this timeout because of parallelism
         await new Promise<void>((res, rej) => {
             setTimeout(() => {
                 expect(renderTasks).toEqual(doneRenderTasks);
