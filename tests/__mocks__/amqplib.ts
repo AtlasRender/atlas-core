@@ -145,6 +145,7 @@ const createChannel = async () => ({
         }
     },
     sendToQueue: async (queueName, content, {headers} = {headers: null}) => {
+        console.log("Sending to queue", content);
         queues[queueName].add({
             content,
             fields: {
