@@ -57,7 +57,6 @@ describe("controllers -> LoginController", () => {
         mocked(User).findOne.mockReturnValueOnce(new Promise((res, rej) => {
             res({
                 ...resultUser,
-                username: loginData.username,
                 privateData: {
                     password: hashedPassword
                 }
