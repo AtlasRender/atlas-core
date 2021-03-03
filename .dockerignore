@@ -3,3 +3,5 @@
 docker-compose
 git-crypt
 kubernetes
+.env.development
+.env
