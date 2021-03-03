@@ -14,7 +14,7 @@
 */
 
 
-describe("core -> Server", async () => {
+describe("core -> Server", () => {
 
     test("Routing Test", async () => {
         // TODO

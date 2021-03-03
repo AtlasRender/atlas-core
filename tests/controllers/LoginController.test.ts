@@ -18,6 +18,7 @@ import RequestError from "../../src/errors/RequestError";
 
 jest.mock("../../src/entities/typeorm/User");
 jest.mock("../../src/core/Authenticator");
+jest.mock("../../src/core/Logger");
 
 describe("controllers -> LoginController", () => {
     const controllerInstance = new LoginController();
