@@ -7,7 +7,7 @@
  */
 
 import Server from "./core/Server";
-import {config} from "./config";
+// import {config} from "./config";
 import JobsProcessor from "./processors/JobsProcessor";
 import TaskReportsProcessor from "./processors/TaskReportsProcessor";
 import UserNotificationProcessor from "./processors/UserNotificationProcessor";
@@ -22,10 +22,11 @@ import UploadController from "./controllers/UploadController";
 import PluginController from "./controllers/PluginController";
 import TasksController from "./controllers/TasksController";
 import RenderTaskAttemptController from "./controllers/RenderTaskAttemptController";
+import JSONObject from "./interfaces/JSONObject";
 
 
-export default async function main() {
-    const server = await Server.createServer(config);
+export default async function main(config: JSONObject) {
+    const server = await Server.createServer(config as Server.Config);
     await JobsProcessor();
     await TaskReportsProcessor();
     await UserNotificationProcessor();

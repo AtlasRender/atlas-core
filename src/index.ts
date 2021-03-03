@@ -22,4 +22,4 @@ const options: SystemConfig.Options = {
 };
 const sysConfig = new SystemConfig(options);
 
-main().then();
+main(SystemConfig.config).then();
