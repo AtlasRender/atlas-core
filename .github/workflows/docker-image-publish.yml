@@ -87,9 +87,7 @@ jobs:
           key: ${{secrets.GCLOUD_TEST_DATA_STORAGE_SSH_ID_RSA_PRIVATE}}
           connect_timeout: 50s
           script: |
-            cd /home
-            sudo rm -rf atlas-core
-            sudo git clone "https://github.com/AtlasRender/atlas-core.git"
-            cd atlas-core
+            cd /home/atlas-core-kubernetes
+            sudo git pull
             sudo kubectl apply -f kubernetes/
             sudo kubectl delete pod -n atlas --all
