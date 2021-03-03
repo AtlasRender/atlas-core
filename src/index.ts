@@ -20,6 +20,6 @@ const options: SystemConfig.Options = {
     ],
     envDispatcher
 };
-const sysConfig = new SystemConfig(options);
+new SystemConfig(options);
 
 main(SystemConfig.config).then();
