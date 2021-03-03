@@ -12,14 +12,14 @@ import WebSocket = require("ws");
 jest.mock("../../src/core/Logger");
 
 describe("core -> ClientWS", () => {
-    test("Test simple message", async () => {
-        const opts = {
-            port: 3003
-        };
-        const webSocketServer = new ClientWS(opts);
-        const client = new WebSocket(`ws://localhost:${opts.port}`);
-
-
-        webSocketServer.close();
-    });
+    // test("Test simple message", async () => {
+    //     const opts = {
+    //         port: 3003
+    //     };
+    //     const webSocketServer = new ClientWS(opts);
+    //     const client = new WebSocket(`ws://localhost:${opts.port}`);
+    //
+    //
+    //     webSocketServer.close();
+    // });
 });
