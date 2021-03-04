@@ -80,53 +80,6 @@ const addUsersToOrg = async (userIds: number[], org: Organization, defaultRole =
 @HTTPController("/organizations")
 @NestedController(RolesController)
 export default class OrganizationsController extends Controller {
-    // constructor() {
-    //     super("/organizations");
-    //
-    //     this.get("/", this.getOrganizations);
-    //     this.post("/", OrganizationRegisterValidator, this.addOrganization);
-    //
-    //     this.get("/:organization_id", this.getOrganizationById);
-    //     this.post("/:organization_id", OrganizationEditValidator, this.editOrganizationById);
-    //     this.delete("/:organization_id", this.deleteOrganizationById);
-    //
-    //     this.get("/:organization_id/users", this.getOrganizationUsers);
-    //     // body == {userIds: [ids]}
-    //     this.post(
-    //         "/:organization_id/users",
-    //         IncludeUserIdsInBodyValidator,
-    //         findOneOrganizationByRequestParams({relations: ["users", "ownerUser", "defaultRole"]}),
-    //         canManageUsers,
-    //         this.addOrganizationUsers
-    //     );
-    //     this.delete(
-    //         "/:organization_id/users",
-    //         IncludeUserIdsInBodyValidator,
-    //         findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}),
-    //         canManageUsers,
-    //         this.deleteOrganizationUsers
-    //     );
-    //
-    //     this.get("/:organization_id/availableUsers", IncludeUsernameInQueryValidator, this.getAvailableUsers);
-    //
-    //     this.get("/:organization_id/users/:user_id", this.getOrgUserById);
-    //
-    //     this.get(
-    //         "/:organization_id/users/:user_id/permissions",
-    //         findOneOrganizationByRequestParams({relations: ["users", "ownerUser"]}),
-    //         this.getUserPermissions
-    //     );
-    //
-    //     this.get(
-    //         "/:organization_id/users/:user_id/permissionLevel",
-    //         this.getUserPermissionLevel
-    //     );
-    //
-    //     // // connect RolesController
-    //     // const rolesController = new RolesController();
-    //     // this.use(rolesController.baseRoute, rolesController.routes(), rolesController.allowedMethods());
-    // }
-
     /**
      * Route __[GET]__ ___/organizations___ - get information about all organizations in the system.
      * @method

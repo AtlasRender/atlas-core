@@ -34,54 +34,6 @@ import RouteMiddleware from "../decorators/RouteMiddleware";
  */
 @HTTPController("/:organization_id/roles")
 export default class RolesController extends Controller {
-    // constructor() {
-    //     super("/:organization_id/roles");
-    //
-    //     this.get("/", this.getRoles);
-    //     this.post(
-    //         "/",
-    //         RoleAddValidator,
-    //         findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
-    //         canManageRoles,
-    //         this.addRole
-    //     );
-    //
-    //     this.get("/:role_id", this.getRole);
-    //     this.post(
-    //         "/:role_id",
-    //         RoleEditValidator,
-    //         findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
-    //         canManageRoles,
-    //         this.editRole
-    //     );
-    //     this.delete(
-    //         "/:role_id",
-    //         findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
-    //         canManageRoles,
-    //         this.deleteRole
-    //     );
-    //
-    //     // users
-    //     this.get("/:role_id/users", this.getRoleUsers);
-    //     this.post(
-    //         "/:role_id/users",
-    //         IncludeUserIdInBodyValidator,
-    //         findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
-    //         canManageUsers,
-    //         this.addRoleUser
-    //     );
-    //
-    //     // this.post("/:org_id/roles/:user_id", this.addRolesToUser);
-    //
-    //     this.delete(
-    //         "/:role_id/users",
-    //         IncludeUserIdInBodyValidator,
-    //         findOneOrganizationByRequestParams({relations: ["ownerUser"]}),
-    //         canManageUsers,
-    //         this.deleteRoleUser
-    //     );
-    // }
-
     /**
      * Route __[GET]__ ___/:organization_id/roles___ - get information about all organization's roles.
      * @method
