@@ -79,10 +79,10 @@ class SystemConfig {
      */
     protected static options: SystemConfig.Options = {
         envFiles: [
-            root + "\\..\\.env",
-            root + "\\..\\.env.production",
-            root + "\\..\\.env.development",
-            root + "\\..\\.env.local",
+            root + "/../.env",
+            root + "/../.env.production",
+            root + "/../.env.development",
+            root + "/../.env.local",
         ]
     };
 
