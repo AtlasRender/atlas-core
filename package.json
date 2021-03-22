@@ -60,7 +60,7 @@
     "typeorm": "^0.2.31",
     "unzipper": "^0.10.11",
     "util": "^0.12.3",
-    "ws": "^7.4.3"
+    "ws": "^7.4.4"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.13.0",
