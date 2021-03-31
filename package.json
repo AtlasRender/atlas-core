@@ -57,7 +57,7 @@
     "reflect-metadata": "^0.1.13",
     "stream-buffers": "^3.0.2",
     "temp-dir": "^2.0.0",
-    "typeorm": "^0.2.31",
+    "typeorm": "^0.2.32",
     "unzipper": "^0.10.11",
     "util": "^0.12.3",
     "ws": "^7.4.4"
