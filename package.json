@@ -48,7 +48,7 @@
     "koa-body": "^4.2.0",
     "koa-convert": "^2.0.0",
     "koa-cors": "^0.0.16",
-    "koa-jwt": "^4.0.0",
+    "koa-jwt": "^4.0.1",
     "koa-router": "^10.0.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.0",
