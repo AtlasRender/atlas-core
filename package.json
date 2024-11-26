@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@atlasrender/render-plugin": "^0.1.2",
-    "ajv": "^7.1.1",
+    "ajv": "^7.2.4",
     "ajv-formats": "^1.6.0",
     "amqplib": "^0.7.1",
     "argon2": "^0.27.2",
